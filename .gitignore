@@ -17,3 +17,5 @@ local.properties
 .env
 debug.keystore
 *-debug.log
+!/install/*.apk
+!install/*.apk
