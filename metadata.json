@@ -1,0 +1,8 @@
+{
+  "name": "Learn Malayalam",
+  "description": "Learn spoken Malayalam with Manglish typing and speech practice, focused on colloquial Central Travancore (Adoor & Pathanamthitta) dialect.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,132 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidUserProgress(data) {
+      return data.userId is string && data.userId == request.auth.uid && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100 &&
+             data.xp is int && data.xp >= 0 && data.xp <= 10000000 &&
+             data.streakDays is int && data.streakDays >= 0 && data.streakDays <= 10000 &&
+             data.completedQuizCount is int && data.completedQuizCount >= 0 && data.completedQuizCount <= 100000 &&
+             data.spokenPhrasesCount is int && data.spokenPhrasesCount >= 0 && data.spokenPhrasesCount <= 100000 &&
+             data.activeScreen is string && data.activeScreen.size() >= 1 && data.activeScreen.size() <= 40 &&
+             data.activeDeckId is string && data.activeDeckId.size() >= 1 && data.activeDeckId.size() <= 64 &&
+             data.activeCardIndex is int && data.activeCardIndex >= 0 && data.activeCardIndex <= 500 &&
+             data.activeQuizIndex is int && data.activeQuizIndex >= 0 && data.activeQuizIndex <= 500 &&
+             data.activeScenarioId is string && data.activeScenarioId.size() >= 1 && data.activeScenarioId.size() <= 64 &&
+             data.lastDevice is string && data.lastDevice.size() >= 1 && data.lastDevice.size() <= 64 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidLearnedPhrase(data, phraseId) {
+      return data.phraseId is string && data.phraseId == phraseId && data.phraseId.size() >= 1 && data.phraseId.size() <= 64 &&
+             data.userId is string && data.userId == request.auth.uid && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.manglish is string && data.manglish.size() >= 1 && data.manglish.size() <= 300 &&
+             data.category is string && data.category.size() >= 1 && data.category.size() <= 64 &&
+             data.masteryLevel is int && data.masteryLevel >= 1 && data.masteryLevel <= 5 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && request.auth.uid == userId;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(userId) &&
+                       request.auth.uid == userId &&
+                       isValidUserProgress(incoming()) &&
+                       incoming().keys().hasAll([
+                         'userId', 'displayName', 'xp', 'streakDays',
+                         'completedQuizCount', 'spokenPhrasesCount',
+                         'activeScreen', 'activeDeckId', 'activeCardIndex',
+                         'activeQuizIndex', 'activeScenarioId', 'lastDevice',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'displayName', 'xp', 'streakDays',
+                         'completedQuizCount', 'spokenPhrasesCount',
+                         'activeScreen', 'activeDeckId', 'activeCardIndex',
+                         'activeQuizIndex', 'activeScenarioId', 'lastDevice',
+                         'createdAt', 'updatedAt'
+                       ]);
+
+      allow update: if isSignedIn() &&
+                       isValidUserProgress(incoming()) &&
+                       isValidId(userId) &&
+                       request.auth.uid == userId &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'displayName', 'xp', 'streakDays',
+                         'completedQuizCount', 'spokenPhrasesCount',
+                         'activeScreen', 'activeDeckId', 'activeCardIndex',
+                         'activeQuizIndex', 'activeScenarioId', 'lastDevice',
+                         'updatedAt'
+                       ]);
+
+      allow delete: if isSignedIn() && isValidId(userId) && request.auth.uid == userId;
+
+      match /learned_phrases/{phraseId} {
+        allow get: if isSignedIn() && isValidId(userId) && isValidId(phraseId) && request.auth.uid == userId;
+        allow list: if isSignedIn() && request.auth.uid == userId && resource.data.userId == request.auth.uid;
+
+        allow create: if isSignedIn() &&
+                         isValidId(userId) &&
+                         isValidId(phraseId) &&
+                         request.auth.uid == userId &&
+                         isValidLearnedPhrase(incoming(), phraseId) &&
+                         incoming().keys().hasAll([
+                           'phraseId', 'userId', 'manglish', 'category',
+                           'masteryLevel', 'createdAt', 'updatedAt'
+                         ]) &&
+                         incoming().keys().hasOnly([
+                           'phraseId', 'userId', 'manglish', 'category',
+                           'masteryLevel', 'createdAt', 'updatedAt'
+                         ]);
+
+        allow update: if isSignedIn() &&
+                         isValidLearnedPhrase(incoming(), phraseId) &&
+                         isValidId(userId) &&
+                         isValidId(phraseId) &&
+                         request.auth.uid == userId &&
+                         incoming().userId == existing().userId &&
+                         incoming().phraseId == existing().phraseId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'manglish', 'category', 'masteryLevel', 'updatedAt'
+                         ]);
+
+        allow delete: if isSignedIn() && isValidId(userId) && isValidId(phraseId) && request.auth.uid == userId;
+      }
+
+      match /progress/{docId} {
+        allow get, list: if isSignedIn() && isValidId(userId) && isValidId(docId) && request.auth.uid == userId;
+        allow create, update: if isSignedIn() && isValidId(userId) && isValidId(docId) && request.auth.uid == userId;
+        allow delete: if isSignedIn() && isValidId(userId) && isValidId(docId) && request.auth.uid == userId;
+      }
+    }
+  }
+}

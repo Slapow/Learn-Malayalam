@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learn Malayalam — Laptop Web App & Cloud Sync</title>
+  <style>
+    :root {
+      --emerald-dark: #073B25;
+      --emerald-primary: #0F6841;
+      --emerald-light: #D6F2DF;
+      --gold: #E5A122;
+      --gold-light: #FDE8BB;
+      --terracotta: #C84B31;
+      --terracotta-light: #FFDAD3;
+      --sand-bg: #FAF7F2;
+      --surface: #FFFFFF;
+      --text-main: #1E2420;
+      --text-muted: #4A554E;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--sand-bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .brand h1 { color: var(--emerald-primary); font-size: 1.45rem; font-weight: 800; letter-spacing: -0.5px; }
+    .badge {
+      background: var(--gold-light);
+      color: #3B2500;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      text-transform: uppercase;
+    }
+    .stats-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.84rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pill-streak { background: var(--terracotta-light); color: var(--terracotta); }
+    .pill-xp { background: var(--gold-light); color: #3B2500; }
+    .pill-sync { background: var(--emerald-light); color: var(--emerald-dark); cursor: pointer; border: none; }
+    .container { max-width: 1080px; width: 100%; margin: 0 auto; padding: 24px; flex: 1; }
+    .handoff-banner {
+      background: linear-gradient(135deg, var(--emerald-primary), var(--emerald-dark));
+      color: white;
+      border-radius: 22px;
+      padding: 22px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 22px;
+      box-shadow: 0 10px 26px rgba(15, 104, 65, 0.18);
+      flex-wrap: wrap;
+    }
+    .handoff-banner h2 { font-size: 1.28rem; margin-bottom: 6px; }
+    .handoff-banner p { font-size: 0.9rem; opacity: 0.92; line-height: 1.45; }
+    .btn {
+      border: none;
+      border-radius: 14px;
+      padding: 11px 18px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.15s ease;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-gold { background: var(--gold); color: #2B1A00; }
+    .btn-primary { background: var(--emerald-primary); color: white; }
+    .btn-outline { background: transparent; border: 1.5px solid var(--emerald-primary); color: var(--emerald-primary); }
+    .btn-danger { background: var(--terracotta); color: white; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 10px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: var(--surface);
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .tab-btn.active { background: var(--emerald-primary); color: white; border-color: var(--emerald-primary); }
+    .sub-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .sub-tab-btn {
+      padding: 7px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: var(--surface);
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .sub-tab-btn.active { background: var(--gold); color: #2B1A00; border-color: var(--gold); }
+    .card {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 22px;
+      border: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 3px 12px rgba(0,0,0,0.03);
+      margin-bottom: 18px;
+    }
+    .three-part-manglish { font-size: 1.4rem; font-weight: 800; color: var(--emerald-primary); margin-bottom: 4px; }
+    .three-part-malayalam { font-size: 1.15rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+    .three-part-english { font-size: 1rem; font-weight: 600; color: var(--text-main); border-top: 1px solid rgba(0,0,0,0.08); padding-top: 10px; }
+    .phonetic-box {
+      margin-top: 8px;
+      background: var(--emerald-light);
+      color: var(--emerald-dark);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+    .nuance-box {
+      margin-top: 8px;
+      background: rgba(229, 161, 34, 0.16);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      color: #3B2500;
+    }
+    .copy-lock-box {
+      margin-top: 14px;
+      background: var(--terracotta-light);
+      border: 2px solid var(--terracotta);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 16px; }
+    .input-box {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(0,0,0,0.16);
+      font-size: 1rem;
+      margin: 12px 0;
+    }
+    .flashcard-stage {
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      background: linear-gradient(180deg, #FFFFFF, #F5FBF7);
+    }
+    .chat-list { max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+    .chat-partner { align-self: flex-start; background: #F0F5F1; border-radius: 16px; padding: 14px 18px; max-width: 82%; }
+    .chat-user { align-self: flex-end; background: var(--emerald-primary); color: white; border-radius: 16px; padding: 12px 18px; max-width: 75%; }
+    .hidden { display: none !important; }
+    .bucket-bar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .bucket-pill { padding: 6px 12px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>Learn Malayalam</h1>
+      <span class="badge" id="levelBadgeHeader">Ground Level 0</span>
+    </div>
+    <div class="stats-bar">
+      <div class="pill pill-streak">🔥 <span id="streakVal">0</span>d Streak</div>
+      <div class="pill pill-xp">⭐ <span id="xpVal">0</span> XP</div>
+      <button class="pill pill-sync" id="authBtn" onclick="handleAuthClick()">☁️ Sign in with Google to Sync</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="handoff-banner">
+      <div>
+        <div style="font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--gold-light); margin-bottom:4px;">
+          NOVICE LEVEL 1 → DISTINGUISHED STUDY PLAN • CLOUD SYNC
+        </div>
+        <h2 id="sessionHeadline">Novice Level 1 (Core Building Blocks)</h2>
+        <p id="sessionSubtext">Master high-frequency spoken Malayalam with mixed written and spoken drills, automatic retry for missed words, and simple English Q&A.</p>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-gold" onclick="switchTab('QUIZ')">Start Practice</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-QUIZ" onclick="switchTab('QUIZ')">🎯 Study Modes</button>
+      <button class="tab-btn" id="tab-FLASHCARDS" onclick="switchTab('FLASHCARDS')">🗂️ Flashcards</button>
+      <button class="tab-btn" id="tab-AI_TUTOR" onclick="switchTab('AI_TUTOR')">💬 Simple Q&A Tutor</button>
+      <button class="tab-btn" id="tab-STUDY_PLAN" onclick="switchTab('STUDY_PLAN')">🗺️ Study Plan & Known Words DB</button>
+    </div>
+
+    <!-- TAB 1: STUDY MODES (MIXED WRITTEN+SPOKEN, WRITE, SPEAK) -->
+    <section id="view-QUIZ">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <div>
+            <span class="badge" id="activeDeckBadge">Novice Level 1: First 12 Words</span>
+            <span style="font-size:0.82rem; color:var(--text-muted); margin-left:8px;" id="quizCounter">Queue: 12 cards</span>
+          </div>
+          <select id="deckSelector" onchange="changeDeck(this.value)" style="padding:8px 12px; border-radius:10px; font-weight:700;">
+            <option value="deck_level0_words">Novice Level 1: First 12 Words</option>
+            <option value="deck_level1_pairs">Novice 1: 2-Word Combos</option>
+            <option value="deck_level2_greetings">Novice 2: Greetings & Contractions</option>
+            <option value="deck_contractions">Novice 3: Spoken Home Sentences</option>
+            <option value="deck_family">Intermediate 1: Kitchen & Family Talk</option>
+            <option value="deck_thattukada">Intermediate 2: Thattukada & Travel</option>
+            <option value="deck_catholic_church">Intermediate 3: Catholic Church & Prayers</option>
+            <option value="deck_advanced_storytelling">Advanced 1: Storytelling & Feelings</option>
+            <option value="deck_advanced_opinions">Advanced 2: Opinions & Polite Debate</option>
+            <option value="deck_slang">Superior 1: Enthuvaadey & Rapid Banter</option>
+            <option value="deck_superior_proverbs">Superior 2: Malayalam Proverbs & Idioms</option>
+            <option value="deck_distinguished_master">Distinguished: Cultural Master & Orator</option>
+          </select>
+        </div>
+
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" id="mode-MIXED" onclick="setQuizletMode('MIXED')">🔀 Mixed Written + Spoken Shuffle (2/2 Mastery)</button>
+          <button class="sub-tab-btn" id="mode-WRITE" onclick="setQuizletMode('WRITE')">✍️ Write Mode (Retype When Wrong)</button>
+          <button class="sub-tab-btn" id="mode-SPEAK" onclick="setQuizletMode('SPEAK')">🎙️ Speak Out Loud Mode</button>
+        </div>
+
+        <div class="bucket-bar">
+          <span class="bucket-pill" style="background:var(--terracotta-light); color:var(--terracotta);" id="bucketNew">🔴 Still Learning: 0</span>
+          <span class="bucket-pill" style="background:var(--gold-light); color:#3B2500;" id="bucketFamiliar">🟡 Familiar (1/2): 0</span>
+          <span class="bucket-pill" style="background:var(--emerald-light); color:var(--emerald-dark);" id="bucketMastered">🟢 Mastered (2/2): 0</span>
+        </div>
+
+        <h3 id="quizPrompt" style="font-size:1.3rem; margin-bottom:6px;">How do you say in Malayalam (Manglish)?</h3>
+        <div id="quizEnglishTarget" style="font-size:1.55rem; font-weight:800; color:var(--emerald-primary); margin-bottom:10px;"></div>
+        <div id="quizHint" class="phonetic-box" style="margin-bottom:12px;"></div>
+
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <button class="btn btn-outline" onclick="speakCurrentQuizPhrase()">🔊 Hear Pronunciation</button>
+          <button class="btn btn-outline" onclick="startBrowserSpeech('quizInput')">🎙️ Speak Answer Out Loud</button>
+        </div>
+
+        <input type="text" id="quizInput" class="input-box" placeholder="Type Manglish answer here (or use 🎙️ Speak button)..." />
+
+        <div id="actionBtnRow" style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="checkQuizAnswer()">Check Answer</button>
+        </div>
+
+        <!-- COPY ANSWER WHEN WRONG LOCK BOX (Quizlet Write / Learn behavior) -->
+        <div id="copyAnswerLockBox" class="copy-lock-box hidden">
+          <div style="font-weight:800; color:var(--terracotta); margin-bottom:6px;">
+            ✍️ Copy Answer to Continue (Added back to shuffle until you get it right 2x!)
+          </div>
+          <div style="font-size:0.9rem; margin-bottom:8px;">
+            Correct Answer: <strong id="copyTargetText" style="font-size:1.1rem; color:var(--emerald-dark);"></strong>
+          </div>
+          <input type="text" id="copyRetypeInput" class="input-box" placeholder="Type the exact Malayalam/Manglish word above to unlock Continue..." oninput="verifyCopyRetype()" />
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-primary" id="continueAfterCopyBtn" onclick="nextQuizQuestion()" disabled style="opacity:0.5;">Retype Correct Answer Above to Continue</button>
+            <button class="btn btn-outline" onclick="overrideQuizCorrect()">Override: I was right</button>
+          </div>
+        </div>
+
+        <div id="quizFeedbackBox" class="nuance-box hidden" style="margin-top:16px;">
+          <div id="quizFeedbackText" style="font-weight:700; margin-bottom:6px;"></div>
+          <div id="quizPhraseBreakdown"></div>
+          <div id="nextBtnContainer" style="margin-top:12px;">
+            <button class="btn btn-primary" onclick="nextQuizQuestion()">Next Card →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: FLASHCARDS -->
+    <section id="view-FLASHCARDS" class="hidden">
+      <div class="card flashcard-stage" onclick="flipFlashcard()">
+        <span class="badge" id="fcCategory">GROUND LEVEL 0</span>
+        <div id="fcContent" style="margin-top:16px; max-width:620px;"></div>
+        <p style="margin-top:18px; font-size:0.8rem; color:var(--text-muted);">Click card to flip between English & 3-Part Malayalam Breakdown</p>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+        <button class="btn btn-outline" onclick="nextFlashcard(false)">🔄 Still Learning</button>
+        <button class="btn btn-outline" onclick="speakCurrentFlashcard()">🔊 Speak Malayalam</button>
+        <span id="fcIndexLabel" style="font-weight:700;">1 / 12</span>
+        <button class="btn btn-primary" onclick="nextFlashcard(true)">✅ Mark Known (+5 XP)</button>
+      </div>
+    </section>
+
+    <!-- TAB 3: SIMPLE Q&A TUTOR (NO GRANDMA PERSONA) -->
+    <section id="view-AI_TUTOR" class="hidden">
+      <div class="card">
+        <div style="margin-bottom:12px;">
+          <h3 style="font-size:1.15rem; color:var(--emerald-primary);">Simple Malayalam Q&A Tutor</h3>
+          <p style="font-size:0.86rem; color:var(--text-muted);">Ask in plain English (e.g., <i>"how do i say hello"</i>, <i>"how do i say thank you"</i>, <i>"how do i say water"</i>). Gives you the direct word plus notes on whether speakers just use the English word or formal/informal phrasing.</p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+          <button class="sub-tab-btn" onclick="askQuickQuestion('How do I say hello?')">How do I say hello?</button>
+          <button class="sub-tab-btn" onclick="askQuickQuestion('How do I say thank you?')">How do I say thank you?</button>
+          <button class="sub-tab-btn" onclick="askQuickQuestion('How do I say yes and no?')">Yes & No</button>
+          <button class="sub-tab-btn" onclick="askQuickQuestion('How do I say I and You?')">I & You</button>
+          <button class="sub-tab-btn" onclick="askQuickQuestion('How do I say water and tea?')">Water & Tea</button>
+          <button class="sub-tab-btn" onclick="askQuickQuestion('How do I say won\\'t come?')">Won't come</button>
+        </div>
+        <div class="chat-list" id="chatList"></div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-outline" onclick="startBrowserSpeech('tutorInput')">🎙️</button>
+          <input type="text" id="tutorInput" class="input-box" style="margin:0; flex:1;" placeholder="Ask in English (e.g. how do i say hello)..." onkeydown="if(event.key==='Enter') sendTutorMessage()" />
+          <button class="btn btn-primary" onclick="sendTutorMessage()">Ask Tutor</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: STUDY PLAN & KNOWN WORDS DATABASE -->
+    <section id="view-STUDY_PLAN" class="hidden">
+      <div class="card">
+        <h3 style="font-size:1.2rem; color:var(--emerald-primary); margin-bottom:6px;">🗺️ Ground Level 0 → Intermediate Study Plan</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:14px;">Master words in Quizlet modes or Flashcards to unlock higher levels automatically.</p>
+        <div class="grid-2" id="studyPlanLevelsGrid"></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+          <div>
+            <h3 style="font-size:1.2rem; color:var(--emerald-primary);">📚 Known Words & Phrases Database</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted);" id="dbSummaryText">0 Known • 0 Struggling • 36 Total</p>
+          </div>
+          <div class="sub-tabs" style="margin:0;">
+            <button class="sub-tab-btn active" onclick="filterWordDb('ALL')">All (36)</button>
+            <button class="sub-tab-btn" onclick="filterWordDb('KNOWN')">✅ Known</button>
+            <button class="sub-tab-btn" onclick="filterWordDb('STRUGGLING')">🎯 Needs Practice</button>
+          </div>
+        </div>
+        <div class="grid-2" id="wordDatabaseGrid"></div>
+      </div>
+    </section>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      initializeFirestore,
+      persistentLocalCache,
+      persistentMultipleTabManager,
+      doc,
+      collection,
+      getDoc,
+      setDoc,
+      updateDoc,
+      onSnapshot,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyApUu8xKupkdWWdsT-Hs4XcIpGGSHYthps",
+      authDomain: "gen-lang-client-0134666056.firebaseapp.com",
+      projectId: "gen-lang-client-0134666056"
+    };
+    const DATABASE_ID = "ai-studio-android-parayu-8a0e225d-9047-4fdb-8fbc-80c8357669d5";
+
+    let app, auth, db, currentUser = null;
+    let unsubUser = null, unsubProgress = null, unsubPhrases = null;
+
+    try {
+      if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("__FIREBASE")) {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        // Enable Firestore IndexedDB offline persistence across tabs
+        db = initializeFirestore(app, {
+          localCache: persistentLocalCache({
+            tabManager: persistentMultipleTabManager()
+          })
+        }, DATABASE_ID);
+
+        onAuthStateChanged(auth, (user) => {
+          currentUser = user;
+          const btn = document.getElementById("authBtn");
+          if (user) {
+            btn.textContent = "☁️ " + (user.displayName || user.email || "Synced");
+            btn.title = "UID: " + user.uid + " (Click to Sign Out)";
+            subscribeUserProgress(user.uid);
+          } else {
+            btn.textContent = "☁️ Sign in with Google";
+            if (unsubUser) unsubUser();
+            if (unsubProgress) unsubProgress();
+            if (unsubPhrases) unsubPhrases();
+          }
+        });
+      }
+    } catch (e) {
+      console.warn("Firebase Web init note:", e);
+    }
+
+    window.handleAuthClick = async function() {
+      if (!auth) {
+        alert("Progress is saved locally in your browser.");
+        return;
+      }
+      if (currentUser) {
+        await signOut(auth);
+      } else {
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: "select_account" });
+        await signInWithPopup(auth, provider);
+      }
+    };
+
+    function subscribeUserProgress(uid) {
+      if (!db) return;
+      if (unsubUser) unsubUser();
+      if (unsubProgress) unsubProgress();
+      if (unsubPhrases) unsubPhrases();
+
+      // 1. Listen to root user document: users/{uid}
+      const userRef = doc(db, "users", uid);
+      unsubUser = onSnapshot(userRef, (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.xp === 140 && data.streakDays === 4 && (!window.appState.learnedPhraseIds || window.appState.learnedPhraseIds.length === 0)) {
+            window.appState.xp = 0;
+            window.appState.streakDays = 0;
+            window.pushCloudProgress();
+            return;
+          }
+          window.appState.xp = data.xp ?? window.appState.xp ?? 0;
+          window.appState.streakDays = data.streakDays ?? window.appState.streakDays ?? 0;
+          window.appState.completedQuizCount = data.completedQuizCount ?? window.appState.completedQuizCount ?? 0;
+          window.appState.spokenPhrasesCount = data.spokenPhrasesCount ?? window.appState.spokenPhrasesCount ?? 0;
+          updateHeaderUI(data);
+        }
+      });
+
+      // 2. Listen to detailed progress document: users/{uid}/progress/current
+      const progressRef = doc(db, "users", uid, "progress", "current");
+      unsubProgress = onSnapshot(progressRef, (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          if (typeof data.xp === "number") window.appState.xp = data.xp;
+          if (typeof data.streakDays === "number") window.appState.streakDays = data.streakDays;
+          if (Array.isArray(data.learnedPhraseIds)) {
+            window.appState.learnedPhraseIds = Array.from(new Set([...(window.appState.learnedPhraseIds || []), ...data.learnedPhraseIds]));
+          }
+          if (Array.isArray(data.graduatedTiers)) {
+            window.appState.graduatedTiers = data.graduatedTiers;
+          }
+          if (data.streakById && typeof data.streakById === "object") {
+            window.appState.streakById = { ...(window.appState.streakById || {}), ...data.streakById };
+          }
+          updateHeaderUI(data);
+          if (typeof renderQuiz === "function") renderQuiz();
+          if (typeof renderFlashcards === "function") renderFlashcards();
+          if (typeof renderStudyPlanAndDb === "function") renderStudyPlanAndDb();
+        }
+      });
+
+      // 3. Listen to learned_phrases collection: users/{uid}/learned_phrases
+      const phrasesCol = collection(db, "users", uid, "learned_phrases");
+      unsubPhrases = onSnapshot(phrasesCol, (snap) => {
+        const ids = [];
+        snap.forEach((d) => {
+          if (d.id) ids.push(d.id);
+        });
+        if (ids.length > 0) {
+          window.appState.learnedPhraseIds = Array.from(new Set([...(window.appState.learnedPhraseIds || []), ...ids]));
+          updateHeaderUI();
+          if (typeof renderStudyPlanAndDb === "function") renderStudyPlanAndDb();
+        }
+      });
+    }
+
+    window.pushCloudProgress = async function() {
+      try {
+        localStorage.setItem("learn_malayalam_web_state_v2", JSON.stringify(window.appState));
+      } catch (_) {}
+
+      try {
+        fetch("/api/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(window.appState)
+        }).catch(() => {});
+      } catch (_) {}
+
+      if (!db || !currentUser) return;
+      const uid = currentUser.uid;
+      const safeName = (currentUser.displayName || "Web Learner").slice(0, 100);
+
+      // 1. Update users/{uid} (strictly matching security rules schema)
+      const userRef = doc(db, "users", uid);
+      const basePayload = {
+        displayName: safeName,
+        xp: Math.max(0, Math.min(10000000, Number(window.appState.xp) || 0)),
+        streakDays: Math.max(0, Math.min(10000, Number(window.appState.streakDays) || 0)),
+        completedQuizCount: Math.max(0, Math.min(100000, Number(window.appState.completedQuizCount) || 0)),
+        spokenPhrasesCount: Math.max(0, Math.min(100000, Number(window.appState.spokenPhrasesCount) || 0)),
+        activeScreen: String(window.appState.activeScreen || "QUIZ").slice(0, 40),
+        activeDeckId: String(window.appState.activeDeckId || "deck_level0_words").slice(0, 64),
+        activeCardIndex: Math.max(0, Math.min(500, Number(window.appState.activeCardIndex) || 0)),
+        activeQuizIndex: Math.max(0, Math.min(500, Number(window.appState.activeQuizIndex) || 0)),
+        activeScenarioId: "tutor_qa_general",
+        lastDevice: "Web Companion",
+        updatedAt: serverTimestamp()
+      };
+
+      try {
+        const snap = await getDoc(userRef);
+        if (!snap.exists()) {
+          await setDoc(userRef, {
+            ...basePayload,
+            userId: uid,
+            createdAt: serverTimestamp()
+          });
+        } else {
+          await updateDoc(userRef, basePayload);
+        }
+      } catch (e) {
+        console.warn("User root sync note:", e);
+      }
+
+      // 2. Update users/{uid}/progress/current with full vocabulary & mastery state
+      const progressRef = doc(db, "users", uid, "progress", "current");
+      try {
+        await setDoc(progressRef, {
+          ...basePayload,
+          userId: uid,
+          learnedPhraseIds: window.appState.learnedPhraseIds || [],
+          strugglingPhraseIds: window.appState.strugglingPhraseIds || [],
+          graduatedTiers: window.appState.graduatedTiers || [],
+          streakById: window.appState.streakById || {},
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      } catch (e) {
+        console.warn("Progress doc sync note:", e);
+      }
+    };
+  </script>
+
+  <script>
+    const STUDY_STAGES = [
+      { level: 0, badge: "Ground Level 0", title: "Ground Zero: First 12 Words", reqWords: 0, deck: "deck_level0_words", desc: "Single-word building blocks: I, You, Yes, No, Want, Where, Now.", tier: "Ground Zero" },
+      { level: 1, badge: "Novice 1", title: "Novice 1: Family & 2-Word Combos", reqWords: 5, deck: "deck_level1_pairs", desc: "Combine 2 words: 'Chaya veno?' (Want tea?) and 'Amma evide?' (Where is Mom?).", tier: "Novice" },
+      { level: 2, badge: "Novice 2", title: "Novice 2: Adoor Action Shortcuts", reqWords: 10, deck: "deck_level2_greetings", desc: "Varoolla (won't come), Cheyyoolla (won't do), Pokoolla (won't go).", tier: "Novice" },
+      { level: 3, badge: "Novice 3", title: "Novice 3: Home Sentences (Graduation Checkpoint)", reqWords: 15, deck: "deck_contractions", desc: "Short conversational sentences. Pass Oral Graduation to reach Intermediate!", tier: "Novice", checkpoint: true },
+      { level: 4, badge: "Intermediate 1", title: "Intermediate 1: Kitchen & Family Talk", reqWords: 19, deck: "deck_family", desc: "Natural home dialogue with Ammachi, Appachan, and morning tea.", tier: "Intermediate" },
+      { level: 5, badge: "Intermediate 2", title: "Intermediate 2: Thattukada & Travel", reqWords: 23, deck: "deck_thattukada", desc: "Order strong tea, pazhampori, and navigate Adoor KSRTC bus stand.", tier: "Intermediate" },
+      { level: 6, badge: "Intermediate 3", title: "Intermediate 3: Catholic Church & Prayers", reqWords: 27, deck: "deck_catholic_church", desc: "Sunday Holy Mass (Qurbana), evening family rosary, Hail Mary, parish priest greetings. Pass Oral Graduation to reach Advanced!", tier: "Intermediate", checkpoint: true },
+      { level: 7, badge: "Advanced 1", title: "Advanced 1: Storytelling & Feelings", reqWords: 33, deck: "deck_advanced_storytelling", desc: "Express personal sorrow, reminiscence of fond times, and recount narrative sequences.", tier: "Advanced" },
+      { level: 8, badge: "Advanced 2", title: "Advanced 2: Opinions & Polite Debate", reqWords: 39, deck: "deck_advanced_opinions", desc: "Diplomatically voice disagreement, provide nuanced reasoning, and propose alternatives. Pass Oral Graduation to reach Superior!", tier: "Advanced", checkpoint: true },
+      { level: 9, badge: "Superior 1", title: "Superior 1: Fast Family Banter", reqWords: 45, deck: "deck_slang", desc: "Rapid Central Travancore cadence, humorous exclamations ('Enthuvaadey', 'pulli'), and witty retorts.", tier: "Superior" },
+      { level: 10, badge: "Superior 2", title: "Superior 2: Malayalam Proverbs (Pazhamchollukal)", reqWords: 51, deck: "deck_superior_proverbs", desc: "Master famous proverbs ('Minnumathellam ponnalla'). Pass Oral Graduation to reach Distinguished!", tier: "Superior", checkpoint: true },
+      { level: 11, badge: "Distinguished", title: "Distinguished: Cultural Master & Orator", reqWords: 56, deck: "deck_distinguished_master", desc: "Exceptional mastery: cultural hospitality, parish speeches, and gracious community counsel.", tier: "Distinguished", checkpoint: true }
+    ];
+
+    const PHRASES = [
+      { id: "l0_01", level: 0, deck: "deck_level0_words", manglish: "Njaan", malayalam: "ഞാൻ", english: "I / Me", phonetic: "nyaan (rhymes with 'naan')", breakdown: "Njaan = I / me", nuance: "Your #1 building block word." },
+      { id: "l0_02", level: 0, deck: "deck_level0_words", manglish: "Nee", malayalam: "നീ", english: "You (casual)", phonetic: "nee (like 'knee')", breakdown: "Nee = You (to friends/younger people)", nuance: "Use 'Nee' with friends. With elders, use their title (Appa/Amma/Chetta)." },
+      { id: "l0_03", level: 0, deck: "deck_level0_words", manglish: "Athe", malayalam: "അതെ", english: "Yes / That's right", phonetic: "uh-they", breakdown: "Athe = Yes", nuance: "In casual conversation, 'Aa' is also used for Yes." },
+      { id: "l0_04", level: 0, deck: "deck_level0_words", manglish: "Illa", malayalam: "ഇല്ല", english: "No / Not there", phonetic: "il-luh", breakdown: "Illa = No / does not exist", nuance: "Used when saying you don't have something or didn't do something." },
+      { id: "l0_05", level: 0, deck: "deck_level0_words", manglish: "Alla", malayalam: "അല്ല", english: "No (Not that)", phonetic: "ul-luh", breakdown: "Alla = Not that", nuance: "Illa = 'don't have'; Alla = 'is not'." },
+      { id: "l0_06", level: 0, deck: "deck_level0_words", manglish: "Undo?", malayalam: "ഉണ്ടോ?", english: "Is there? / Do you have?", phonetic: "un-doh?", breakdown: "Undo? = Is there?", nuance: "Point at any item and ask '[Item] undo?'." },
+      { id: "l0_07", level: 0, deck: "deck_level0_words", manglish: "Veno?", malayalam: "വേണോ?", english: "Do you want?", phonetic: "vay-noh?", breakdown: "Veno? = Want?", nuance: "'Chaya veno?' = Do you want tea?" },
+      { id: "l0_08", level: 0, deck: "deck_level0_words", manglish: "Venda", malayalam: "വേണ്ട", english: "Don't want / No thanks", phonetic: "ven-duh", breakdown: "Venda = Don't want", nuance: "Polite way to decline extra food or tea." },
+      { id: "l0_09", level: 0, deck: "deck_level0_words", manglish: "Entha?", malayalam: "എന്താ?", english: "What?", phonetic: "en-thaa?", breakdown: "Entha = What is it?", nuance: "In Adoor, friends also say 'Enthuvaa?'." },
+      { id: "l0_10", level: 0, deck: "deck_level0_words", manglish: "Evide?", malayalam: "എവിടെ?", english: "Where?", phonetic: "eh-vi-dey?", breakdown: "Evide = Where?", nuance: "Spoken quickly, sounds like 'Evideya?'." },
+      { id: "l0_11", level: 0, deck: "deck_level0_words", manglish: "Ippo", malayalam: "ഇപ്പൊ", english: "Now / Right now", phonetic: "ip-poh", breakdown: "Ippo = Now", nuance: "Spoken short form of textbook 'ippol'." },
+      { id: "l0_12", level: 0, deck: "deck_level0_words", manglish: "Ketto", malayalam: "കേട്ടോ", english: "Okay? / Got it?", phonetic: "ket-toh", breakdown: "Ketto = Heard? / Okay?", nuance: "Added to the end of sentences for warmth." },
+      { id: "l1_01", level: 1, deck: "deck_level1_pairs", manglish: "Chaya veno?", malayalam: "ചായ വേണോ?", english: "Do you want tea?", phonetic: "chaa-yuh vay-noh?", breakdown: "Chaya (tea) + veno? (do you want?)", nuance: "Most common hospitality phrase in Kerala." },
+      { id: "l1_02", level: 1, deck: "deck_level1_pairs", manglish: "Enikku veno", malayalam: "എനിക്ക് വേണം", english: "I want / I need", phonetic: "eh-nik-ku vay-nam", breakdown: "Enikku (to me) + venam (want)", nuance: "Opposite of 'Enikku venda' (I don't want)." },
+      { id: "l1_03", level: 1, deck: "deck_level1_pairs", manglish: "Vellam undo?", malayalam: "വെള്ളം ഉണ്ടോ?", english: "Is there water?", phonetic: "vel-lum un-doh?", breakdown: "Vellam (water) + undo? (is there?)", nuance: "Essential restaurant/home phrase." },
+      { id: "l1_04", level: 1, deck: "deck_level1_pairs", manglish: "Appa evide?", malayalam: "അപ്പ എവിടെ?", english: "Where is Dad?", phonetic: "up-puh eh-vi-dey?", breakdown: "Appa (Dad) + evide? (where?)", nuance: "In Central Travancore, 'Appa' is used for Father." },
+      { id: "l2_01", level: 2, deck: "deck_level2_greetings", manglish: "Varoolla", malayalam: "വരൂല്ല", english: "Won't come", phonetic: "vuh-roo-lah", breakdown: "Adoor contraction for varunnilla", nuance: "Central Travancore spoken signature contraction." },
+      { id: "l2_02", level: 2, deck: "deck_level2_greetings", manglish: "Cheyyoolla", malayalam: "ചെയ്യൂല്ല", english: "Won't do", phonetic: "chey-yoo-lah", breakdown: "Adoor contraction for cheyyunnilla", nuance: "Fast spoken contraction." },
+      { id: "ct_01", level: 3, deck: "deck_contractions", manglish: "Njaan ippo varoolla ketto", malayalam: "ഞാൻ ഇപ്പൊ വരൂല്ല കേട്ടോ", english: "I won't be coming right now, okay?", phonetic: "nyaan ip-poh vuh-roo-luh ket-toh", breakdown: "Njaan (I) + ippo (now) + varoolla (won't come) + ketto (okay?)", nuance: "Combines Level 0 + Level 2 building blocks." },
+      { id: "ct_08", level: 4, deck: "deck_family", manglish: "Ammachiye, chaya ready aayo?", malayalam: "അമ്മാച്ചിയേ, ചായ റെഡിയായോ?", english: "Grandma, is the tea ready?", phonetic: "um-maa-chi-yey, chaa-yuh ready aa-yoh?", breakdown: "Ammachiye (Grandma) + chaya (tea) + ready aayo? (is it ready?)", nuance: "Natural household Manglish." },
+      { id: "ct_12", level: 5, deck: "deck_thattukada", manglish: "Oru strong chaya pinne randu parotta", malayalam: "ഒരു സ്ട്രോങ്ങ് ചായ പിന്നെ രണ്ട് പൊറോട്ട", english: "One strong tea and two parottas", phonetic: "oh-roo strong chaa-yuh pin-ney run-doo puh-rot-tuh", breakdown: "Oru (one) + strong chaya + pinne (and) + randu parotta (2 parottas)", nuance: "Ordering at the tea stall." },
+      { id: "cc_01", level: 6, deck: "deck_catholic_church", manglish: "Njaan palliye pokuvaa", malayalam: "ഞാൻ പള്ളിയിൽ പോകുവാ", english: "I am going to church.", phonetic: "nyaan pul-li-ye poh-koo-vah", breakdown: "Njaan (I) + palliye (to church) + pokuvaa (going)", nuance: "Heard every Sunday morning across Christian households." },
+      { id: "cc_02", level: 6, deck: "deck_catholic_church", manglish: "Njaayarazhcha Holy Qurbana koodanam", malayalam: "ഞായറാഴ്ച കുർബാന കൂടണം", english: "We must attend Sunday Holy Mass (Qurbana).", phonetic: "nyah-yur-ahzh-chuh holy koor-bah-nah koo-duh-num", breakdown: "Njaayarazhcha (Sunday) + Holy Qurbana (Mass) + koodanam (must attend)", nuance: "'Qurbana kooduka' is the authentic idiom." },
+      { id: "cc_07", level: 6, deck: "deck_catholic_church", manglish: "Dhaivathinu sthuthi!", malayalam: "ദൈവത്തിന് സ്തുതി!", english: "Praise be to God! / Thanks be to God!", phonetic: "dhy-vuh-thin-oo sthoo-thee", breakdown: "Dhaivathinu (To God) + sthuthi (Praise)", nuance: "Spoken upon receiving good news or finishing work." },
+      { id: "cc_05", level: 6, deck: "deck_catholic_church", manglish: "Nanma niranja Mariyame, ninakku sthuthi", malayalam: "നന്മ നിറഞ്ഞ മറിയമേ, നിനക്ക് സ്തുതി", english: "Hail Mary, full of grace (Praise be to thee).", phonetic: "nun-muh ni-run-juh muh-ree-yum-ey, ni-nuk-koo sthoo-thee", breakdown: "Hail Mary opening recited in Malayalam rosaries.", nuance: "Sacred Catholic prayer opening." },
+      { id: "adv_01", level: 7, deck: "deck_advanced_storytelling", manglish: "Njan oru karyam parayatte?", malayalam: "ഞാൻ ഒരു കാര്യം പറയട്ടെ?", english: "Can I tell you something?", phonetic: "nyahn oh-roo kah-ryum puh-ruy-yut-tey?", breakdown: "Njan (I) + oru karyam (one matter) + parayatte? (may I say?)", nuance: "Gentle conversational opening for personal stories." },
+      { id: "adv_02", level: 7, deck: "deck_advanced_storytelling", manglish: "Athoru nalla kalam aayirunnu", malayalam: "അതൊരു നല്ല കാലം ആയിരുന്നു", english: "That was such a fond, good time.", phonetic: "uh-tho-roo nul-luh kah-lum ah-yi-roon-noo", breakdown: "Athu (That) + oru nalla kalam (good era) + aayirunnu (was)", nuance: "Reminiscing with family members." },
+      { id: "adv_07", level: 8, deck: "deck_advanced_opinions", manglish: "Ente abhiprayathil athu shariyalla", malayalam: "എന്റെ അഭിപ്രായത്തിൽ അത് ശരിയല്ല", english: "In my opinion, that is not right.", phonetic: "en-tey uh-bhi-prah-yuh-thil uh-thoo shuh-ri-yul-lah", breakdown: "Ente abhiprayathil (In my opinion) + athu (that) + shariyalla (is not right)", nuance: "Diplomatically voice disagreement." },
+      { id: "adv_08", level: 8, deck: "deck_advanced_opinions", manglish: "Ningal paranjathu shariyaanu, ennalum...", malayalam: "നിങ്ങൾ പറഞ്ഞത് ശരിയാണ്, എന്നാലും...", english: "What you said is true, nevertheless...", phonetic: "ning-ngul puh-run-juh-thoo shuh-ri-yah-noo, en-nah-loom", breakdown: "Concedes point gracefully before introducing another view.", nuance: "The diplomat's tool." },
+      { id: "ct_06", level: 9, deck: "deck_slang", manglish: "Enthuvaadey ithu?", malayalam: "എന്തുവാടേ ഇത്?", english: "What on earth is this, man?", phonetic: "en-thoo-vah-dey ih-thoo?", breakdown: "Enthuvaadey (What is this bro) + ithu (this)", nuance: "Quintessential Central Travancore exclamation of surprise." },
+      { id: "sup_03", level: 9, deck: "deck_slang", manglish: "Nammalude naattile visheshangal paranjal theeroolla", malayalam: "നമ്മുടെ നാട്ടിലെ വിശേഷങ്ങൾ പറഞ്ഞാൽ തീരൂല്ല", english: "If we start discussing our hometown news, it will never end!", phonetic: "num-mul-oo-dey naht-ti-ley vi-shey-shung-ngul puh-run-jahl theey-roo-lah", breakdown: "Hometown news + will never end", nuance: "Features Adoor '-oolla' contraction." },
+      { id: "prv_01", level: 10, deck: "deck_superior_proverbs", manglish: "Minnumathellam ponnalla", malayalam: "മിന്നുന്നതെല്ലാം പൊന്നല്ല", english: "All that glitters is not gold.", phonetic: "min-noo-nuh-thel-lum pon-nul-lah", breakdown: "Minnumathellam (All that shines) + ponnalla (is not gold)", nuance: "Famous Malayalam proverb." },
+      { id: "prv_02", level: 10, deck: "deck_superior_proverbs", manglish: "Velichathu kaanumbozhalle niram ariyoo", malayalam: "വെളിച്ചത്ത് കാണുമ്പോഴല്ലേ നിറം അറിയൂ", english: "Only when brought into the light is the true character revealed.", phonetic: "veh-li-chuh-thoo kah-noom-boh-zhul-ley ni-rum uh-ri-yoo", breakdown: "Seen in light + is color known", nuance: "Travancore proverb of wisdom." },
+      { id: "dst_01", level: 11, deck: "deck_distinguished_master", manglish: "Athithi daivam aayi karuthunna naadaanu nammudethu", malayalam: "അതിഥി ദൈവമായി കരുതുന്ന നാടാണ് നമ്മുടേത്", english: "Ours is a land that welcomes every guest with divine reverence.", phonetic: "uh-thi-thi dhy-vum ah-yee kuh-roo-thoon-nuh nah-dah-noo num-moo-dey-thoo", breakdown: "Athithi Devo Bhava in Kerala community speech.", nuance: "Elevated community cultural expression." }
+    ];
+
+    window.appState = {
+      xp: 0,
+      streakDays: 0,
+      completedQuizCount: 0,
+      spokenPhrasesCount: 0,
+      learnedPhraseIds: [],
+      strugglingPhraseIds: [],
+      streakById: {},
+      activeScreen: "QUIZ",
+      activeDeckId: "deck_level0_words",
+      quizletMode: "MIXED",
+      activeCardIndex: 0,
+      activeQuizIndex: 0,
+      isFlipped: false,
+      wordDbFilter: "ALL"
+    };
+
+    // Load saved browser state if present (and clean up any old 140 XP / 4 streak mock data)
+    try {
+      const saved = JSON.parse(localStorage.getItem("learn_malayalam_web_state_v2") || "null");
+      if (saved) {
+        if (saved.xp === 140 && saved.streakDays === 4 && (!saved.learnedPhraseIds || saved.learnedPhraseIds.length === 0)) {
+          saved.xp = 0;
+          saved.streakDays = 0;
+        }
+        window.appState = { ...window.appState, ...saved };
+      }
+    } catch (_) {}
+
+    function getActiveDeckPhrases() {
+      const list = PHRASES.filter(p => p.deck === window.appState.activeDeckId);
+      return list.length ? list : PHRASES.filter(p => p.level === 0);
+    }
+
+    function computeCurrentStage() {
+      const count = (window.appState.learnedPhraseIds || []).length;
+      let current = STUDY_STAGES[0];
+      for (const s of STUDY_STAGES) {
+        if (count >= s.reqWords) current = s;
+      }
+      return current;
+    }
+
+    function updateHeaderUI() {
+      document.getElementById("xpVal").textContent = window.appState.xp || 0;
+      document.getElementById("streakVal").textContent = window.appState.streakDays || 0;
+      const stage = computeCurrentStage();
+      document.getElementById("levelBadgeHeader").textContent = stage.badge;
+      document.getElementById("sessionHeadline").textContent = `${stage.badge}: ${stage.title}`;
+
+      const deckPhrases = getActiveDeckPhrases();
+      let newCount = 0, famCount = 0, mastCount = 0;
+      deckPhrases.forEach(p => {
+        const s = (window.appState.streakById && window.appState.streakById[p.id]) || 0;
+        if (s >= 2 || (window.appState.learnedPhraseIds || []).includes(p.id)) mastCount++;
+        else if (s === 1) famCount++;
+        else newCount++;
+      });
+      document.getElementById("bucketNew").textContent = `🔴 Still Learning: ${newCount}`;
+      document.getElementById("bucketFamiliar").textContent = `🟡 Familiar (1/2): ${famCount}`;
+      document.getElementById("bucketMastered").textContent = `🟢 Mastered (2/2): ${mastCount}`;
+    }
+
+    window.resetAllProgress = function() {
+      window.appState.xp = 0;
+      window.appState.streakDays = 0;
+      window.appState.learnedPhraseIds = [];
+      window.appState.strugglingPhraseIds = [];
+      window.appState.streakById = {};
+      localStorage.removeItem("learn_malayalam_web_state_v2");
+      updateHeaderUI();
+      renderQuiz();
+      renderStudyPlanAndDb();
+      if (window.pushCloudProgress) window.pushCloudProgress();
+    };
+
+    window.changeDeck = function(deckId) {
+      window.appState.activeDeckId = deckId;
+      window.appState.activeQuizIndex = 0;
+      window.appState.activeCardIndex = 0;
+      const sel = document.getElementById("deckSelector");
+      document.getElementById("activeDeckBadge").textContent = sel.options[sel.selectedIndex].text;
+      updateHeaderUI();
+      renderQuiz();
+      renderFlashcards();
+    };
+
+    window.setQuizletMode = function(mode) {
+      window.appState.quizletMode = mode;
+      ["MIXED", "WRITE", "SPEAK"].forEach(m => {
+        document.getElementById("mode-" + m).classList.toggle("active", m === mode);
+      });
+      renderQuiz();
+    };
+
+    window.switchTab = function(tab) {
+      window.appState.activeScreen = tab;
+      ["QUIZ", "FLASHCARDS", "AI_TUTOR", "STUDY_PLAN"].forEach(t => {
+        document.getElementById("view-" + t).classList.toggle("hidden", t !== tab);
+        const btn = document.getElementById("tab-" + t);
+        if (btn) btn.classList.toggle("active", t === tab);
+      });
+      if (tab === "STUDY_PLAN") renderStudyPlanAndDb();
+      if (window.pushCloudProgress) window.pushCloudProgress();
+    };
+
+    function renderQuiz() {
+      const deckPhrases = getActiveDeckPhrases();
+      const qIdx = window.appState.activeQuizIndex % deckPhrases.length;
+      const p = deckPhrases[qIdx];
+      const streak = (window.appState.streakById && window.appState.streakById[p.id]) || 0;
+      const isSpeakStep = window.appState.quizletMode === "SPEAK" || (window.appState.quizletMode === "MIXED" && qIdx % 2 === 1);
+
+      document.getElementById("quizCounter").textContent = `Card ${qIdx + 1} of ${deckPhrases.length} • Mastery Streak: ${streak}/2`;
+      document.getElementById("quizPrompt").textContent = isSpeakStep
+        ? "🎙️ Speak Out Loud (or type) the Malayalam word for:"
+        : "✍️ Type the Malayalam (Manglish) word for:";
+      document.getElementById("quizEnglishTarget").textContent = `"${p.english}"`;
+      document.getElementById("quizHint").textContent = `🔊 Pronunciation Hint: ${p.phonetic}  |  🧩 ${p.breakdown}`;
+      document.getElementById("quizInput").value = "";
+      document.getElementById("copyRetypeInput").value = "";
+      document.getElementById("copyAnswerLockBox").classList.add("hidden");
+      document.getElementById("quizFeedbackBox").classList.add("hidden");
+      document.getElementById("actionBtnRow").classList.remove("hidden");
+      updateHeaderUI();
+    }
+
+    function normalizeText(s) {
+      return (s || "").toLowerCase().replace(/[^a-z0-9]/g, "").replace(/aa/g, "a").replace(/ee/g, "i").replace(/oo/g, "u");
+    }
+
+    window.checkQuizAnswer = function() {
+      const deckPhrases = getActiveDeckPhrases();
+      const qIdx = window.appState.activeQuizIndex % deckPhrases.length;
+      const p = deckPhrases[qIdx];
+      const val = document.getElementById("quizInput").value.trim();
+      const normUser = normalizeText(val);
+      const normTarget = normalizeText(p.manglish);
+
+      const ok = normUser.length > 0 && (normUser === normTarget || normTarget.includes(normUser) && normUser.length >= Math.min(3, normTarget.length));
+
+      document.getElementById("actionBtnRow").classList.add("hidden");
+      const box = document.getElementById("quizFeedbackBox");
+      box.classList.remove("hidden");
+
+      document.getElementById("quizPhraseBreakdown").innerHTML = `
+        <div class="three-part-manglish">${p.manglish}</div>
+        <div class="three-part-malayalam">${p.malayalam}</div>
+        <div class="three-part-english">${p.english}</div>
+        <div class="phonetic-box">🔊 Say it: ${p.phonetic} • 🧩 ${p.breakdown}</div>
+        <div class="nuance-box">🌴 ${p.nuance}</div>
+      `;
+
+      if (ok) {
+        const prev = (window.appState.streakById[p.id] || 0) + 1;
+        window.appState.streakById[p.id] = prev;
+        if (prev >= 2 && !window.appState.learnedPhraseIds.includes(p.id)) {
+          window.appState.learnedPhraseIds.push(p.id);
+        }
+        window.appState.strugglingPhraseIds = (window.appState.strugglingPhraseIds || []).filter(id => id !== p.id);
+        window.appState.xp = (window.appState.xp || 0) + 10;
+        if ((window.appState.streakDays || 0) === 0) window.appState.streakDays = 1;
+
+        document.getElementById("quizFeedbackText").textContent = `✅ Correct! Mastery streak for "${p.manglish}": ${Math.min(prev, 2)}/2 (+10 XP)`;
+        document.getElementById("nextBtnContainer").classList.remove("hidden");
+      } else {
+        window.appState.streakById[p.id] = 0;
+        if (!window.appState.strugglingPhraseIds.includes(p.id)) {
+          window.appState.strugglingPhraseIds.push(p.id);
+        }
+        document.getElementById("quizFeedbackText").textContent = `❌ Not quite — "${p.manglish}" was reset to 0/2 and added back to the shuffle. Retype the correct answer above to continue!`;
+        document.getElementById("nextBtnContainer").classList.add("hidden");
+        document.getElementById("copyTargetText").textContent = p.manglish;
+        document.getElementById("copyAnswerLockBox").classList.remove("hidden");
+        const btn = document.getElementById("continueAfterCopyBtn");
+        btn.disabled = true;
+        btn.style.opacity = "0.5";
+        btn.textContent = "Retype Correct Answer Above to Continue";
+      }
+
+      updateHeaderUI();
+      if (window.pushCloudProgress) window.pushCloudProgress();
+    };
+
+    window.verifyCopyRetype = function() {
+      const deckPhrases = getActiveDeckPhrases();
+      const p = deckPhrases[window.appState.activeQuizIndex % deckPhrases.length];
+      const typed = document.getElementById("copyRetypeInput").value.trim();
+      const matched = normalizeText(typed) === normalizeText(p.manglish) || typed.toLowerCase() === p.manglish.toLowerCase();
+      const btn = document.getElementById("continueAfterCopyBtn");
+      btn.disabled = !matched;
+      btn.style.opacity = matched ? "1" : "0.5";
+      btn.textContent = matched ? "✅ Copied! Continue →" : "Retype Correct Answer Above to Continue";
+    };
+
+    window.overrideQuizCorrect = function() {
+      const deckPhrases = getActiveDeckPhrases();
+      const p = deckPhrases[window.appState.activeQuizIndex % deckPhrases.length];
+      const prev = (window.appState.streakById[p.id] || 0) + 1;
+      window.appState.streakById[p.id] = prev;
+      if (prev >= 2 && !window.appState.learnedPhraseIds.includes(p.id)) {
+        window.appState.learnedPhraseIds.push(p.id);
+      }
+      window.appState.xp = (window.appState.xp || 0) + 10;
+      if ((window.appState.streakDays || 0) === 0) window.appState.streakDays = 1;
+      nextQuizQuestion();
+    };
+
+    window.nextQuizQuestion = function() {
+      const deckPhrases = getActiveDeckPhrases();
+      window.appState.activeQuizIndex = (window.appState.activeQuizIndex + 1) % deckPhrases.length;
+      renderQuiz();
+      if (window.pushCloudProgress) window.pushCloudProgress();
+    };
+
+    window.speakText = function(text) {
+      if ("speechSynthesis" in window) {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "ml-IN";
+        u.rate = 0.9;
+        window.speechSynthesis.speak(u);
+      }
+    };
+
+    window.speakCurrentQuizPhrase = function() {
+      const deckPhrases = getActiveDeckPhrases();
+      const p = deckPhrases[window.appState.activeQuizIndex % deckPhrases.length];
+      window.speakText(p.malayalam);
+    };
+
+    window.startBrowserSpeech = function(inputId) {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        alert("Speech recognition works in Chrome or Edge.");
+        return;
+      }
+      const rec = new SpeechRec();
+      rec.lang = "en-IN";
+      rec.onresult = (ev) => {
+        const transcript = ev.results[0][0].transcript;
+        document.getElementById(inputId).value = transcript;
+        window.appState.spokenPhrasesCount = (window.appState.spokenPhrasesCount || 0) + 1;
+        if (inputId === "quizInput") checkQuizAnswer();
+      };
+      rec.start();
+    };
+
+    function renderFlashcards() {
+      const deckPhrases = getActiveDeckPhrases();
+      const p = deckPhrases[window.appState.activeCardIndex % deckPhrases.length];
+      document.getElementById("fcCategory").textContent = `LEVEL ${p.level} • ${p.manglish}`;
+      document.getElementById("fcIndexLabel").textContent = `${(window.appState.activeCardIndex % deckPhrases.length) + 1} / ${deckPhrases.length}`;
+      const container = document.getElementById("fcContent");
+      if (!window.appState.isFlipped) {
+        container.innerHTML = `
+          <div style="font-size:1.65rem; font-weight:800; color:var(--emerald-primary);">${p.english}</div>
+          <div style="margin-top:8px; font-size:0.9rem; color:var(--text-muted);">🔊 Hint: ${p.phonetic}</div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="three-part-manglish">${p.manglish}</div>
+          <div class="three-part-malayalam">${p.malayalam}</div>
+          <div class="three-part-english">${p.english}</div>
+          <div class="phonetic-box">🔊 Say it: ${p.phonetic} • 🧩 ${p.breakdown}</div>
+          <div class="nuance-box">💡 ${p.nuance}</div>
+        `;
+      }
+    }
+
+    window.flipFlashcard = function() {
+      window.appState.isFlipped = !window.appState.isFlipped;
+      renderFlashcards();
+    };
+
+    window.nextFlashcard = function(known) {
+      const deckPhrases = getActiveDeckPhrases();
+      const p = deckPhrases[window.appState.activeCardIndex % deckPhrases.length];
+      if (known) {
+        window.appState.xp = (window.appState.xp || 0) + 5;
+        if ((window.appState.streakDays || 0) === 0) window.appState.streakDays = 1;
+        if (!window.appState.learnedPhraseIds.includes(p.id)) {
+          window.appState.learnedPhraseIds.push(p.id);
+        }
+      }
+      window.appState.isFlipped = false;
+      window.appState.activeCardIndex = (window.appState.activeCardIndex + 1) % deckPhrases.length;
+      updateHeaderUI();
+      renderFlashcards();
+      if (window.pushCloudProgress) window.pushCloudProgress();
+    };
+
+    window.speakCurrentFlashcard = function() {
+      const deckPhrases = getActiveDeckPhrases();
+      const p = deckPhrases[window.appState.activeCardIndex % deckPhrases.length];
+      window.speakText(p.malayalam);
+    };
+
+    // Simple English-First Q&A Tutor (No Grandma Persona)
+    const chatMessages = [
+      {
+        isUser: false,
+        english: "Ask me how to say any word or phrase in Malayalam (for example: 'How do I say hello?' or 'How do I say thank you?'). I'll give you the exact Malayalam word in English letters (Manglish), Malayalam script, pronunciation, and whether speakers use the English word in casual vs. formal situations.",
+        manglish: "Namaskaram / Hello",
+        malayalam: "നമസ്കാരം / ഹലോ",
+        tip: "Note: In everyday casual conversation in Kerala, people usually just say 'Hello!' or ask 'Sugham aano?' (Are you well?)."
+      }
+    ];
+
+    function buildDirectTutorReply(q) {
+      const lower = q.toLowerCase();
+      if (lower.includes("hello") || lower.includes("hi") || lower.includes("greet")) {
+        return {
+          english: 'The word for hello is "Namaskaram" (or "Hello" in casual speech).',
+          manglish: "Namaskaram / Sugham aano?",
+          malayalam: "നമസ്കാരം / സുഖമാണോ?",
+          tip: 'Usage Note: "Namaskaram" is formal/respectful. With friends, family, or on the phone, Malayalam speakers almost always just use the English word "Hello" or ask "Sugham aano?" (How are you?).'
+        };
+      }
+      if (lower.includes("thank")) {
+        return {
+          english: 'The word for thank you is "Nanni" (though people usually say "Thanks" casually).',
+          manglish: "Nanni / Thanks",
+          malayalam: "നന്ദി / താങ്ക്സ്",
+          tip: 'Usage Note: "Nanni" is formal textbook/speech Malayalam. In everyday casual conversation in Adoor & Kerala, people just say the English word "Thanks" or "Thank you".'
+        };
+      }
+      if (lower.includes("yes") || lower.includes("no")) {
+        return {
+          english: 'The word for yes is "Athe" (or casual "Aa"), and the word for no is "Illa" (or "Alla").',
+          manglish: "Athe (Yes) • Illa / Alla (No)",
+          malayalam: "അതെ • ഇല്ല / അല്ല",
+          tip: 'Usage Note: Use "Illa" for "I don\'t have / didn\'t do" and "Alla" for "Not that one". Use "Venda" for "No thanks / I don\'t want".'
+        };
+      }
+      if (lower.includes("water") || lower.includes("tea") || lower.includes("food")) {
+        return {
+          english: 'The word for water is "Vellam", and the word for tea is "Chaya".',
+          manglish: "Vellam (Water) • Chaya (Tea) • Veno? (Do you want?)",
+          malayalam: "വെള്ളം • ചായ • വേണോ?",
+          tip: 'Combine with Level 0 words: "Vellam undo?" (Is there water?) or "Chaya veno?" (Do you want tea?).'
+        };
+      }
+      if (lower.includes("won't come") || lower.includes("not coming") || lower.includes("varoolla")) {
+        return {
+          english: 'The phrase for "won\'t come" is "Varoolla" (or "Varathilla" in Central Travancore).',
+          manglish: "Njaan ippo varoolla",
+          malayalam: "ഞാൻ ഇപ്പൊ വരൂല്ല",
+          tip: 'Dialect Note: Textbook Malayalam says "varunnilla", but in everyday spoken Malayalam people contract "-unnilla" to "-oolla" (varoolla).'
+        };
+      }
+      // Search PHRASES
+      const match = PHRASES.find(p =>
+        lower.includes(p.english.toLowerCase()) ||
+        lower.includes(p.manglish.toLowerCase()) ||
+        p.english.toLowerCase().split(/[ /?]+/).some(w => w.length > 2 && lower.includes(w))
+      ) || PHRASES[0];
+
+      return {
+        english: `The word/phrase for "${match.english}" is "${match.manglish}".`,
+        manglish: `${match.manglish} (${match.phonetic})`,
+        malayalam: match.malayalam,
+        tip: `Word Breakdown: ${match.breakdown}. Note: ${match.nuance}`
+      };
+    }
+
+    function renderChat() {
+      const list = document.getElementById("chatList");
+      list.innerHTML = chatMessages.map(m => m.isUser
+        ? `<div class="chat-user">${m.english}</div>`
+        : `<div class="chat-partner">
+             <div style="font-size:1rem; font-weight:700; color:var(--text-main); margin-bottom:6px;">${m.english}</div>
+             <div class="three-part-manglish" style="font-size:1.1rem;">${m.manglish}</div>
+             <div class="three-part-malayalam" style="font-size:1rem;">${m.malayalam}</div>
+             ${m.tip ? `<div class="nuance-box">💡 ${m.tip}</div>` : ""}
+           </div>`
+      ).join("");
+      list.scrollTop = list.scrollHeight;
+    }
+
+    window.askQuickQuestion = function(q) {
+      document.getElementById("tutorInput").value = q;
+      sendTutorMessage();
+    };
+
+    window.sendTutorMessage = function() {
+      const input = document.getElementById("tutorInput");
+      const text = input.value.trim();
+      if (!text) return;
+      chatMessages.push({ isUser: true, english: text });
+      input.value = "";
+      const reply = buildDirectTutorReply(text);
+      chatMessages.push({ isUser: false, ...reply });
+      renderChat();
+    };
+
+    window.filterWordDb = function(filter) {
+      window.appState.wordDbFilter = filter;
+      renderStudyPlanAndDb();
+    };
+
+    function renderStudyPlanAndDb() {
+      const count = (window.appState.learnedPhraseIds || []).length;
+      const stagesGrid = document.getElementById("studyPlanLevelsGrid");
+      stagesGrid.innerHTML = STUDY_STAGES.map(s => {
+        const unlocked = count >= s.reqWords || s.level === 0;
+        return `
+          <div class="card" style="margin-bottom:0; opacity:${unlocked ? 1 : 0.72}; border-color:${unlocked ? 'var(--emerald-primary)' : 'rgba(0,0,0,0.1)'};">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="badge">${s.badge}</span>
+              <span style="font-size:0.78rem; font-weight:700; color:${unlocked ? 'var(--emerald-primary)' : 'var(--text-muted)'};">
+                ${unlocked ? "✅ UNLOCKED" : `🔒 Master ${s.reqWords} words`}
+              </span>
+            </div>
+            <h4 style="margin:8px 0 4px; font-size:1.05rem;">${s.title}</h4>
+            <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:10px;">${s.desc}</p>
+            <button class="btn btn-outline" style="padding:7px 12px; font-size:0.8rem;" onclick="changeDeck('${s.deck}'); switchTab('QUIZ');">Study This Level →</button>
+          </div>
+        `;
+      }).join("");
+
+      const knownIds = window.appState.learnedPhraseIds || [];
+      const strugglingIds = window.appState.strugglingPhraseIds || [];
+      document.getElementById("dbSummaryText").textContent = `${knownIds.length} Known • ${strugglingIds.length} Needs Practice • ${PHRASES.length} Total in Curriculum`;
+
+      let filtered = PHRASES;
+      if (window.appState.wordDbFilter === "KNOWN") {
+        filtered = PHRASES.filter(p => knownIds.includes(p.id));
+      } else if (window.appState.wordDbFilter === "STRUGGLING") {
+        filtered = PHRASES.filter(p => strugglingIds.includes(p.id));
+      }
+
+      const dbGrid = document.getElementById("wordDatabaseGrid");
+      if (filtered.length === 0) {
+        dbGrid.innerHTML = `<div style="color:var(--text-muted); font-size:0.9rem;">No words in this filter yet. Practice in Quizlet Study Modes to populate your Known Words Database!</div>`;
+        return;
+      }
+      dbGrid.innerHTML = filtered.map(p => {
+        const isKnown = knownIds.includes(p.id);
+        return `
+          <div class="card" style="margin-bottom:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="badge">Level ${p.level}</span>
+              <span style="font-size:0.78rem; font-weight:700; color:${isKnown ? 'var(--emerald-primary)' : 'var(--text-muted)'};">
+                ${isKnown ? "✅ Known" : "📖 Learning"}
+              </span>
+            </div>
+            <div class="three-part-manglish" style="margin-top:8px;">${p.manglish}</div>
+            <div class="three-part-malayalam">${p.malayalam}</div>
+            <div class="three-part-english">${p.english}</div>
+            <div class="phonetic-box">🔊 ${p.phonetic} • 🧩 ${p.breakdown}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    fetch("/api/session").then(r => r.json()).then(data => {
+      if (data && data.xp !== undefined) {
+        if (data.xp === 140 && data.streakDays === 4) {
+          data.xp = 0;
+          data.streakDays = 0;
+        }
+        window.appState = { ...window.appState, ...data };
+        updateHeaderUI();
+      }
+    }).catch(() => {});
+
+    renderQuiz();
+    renderFlashcards();
+    renderChat();
+    renderStudyPlanAndDb();
+  </script>
+</body>
+</html>
