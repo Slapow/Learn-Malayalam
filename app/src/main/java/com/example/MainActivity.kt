@@ -283,6 +283,7 @@ fun MainFeatureScreen(
                 Screen.QUIZ -> {
                     LessonQuizScreen(
                         state = quizState,
+                        userXp = userStats.xp,
                         isListening = isListening,
                         speechStatus = speechStatus,
                         onBack = { viewModel.navigateTo(Screen.HOME) },
@@ -314,6 +315,8 @@ fun MainFeatureScreen(
                         onMarkKnown = { viewModel.markCardKnown() },
                         onMarkLearning = { viewModel.markCardLearning() },
                         onSpeakPhrase = { phrase -> viewModel.speakPhrase(phrase) },
+                        onUndo = { viewModel.undoLastFlashcardSwipe() },
+                        onAdvanceWithoutTally = { viewModel.advanceCardWithoutTally() },
                         onToggleFrontLanguage = { viewModel.toggleFlashcardFrontLanguage() },
                         onShuffleDeck = { viewModel.shuffleCurrentFlashcardDeck() },
                         onRestartDeck = { viewModel.restartCurrentFlashcardDeck() },

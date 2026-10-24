@@ -50,6 +50,13 @@ data class QuizState(
  * Complete Quizlet + Duolingo Deck Study State supporting all 7 modes:
  * FLASHCARDS, MIXED_MASTERY (Written + Spoken Shuffle), LEARN, WRITE, SPEAK, MATCH, TEST
  */
+data class FlashcardSwipeHistory(
+    val phraseId: String,
+    val cardIndex: Int,
+    val wasKnown: Boolean,
+    val wasFirstStillLearning: Boolean = false
+)
+
 data class FlashcardState(
     val currentDeck: FlashcardDeck = DialectRepository.decks[0],
     val activeMode: QuizletStudyMode = QuizletStudyMode.FLASHCARDS,
@@ -60,6 +67,9 @@ data class FlashcardState(
     val isShuffled: Boolean = false,
     val learnedInSession: Set<String> = emptySet(),
     val stillLearningInSession: Set<String> = emptySet(),
+    val cardsSentToStillLearning: Set<String> = emptySet(),
+    val cardPresentationCount: Map<String, Int> = emptyMap(),
+    val swipeHistory: List<FlashcardSwipeHistory> = emptyList(),
     // 2. Adaptive Queue sub-state (MIXED_MASTERY, LEARN, WRITE, SPEAK, TEST)
     val studyQueue: List<DeckStudyQuestion> = emptyList(),
     val currentQuestionIndex: Int = 0,
@@ -489,6 +499,8 @@ class MainViewModel(
         val initialStreaks = deck.phrases.associate { it.id to 0 }
         when (mode) {
             QuizletStudyMode.FLASHCARDS -> {
+                val initialCardId = deck.phrases.getOrNull(0)?.id
+                val initPresCount = if (initialCardId != null) mapOf(initialCardId to 1) else emptyMap()
                 _flashcardState.value = FlashcardState(
                     currentDeck = deck,
                     activeMode = mode,
@@ -496,6 +508,11 @@ class MainViewModel(
                     isFlipped = false,
                     isEnglishOnFront = _flashcardState.value.isEnglishOnFront,
                     isShuffled = false,
+                    learnedInSession = emptySet(),
+                    stillLearningInSession = emptySet(),
+                    cardsSentToStillLearning = emptySet(),
+                    cardPresentationCount = initPresCount,
+                    swipeHistory = emptyList(),
                     cardStreaks = initialStreaks
                 )
             }
@@ -657,11 +674,23 @@ class MainViewModel(
         val newLearned = s.learnedInSession + currentPhrase.id
         val newStillLearning = s.stillLearningInSession - currentPhrase.id
         val nextIdx = (s.currentCardIndex + 1) % s.currentDeck.phrases.size
+        val nextCardId = s.currentDeck.phrases.getOrNull(nextIdx)?.id
+        val newPresCount = s.cardPresentationCount.toMutableMap()
+        if (nextCardId != null) {
+            newPresCount[nextCardId] = (newPresCount[nextCardId] ?: 0) + 1
+        }
+        val historyItem = FlashcardSwipeHistory(
+            phraseId = currentPhrase.id,
+            cardIndex = s.currentCardIndex,
+            wasKnown = true
+        )
         _flashcardState.value = s.copy(
             currentCardIndex = nextIdx,
             isFlipped = false,
             learnedInSession = newLearned,
             stillLearningInSession = newStillLearning,
+            cardPresentationCount = newPresCount,
+            swipeHistory = s.swipeHistory + historyItem,
             cardStreaks = newStreaks
         )
         syncToCloud()
@@ -677,15 +706,90 @@ class MainViewModel(
         val newStreaks = s.cardStreaks.toMutableMap().apply {
             put(currentPhrase.id, 0)
         }
+        val isFirstTimeSent = !s.cardsSentToStillLearning.contains(currentPhrase.id)
+        val newCardsSent = s.cardsSentToStillLearning + currentPhrase.id
         val nextIdx = (s.currentCardIndex + 1) % s.currentDeck.phrases.size
+        val nextCardId = s.currentDeck.phrases.getOrNull(nextIdx)?.id
+        val newPresCount = s.cardPresentationCount.toMutableMap()
+        if (nextCardId != null) {
+            newPresCount[nextCardId] = (newPresCount[nextCardId] ?: 0) + 1
+        }
+        val historyItem = FlashcardSwipeHistory(
+            phraseId = currentPhrase.id,
+            cardIndex = s.currentCardIndex,
+            wasKnown = false,
+            wasFirstStillLearning = isFirstTimeSent
+        )
         _flashcardState.value = s.copy(
             currentCardIndex = nextIdx,
             isFlipped = false,
             learnedInSession = s.learnedInSession - currentPhrase.id,
             stillLearningInSession = s.stillLearningInSession + currentPhrase.id,
+            cardsSentToStillLearning = newCardsSent,
+            cardPresentationCount = newPresCount,
+            swipeHistory = s.swipeHistory + historyItem,
             cardStreaks = newStreaks
         )
         syncToCloud()
+    }
+
+    fun undoLastFlashcardSwipe() {
+        val s = _flashcardState.value
+        if (s.swipeHistory.isNotEmpty()) {
+            val lastAction = s.swipeHistory.last()
+            val updatedHistory = s.swipeHistory.dropLast(1)
+            val newLearned = if (lastAction.wasKnown) {
+                s.learnedInSession - lastAction.phraseId
+            } else {
+                s.learnedInSession
+            }
+            val newStillLearning = if (!lastAction.wasKnown) {
+                s.stillLearningInSession - lastAction.phraseId
+            } else {
+                s.stillLearningInSession
+            }
+            val newCardsSent = if (!lastAction.wasKnown && lastAction.wasFirstStillLearning) {
+                s.cardsSentToStillLearning - lastAction.phraseId
+            } else {
+                s.cardsSentToStillLearning
+            }
+            val currentCardId = s.currentDeck.phrases.getOrNull(s.currentCardIndex)?.id
+            val newPresCount = s.cardPresentationCount.toMutableMap()
+            if (currentCardId != null) {
+                val count = newPresCount[currentCardId] ?: 1
+                if (count > 1) {
+                    newPresCount[currentCardId] = count - 1
+                }
+            }
+            _flashcardState.value = s.copy(
+                currentCardIndex = lastAction.cardIndex,
+                isFlipped = false,
+                learnedInSession = newLearned,
+                stillLearningInSession = newStillLearning,
+                cardsSentToStillLearning = newCardsSent,
+                cardPresentationCount = newPresCount,
+                swipeHistory = updatedHistory
+            )
+            syncToCloud()
+        } else {
+            val prevIdx = if (s.currentDeck.phrases.isNotEmpty()) {
+                (s.currentCardIndex - 1 + s.currentDeck.phrases.size) % s.currentDeck.phrases.size
+            } else 0
+            _flashcardState.value = s.copy(
+                currentCardIndex = prevIdx,
+                isFlipped = false
+            )
+        }
+    }
+
+    fun advanceCardWithoutTally() {
+        val s = _flashcardState.value
+        if (s.currentDeck.phrases.isEmpty()) return
+        val nextIdx = (s.currentCardIndex + 1) % s.currentDeck.phrases.size
+        _flashcardState.value = s.copy(
+            currentCardIndex = nextIdx,
+            isFlipped = false
+        )
     }
 
     fun toggleFlashcardFrontLanguage() {
@@ -701,11 +805,15 @@ class MainViewModel(
         val shuffledDeck = s.currentDeck.copy(
             phrases = s.currentDeck.phrases.shuffled()
         )
+        val initialCardId = shuffledDeck.phrases.getOrNull(0)?.id
+        val initPresCount = if (initialCardId != null) mapOf(initialCardId to 1) else emptyMap()
         _flashcardState.value = s.copy(
             currentDeck = shuffledDeck,
             currentCardIndex = 0,
             isFlipped = false,
-            isShuffled = true
+            isShuffled = true,
+            cardPresentationCount = initPresCount,
+            swipeHistory = emptyList()
         )
     }
 
@@ -719,6 +827,8 @@ class MainViewModel(
             DialectRepository.decks.find { it.id == s.currentDeck.id } ?: s.currentDeck
         }
         val resetStreaks = canonicalDeck.phrases.associate { it.id to 0 }
+        val initialCardId = canonicalDeck.phrases.getOrNull(0)?.id
+        val initPresCount = if (initialCardId != null) mapOf(initialCardId to 1) else emptyMap()
         _flashcardState.value = s.copy(
             currentDeck = canonicalDeck,
             currentCardIndex = 0,
@@ -726,6 +836,9 @@ class MainViewModel(
             isShuffled = false,
             learnedInSession = emptySet(),
             stillLearningInSession = emptySet(),
+            cardsSentToStillLearning = emptySet(),
+            cardPresentationCount = initPresCount,
+            swipeHistory = emptyList(),
             cardStreaks = resetStreaks
         )
         syncToCloud()
@@ -738,10 +851,16 @@ class MainViewModel(
 
     fun selectStudyMcOption(index: Int) {
         _flashcardState.value = _flashcardState.value.copy(selectedMcOption = index)
+        if (!_flashcardState.value.isQuestionEvaluated) {
+            evaluateDeckStudyQuestion()
+        }
     }
 
     fun selectStudyTrueFalse(choice: Boolean) {
         _flashcardState.value = _flashcardState.value.copy(selectedTrueFalse = choice)
+        if (!_flashcardState.value.isQuestionEvaluated) {
+            evaluateDeckStudyQuestion()
+        }
     }
 
     fun updateStudyCopyInput(text: String) {
@@ -1125,6 +1244,9 @@ class MainViewModel(
 
     fun selectQuizOption(index: Int) {
         _quizState.value = _quizState.value.copy(selectedOptionIndex = index)
+        if (!_quizState.value.isEvaluated) {
+            evaluateCurrentQuestion()
+        }
     }
 
     fun evaluateCurrentQuestion() {
@@ -1161,11 +1283,12 @@ class MainViewModel(
             }
 
             QuizType.DIALECT_CHOICE -> {
-                isCorrect = (state.selectedOptionIndex == 0)
+                val chosenText = q.options.getOrNull(state.selectedOptionIndex ?: -1)
+                isCorrect = (chosenText != null && (chosenText.equals(q.phrase.manglish, ignoreCase = true) || state.selectedOptionIndex == 0))
                 feedback = if (isCorrect) {
-                    "Spot on! '${q.options.getOrNull(0)}'"
+                    "Spot on! '${q.options.getOrNull(0) ?: q.phrase.manglish}'"
                 } else {
-                    "The correct word is '${q.options.getOrNull(0)}'!"
+                    "The correct word is '${q.phrase.manglish}'!"
                 }
             }
         }

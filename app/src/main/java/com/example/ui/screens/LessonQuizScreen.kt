@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import com.example.model.QuizQuestion
 import com.example.model.QuizType
 import com.example.ui.components.SpeechPracticeBar
@@ -48,6 +50,7 @@ import com.example.viewmodel.QuizState
 @Composable
 fun LessonQuizScreen(
     state: QuizState,
+    userXp: Int = 0,
     isListening: Boolean,
     speechStatus: String,
     onBack: () -> Unit,
@@ -137,7 +140,7 @@ fun LessonQuizScreen(
                                     modifier = Modifier.padding(start = 4.dp)
                                 ) {
                                     Text(
-                                        text = "Q ${state.currentIndex + 1}/${state.questions.size}",
+                                        text = "${state.currentIndex + 1} / ${state.questions.size}",
                                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                         color = GoldenOnContainer,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
@@ -147,20 +150,37 @@ fun LessonQuizScreen(
                         }
                     }
 
-                    // 3. Far Right: Reshuffled count
+                    // 3. Far Right: Reshuffled count with reddish orange recycle icon (same as decks)
                     if (!state.isFinished) {
-                        Text(
-                            text = "🔄 ${state.reshuffledCount}",
-                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = if (state.reshuffledCount > 0) {
-                                TerracottaAccent
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                            },
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
                                 .padding(end = 12.dp)
-                        )
+                                .testTag("quiz_reshuffled_counter")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Autorenew,
+                                contentDescription = "Recycled questions",
+                                tint = if (state.reshuffledCount > 0) {
+                                    TerracottaAccent
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                },
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .padding(end = 4.dp)
+                            )
+                            Text(
+                                text = "${state.reshuffledCount}",
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                color = if (state.reshuffledCount > 0) {
+                                    TerracottaAccent
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -194,16 +214,14 @@ fun LessonQuizScreen(
                     textAlign = TextAlign.Center
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = "Every word you practiced has been updated in your Known Words Database & Cloud Firestore! (+20 XP)",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
+                AnimatedXpCounter(
+                    targetXp = userXp,
+                    addedXp = 20
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
                 Button(
                     onClick = onRestart,
@@ -273,15 +291,34 @@ fun LessonQuizScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         item {
-                            Text(
-                                text = q.prompt,
-                                style = MaterialTheme.typography.titleLarge.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 20.sp,
-                                    lineHeight = 27.sp
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                            val isQuestionRecycled = q.id.contains("_retry_") || q.id.contains("_skipped_")
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Text(
+                                    text = q.prompt,
+                                    style = MaterialTheme.typography.titleLarge.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 20.sp,
+                                        lineHeight = 27.sp
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                if (isQuestionRecycled) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Autorenew,
+                                        contentDescription = "Recycled question",
+                                        tint = TerracottaAccent,
+                                        modifier = Modifier
+                                            .padding(start = 8.dp)
+                                            .size(24.dp)
+                                            .testTag("quiz_question_recycled_indicator")
+                                    )
+                                }
+                            }
 
                             if ((q.hint.isNotBlank() || q.phrase.wordBreakdown.isNotBlank()) && q.type != QuizType.MANGLISH_TYPING) {
                                 Spacer(modifier = Modifier.height(10.dp))
@@ -377,7 +414,12 @@ fun LessonQuizScreen(
                                     DialectChoiceCard(
                                         options = q.options,
                                         selectedIndex = state.selectedOptionIndex,
-                                        onSelectOption = onSelectOption,
+                                        onSelectOption = { idx ->
+                                            if (!state.isEvaluated) {
+                                                onSelectOption(idx)
+                                                onEvaluate()
+                                            }
+                                        },
                                         isEvaluated = state.isEvaluated
                                     )
                                 }
@@ -434,76 +476,81 @@ fun LessonQuizScreen(
                     }
                 }
 
-                // Bottom Evaluation Drawer:
-                // For MANGLISH_TYPING: no "Check Answer" button (user presses Enter on keyboard); only shown when wrong/skipped to click Continue.
+                // Floating Action Button (no background container surrounding it):
+                // For MANGLISH_TYPING and DIALECT_CHOICE: no "Check Answer" button (user presses Enter on keyboard or taps choice);
+                // only shown when wrong/skipped to click Continue.
                 // For other question types: shown when not evaluated ("Check Answer") or when wrong/skipped ("Continue").
-                val showBottomDrawer = if (currentQ.type == QuizType.MANGLISH_TYPING) {
+                val showBottomButton = if (currentQ.type == QuizType.MANGLISH_TYPING || currentQ.type == QuizType.DIALECT_CHOICE) {
                     state.isEvaluated && !state.isCorrect
                 } else {
                     !state.isEvaluated || !state.isCorrect
                 }
-                if (showBottomDrawer) {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colorScheme.surface,
-                        tonalElevation = 8.dp,
-                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                if (showBottomButton) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 16.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 20.dp, vertical = 14.dp)
-                        ) {
-                            if (state.isEvaluated) {
-                                val canContinue = !state.mustCopyAnswer || state.isCopyAnswerUnlocked
-                                Button(
-                                    onClick = onNext,
-                                    enabled = canContinue,
-                                    shape = RoundedCornerShape(14.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.primary,
-                                        contentColor = Color.White
-                                    ),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(52.dp)
-                                        .testTag("quiz_continue_button")
-                                ) {
-                                    Text(
-                                        text = if (!canContinue) {
-                                            "Type Correct Answer Above to Continue"
-                                        } else if (state.currentIndex + 1 >= state.questions.size && state.reshuffledCount == 0) {
-                                            "Complete (+20 XP)"
-                                        } else {
-                                            "Continue"
-                                        },
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp
-                                    )
-                                }
-                            } else {
-                                val canCheck = when (currentQ.type) {
-                                    QuizType.MANGLISH_TYPING -> state.typedInput.isNotBlank()
-                                    QuizType.SPEAKING_PRACTICE -> true
-                                    QuizType.WORD_TILES -> state.selectedTileIndices.isNotEmpty()
-                                    QuizType.DIALECT_CHOICE -> state.selectedOptionIndex != null
-                                }
+                        if (state.isEvaluated) {
+                            val canContinue = !state.mustCopyAnswer || state.isCopyAnswerUnlocked
+                            Button(
+                                onClick = onNext,
+                                enabled = canContinue,
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = ButtonDefaults.buttonElevation(
+                                    defaultElevation = 4.dp,
+                                    pressedElevation = 8.dp,
+                                    disabledElevation = 0.dp
+                                ),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = Color.White
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(54.dp)
+                                    .testTag("quiz_continue_button")
+                            ) {
+                                Text(
+                                    text = if (!canContinue) {
+                                        "Type Correct Answer Above to Continue"
+                                    } else if (state.currentIndex + 1 >= state.questions.size && state.reshuffledCount == 0) {
+                                        "Complete (+20 XP)"
+                                    } else {
+                                        "Continue"
+                                    },
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        } else {
+                            val canCheck = when (currentQ.type) {
+                                QuizType.MANGLISH_TYPING -> state.typedInput.isNotBlank()
+                                QuizType.SPEAKING_PRACTICE -> true
+                                QuizType.WORD_TILES -> state.selectedTileIndices.isNotEmpty()
+                                QuizType.DIALECT_CHOICE -> state.selectedOptionIndex != null
+                            }
 
-                                Button(
-                                    onClick = onEvaluate,
-                                    enabled = canCheck,
-                                    shape = RoundedCornerShape(14.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.primary,
-                                        contentColor = Color.White
-                                    ),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(52.dp)
-                                        .testTag("quiz_check_answer_button")
-                                ) {
-                                    Text("Check Answer", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                                }
+                            Button(
+                                onClick = onEvaluate,
+                                enabled = canCheck,
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = ButtonDefaults.buttonElevation(
+                                    defaultElevation = 4.dp,
+                                    pressedElevation = 8.dp,
+                                    disabledElevation = 0.dp
+                                ),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = Color.White
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(54.dp)
+                                    .testTag("quiz_check_answer_button")
+                            ) {
+                                Text("Check Answer", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                             }
                         }
                     }
@@ -1144,6 +1191,120 @@ fun DialectChoiceCard(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
+            }
+        }
+    }
+}
+
+/**
+ * Animated celebratory XP counter for drill complete end screen.
+ * Recreates the exact visual styling of the TopHeaderBar XP badge on the Home Screen
+ * (Golden container, lightning bolt icon, bold golden-on-container number) and animates
+ * the +20 XP being earned with a bouncy celebratory badge and numeric counter.
+ */
+@Composable
+fun AnimatedXpCounter(
+    targetXp: Int,
+    addedXp: Int = 20,
+    modifier: Modifier = Modifier
+) {
+    val startXp = (targetXp - addedXp).coerceAtLeast(0)
+    var animationTriggered by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(250)
+        animationTriggered = true
+    }
+
+    val animatedXp by animateIntAsState(
+        targetValue = if (animationTriggered) targetXp else startXp,
+        animationSpec = tween(durationMillis = 1100, easing = FastOutSlowInEasing),
+        label = "XpCountAnimation"
+    )
+
+    val badgeScale by animateFloatAsState(
+        targetValue = if (animationTriggered) 1f else 0.35f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
+        label = "BadgeScale"
+    )
+
+    val badgeAlpha by animateFloatAsState(
+        targetValue = if (animationTriggered) 1f else 0f,
+        animationSpec = tween(durationMillis = 350),
+        label = "BadgeAlpha"
+    )
+
+    val plusTranslateY by animateFloatAsState(
+        targetValue = if (animationTriggered) 0f else 16f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
+        label = "PlusTranslateY"
+    )
+
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        // Floating celebratory "+20 XP" bubble
+        Box(
+            modifier = Modifier
+                .graphicsLayer {
+                    scaleX = badgeScale
+                    scaleY = badgeScale
+                    alpha = badgeAlpha
+                    translationY = -plusTranslateY
+                }
+        ) {
+            Surface(
+                color = PalmContainerLight,
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(1.5.dp, EmeraldDark)
+            ) {
+                Text(
+                    text = "+$addedXp XP",
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 15.sp
+                    ),
+                    color = EmeraldDark,
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 5.dp)
+                )
+            }
+        }
+
+        // Home screen XP Counter graphic (Golden container, lightning bolt, bold XP text)
+        Surface(
+            color = GoldenContainerLight.copy(alpha = 0.95f),
+            shape = RoundedCornerShape(18.dp),
+            tonalElevation = 2.dp,
+            modifier = Modifier
+                .graphicsLayer {
+                    scaleX = 0.94f + (badgeScale * 0.06f)
+                    scaleY = 0.94f + (badgeScale * 0.06f)
+                }
+                .testTag("drill_complete_xp_counter")
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 22.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("⚡", fontSize = 24.sp)
+                Text(
+                    text = "$animatedXp",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 26.sp
+                    ),
+                    color = GoldenOnContainer
+                )
+                Text(
+                    text = "XP",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    ),
+                    color = GoldenOnContainer.copy(alpha = 0.85f)
+                )
             }
         }
     }

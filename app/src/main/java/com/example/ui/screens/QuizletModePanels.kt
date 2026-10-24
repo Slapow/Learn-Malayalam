@@ -532,18 +532,14 @@ fun DeckAdaptiveQuestionPanel(
         }
 
         // Bottom Evaluation & Continue Bar
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = if (state.isQuestionEvaluated) {
-                if (state.isQuestionCorrect) PalmContainerLight else TerracottaContainer
-            } else MaterialTheme.colorScheme.surface,
-            tonalElevation = 8.dp,
-            shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 12.dp),
+            contentAlignment = Alignment.Center
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 18.dp, vertical = 12.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 if (state.isQuestionEvaluated) {
                     Text(
@@ -563,14 +559,15 @@ fun DeckAdaptiveQuestionPanel(
                     Button(
                         onClick = onNext,
                         enabled = canContinue,
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 8.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (state.isQuestionCorrect) EmeraldPrimary else TerracottaAccent,
                             contentColor = Color.White
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp)
+                            .height(52.dp)
                             .testTag("study_continue_button")
                     ) {
                         Text(
@@ -582,7 +579,7 @@ fun DeckAdaptiveQuestionPanel(
                             fontWeight = FontWeight.Bold
                         )
                     }
-                } else {
+                } else if (currentQ.format != StudyPromptFormat.MULTIPLE_CHOICE && currentQ.format != StudyPromptFormat.TRUE_FALSE) {
                     val canSubmit = when (currentQ.format) {
                         StudyPromptFormat.MULTIPLE_CHOICE -> state.selectedMcOption != null
                         StudyPromptFormat.TRUE_FALSE -> state.selectedTrueFalse != null
@@ -595,10 +592,11 @@ fun DeckAdaptiveQuestionPanel(
                             onEvaluate()
                         },
                         enabled = canSubmit,
-                        shape = RoundedCornerShape(14.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 8.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp)
+                            .height(52.dp)
                             .testTag("study_check_button")
                     ) {
                         Text("Check Answer", fontWeight = FontWeight.Bold, fontSize = 16.sp)

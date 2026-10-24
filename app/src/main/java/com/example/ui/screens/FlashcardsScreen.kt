@@ -1,6 +1,7 @@
 package com.example.ui.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -9,6 +10,10 @@ import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,12 +24,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shuffle
@@ -52,6 +60,7 @@ import com.example.model.QuizletStudyMode
 import com.example.model.UserStats
 import com.example.ui.theme.*
 import com.example.viewmodel.FlashcardState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
@@ -69,6 +78,8 @@ fun FlashcardsScreen(
     onFlipCard: () -> Unit,
     onMarkKnown: () -> Unit,
     onMarkLearning: () -> Unit,
+    onUndo: () -> Unit = {},
+    onAdvanceWithoutTally: () -> Unit = {},
     onSpeakPhrase: (PhraseItem) -> Unit,
     onToggleFrontLanguage: () -> Unit = {},
     onShuffleDeck: () -> Unit = {},
@@ -104,6 +115,10 @@ fun FlashcardsScreen(
     var levelMenuExpanded by remember { mutableStateOf(false) }
     var settingsMenuExpanded by remember { mutableStateOf(false) }
 
+    // Autoplay mode state
+    var isAutoplayOn by remember { mutableStateOf(false) }
+    var autoplayBannerText by remember { mutableStateOf<String?>(null) }
+
     val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
     val swipeThresholdPx = with(density) { 115.dp.toPx() }
@@ -116,17 +131,56 @@ fun FlashcardsScreen(
         mutableStateOf(false)
     }
 
+    LaunchedEffect(currentPhrase?.id, state.currentCardIndex) {
+        cardOffset.snapTo(Offset.Zero)
+        isAnimatingOut = false
+    }
+
+    // Autoplay banner auto-hide effect
+    LaunchedEffect(autoplayBannerText) {
+        if (autoplayBannerText != null) {
+            delay(1800L)
+            autoplayBannerText = null
+        }
+    }
+
+    // Autoplay automated loop: flips card, then swipes it away, advancing without changing tally
+    LaunchedEffect(isAutoplayOn, currentPhrase?.id, state.currentCardIndex) {
+        if (!isAutoplayOn || currentPhrase == null) return@LaunchedEffect
+
+        // Display front face
+        delay(2200L)
+        if (!isAutoplayOn) return@LaunchedEffect
+
+        // Automatically flip card
+        onFlipCard()
+
+        // Display back face
+        delay(2200L)
+        if (!isAutoplayOn) return@LaunchedEffect
+
+        // Automatically swipe card away
+        isAnimatingOut = true
+        cardOffset.animateTo(
+            targetValue = Offset(flyOffDistancePx, 20f),
+            animationSpec = tween(durationMillis = 220, easing = FastOutLinearInEasing)
+        )
+
+        // Advance to next card without changing tally
+        onAdvanceWithoutTally()
+    }
+
     val swipeRatio = (cardOffset.value.x / swipeThresholdPx).coerceIn(-1f, 1f)
     val absSwipeProgress = abs(swipeRatio).coerceIn(0f, 1f)
 
-    val isRecycled = currentPhrase != null && (
-        state.stillLearningInSession.contains(currentPhrase.id) ||
-            (userStats.masteryRecords[currentPhrase.id]?.mistakeCount ?: 0) > 0
-        )
-    val isNextRecycled = nextPhrase != null && (
-        state.stillLearningInSession.contains(nextPhrase.id) ||
-            (userStats.masteryRecords[nextPhrase.id]?.mistakeCount ?: 0) > 0
-        )
+    // Only show recycled indicator if card was sent to still learning AND shown for the 2+ time in this session
+    val isRecycled = currentPhrase != null &&
+        state.cardsSentToStillLearning.contains(currentPhrase.id) &&
+        (state.cardPresentationCount[currentPhrase.id] ?: 1) >= 2
+
+    val isNextRecycled = nextPhrase != null &&
+        state.cardsSentToStillLearning.contains(nextPhrase.id) &&
+        (state.cardPresentationCount[nextPhrase.id] ?: 1) >= 2
 
     // Subtle scale pulse on the tally badges when dragging toward left or right (Quizlet style)
     val leftBadgeScale = 1f + (if (swipeRatio < 0f) abs(swipeRatio) * 0.12f else 0f)
@@ -151,7 +205,10 @@ fun FlashcardsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(
-                            onClick = onBack,
+                            onClick = {
+                                isAutoplayOn = false
+                                onBack()
+                            },
                             modifier = Modifier.testTag("flashcards_back_button")
                         ) {
                             Icon(
@@ -169,7 +226,7 @@ fun FlashcardsScreen(
                                     .testTag("flashcards_count_bubble")
                             ) {
                                 Text(
-                                    text = "${state.currentCardIndex + 1}/$totalCards",
+                                    text = "${state.currentCardIndex + 1} / $totalCards",
                                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                     color = GoldenOnContainer,
                                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
@@ -233,6 +290,7 @@ fun FlashcardsScreen(
                                         }
                                     } else null,
                                     onClick = {
+                                        isAutoplayOn = false
                                         onSelectDeck(DialectRepository.buildOverallDeck(knownCount))
                                         levelMenuExpanded = false
                                     },
@@ -287,6 +345,7 @@ fun FlashcardsScreen(
                                         },
                                         onClick = {
                                             if (isReached) {
+                                                isAutoplayOn = false
                                                 onSelectDeck(stageDeck)
                                                 levelMenuExpanded = false
                                             }
@@ -352,6 +411,7 @@ fun FlashcardsScreen(
                                         )
                                     },
                                     onClick = {
+                                        isAutoplayOn = false
                                         onShuffleDeck()
                                         settingsMenuExpanded = false
                                     },
@@ -376,6 +436,7 @@ fun FlashcardsScreen(
                                         )
                                     },
                                     onClick = {
+                                        isAutoplayOn = false
                                         onRestartDeck()
                                         settingsMenuExpanded = false
                                     },
@@ -388,12 +449,29 @@ fun FlashcardsScreen(
             }
         }
     ) { innerPadding ->
+        val studyProgress = if (totalCards > 0) {
+            ((state.currentCardIndex + 1).toFloat() / totalCards.toFloat()).coerceIn(0f, 1f)
+        } else {
+            0f
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
+            // Top Progress Bar (directly under top taskbar, matching drills tab)
+            LinearProgressIndicator(
+                progress = { studyProgress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp)
+                    .testTag("flashcards_progress_bar"),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+            )
+
             // Still Learning (Left, Red) and Learned (Right, Green) Tally Indicators
             Row(
                 modifier = Modifier
@@ -460,13 +538,13 @@ fun FlashcardsScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 16.dp),
+                    .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
                 // 1. Underneath Next Card in Stack (scales & rises smoothly as top card is dragged)
                 if (nextPhrase != null) {
-                    val backScale = 0.93f + (0.07f * absSwipeProgress)
-                    val backTranslationY = with(density) { (14.dp * (1f - absSwipeProgress)).toPx() }
+                    val backScale = 0.94f + (0.06f * absSwipeProgress)
+                    val backTranslationY = with(density) { (12.dp * (1f - absSwipeProgress)).toPx() }
                     val nextFrontWord = if (state.isEnglishOnFront) nextPhrase.english else nextPhrase.manglish
 
                     Card(
@@ -498,7 +576,7 @@ fun FlashcardsScreen(
                     }
                 }
 
-                // 2. Active Foreground Card with Quizlet Physics & Fly-off Animation
+                // 2. Active Foreground Card with Quizlet Physics, Slight Lean, and Uninverted Gesture Space
                 if (currentPhrase != null) {
                     val baseBorder = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                     val borderColor = when {
@@ -517,20 +595,17 @@ fun FlashcardsScreen(
                     val frontWord = if (state.isEnglishOnFront) currentPhrase.english else currentPhrase.manglish
                     val backWord = if (state.isEnglishOnFront) currentPhrase.manglish else currentPhrase.english
 
-                    Card(
+                    // Critical: pointerInput is attached to this Box in untransformed screen space
+                    // BEFORE applying graphicsLayer 3D flip. This ensures drag coordinates and
+                    // left/right directions are NEVER inverted when the card is flipped 180 degrees.
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .graphicsLayer {
-                                translationX = cardOffset.value.x
-                                translationY = cardOffset.value.y * 0.35f
-                                rotationZ = (cardOffset.value.x / 28f).coerceIn(-16f, 16f)
-                                rotationY = rotation
-                                cameraDistance = 14f * this.density
-                            }
                             .pointerInput(currentPhrase.id, state.currentCardIndex) {
                                 val velocityTracker = VelocityTracker()
                                 detectDragGestures(
                                     onDragStart = {
+                                        if (isAutoplayOn) isAutoplayOn = false
                                         velocityTracker.resetTracking()
                                     },
                                     onDragEnd = {
@@ -551,10 +626,10 @@ fun FlashcardsScreen(
                                                     cardOffset.animateTo(
                                                         targetValue = Offset(
                                                             x = flyOffDistancePx,
-                                                            y = currentY + 60f
+                                                            y = currentY + 30f
                                                         ),
                                                         animationSpec = tween(
-                                                            durationMillis = 210,
+                                                            durationMillis = 200,
                                                             easing = FastOutLinearInEasing
                                                         )
                                                     )
@@ -567,10 +642,10 @@ fun FlashcardsScreen(
                                                     cardOffset.animateTo(
                                                         targetValue = Offset(
                                                             x = -flyOffDistancePx,
-                                                            y = currentY + 60f
+                                                            y = currentY + 30f
                                                         ),
                                                         animationSpec = tween(
-                                                            durationMillis = 210,
+                                                            durationMillis = 200,
                                                             easing = FastOutLinearInEasing
                                                         )
                                                     )
@@ -622,43 +697,143 @@ fun FlashcardsScreen(
                                 indication = null
                             ) {
                                 if (!isAnimatingOut) {
+                                    if (isAutoplayOn) isAutoplayOn = false
                                     onFlipCard()
                                 }
                             }
-                            .border(
-                                width = if (absSwipeProgress > 0.1f) 2.5.dp else 1.5.dp,
-                                color = borderColor,
-                                shape = RoundedCornerShape(28.dp)
-                            )
-                            .testTag("flashcard_flip_card"),
-                        shape = RoundedCornerShape(28.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = cardContainerColor
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                            .graphicsLayer {
+                                translationX = cardOffset.value.x
+                                translationY = cardOffset.value.y * 0.25f
+                                // Slight Quizlet lean: subtle tilt up to 5 degrees max
+                                rotationZ = (cardOffset.value.x / 95f).coerceIn(-5f, 5f)
+                                rotationY = rotation
+                                cameraDistance = 14f * this.density
+                            }
                     ) {
-                        if (rotation <= 90f) {
-                            MinimalFlashcardContent(
-                                centerWord = frontWord,
-                                isRecycled = isRecycled,
-                                swipeRatio = swipeRatio,
-                                onSpeak = { onSpeakPhrase(currentPhrase) }
-                            )
-                        } else {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .graphicsLayer { rotationY = 180f }
-                            ) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .border(
+                                    width = if (absSwipeProgress > 0.1f) 2.5.dp else 1.5.dp,
+                                    color = borderColor,
+                                    shape = RoundedCornerShape(28.dp)
+                                )
+                                .testTag("flashcard_flip_card"),
+                            shape = RoundedCornerShape(28.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = cardContainerColor
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                        ) {
+                            if (rotation <= 90f) {
                                 MinimalFlashcardContent(
-                                    centerWord = backWord,
+                                    centerWord = frontWord,
                                     isRecycled = isRecycled,
                                     swipeRatio = swipeRatio,
                                     onSpeak = { onSpeakPhrase(currentPhrase) }
                                 )
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .graphicsLayer { rotationY = 180f }
+                                ) {
+                                    MinimalFlashcardContent(
+                                        centerWord = backWord,
+                                        isRecycled = isRecycled,
+                                        swipeRatio = swipeRatio,
+                                        onSpeak = { onSpeakPhrase(currentPhrase) }
+                                    )
+                                }
                             }
                         }
                     }
+                }
+            }
+
+            // Autoplay Status Pill (appears briefly when toggled)
+            this@Column.AnimatedVisibility(
+                visible = autoplayBannerText != null,
+                enter = fadeIn() + scaleIn(initialScale = 0.9f),
+                exit = fadeOut() + scaleOut(targetScale = 0.9f),
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Surface(
+                    color = MaterialTheme.colorScheme.inverseSurface,
+                    shape = RoundedCornerShape(16.dp),
+                    shadowElevation = 3.dp,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                ) {
+                    Text(
+                        text = autoplayBannerText ?: "",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.inverseOnSurface,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 5.dp)
+                    )
+                }
+            }
+
+            // Under the card: Undo Arrow on left, "Tap to reveal..." in middle, Play/Pause on right
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Left: Undo Arrow
+                IconButton(
+                    onClick = {
+                        if (isAutoplayOn) isAutoplayOn = false
+                        onUndo()
+                    },
+                    modifier = Modifier.testTag("flashcards_undo_button")
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Undo,
+                        contentDescription = "Undo previous swipe",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+
+                // Middle: Tap to reveal "Malayalam" or "English" depending on card status
+                val currentFaceIsEnglish = if (state.isEnglishOnFront) !state.isFlipped else state.isFlipped
+                val targetRevealLanguage = if (currentFaceIsEnglish) "Malayalam" else "English"
+
+                Surface(
+                    onClick = {
+                        if (isAutoplayOn) isAutoplayOn = false
+                        onFlipCard()
+                    },
+                    color = Color.Transparent,
+                    modifier = Modifier
+                        .weight(1f)
+                        .testTag("flashcards_tap_to_reveal_button")
+                ) {
+                    Text(
+                        text = "Tap to reveal $targetRevealLanguage",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+
+                // Right: Autoplay Play / Pause button
+                IconButton(
+                    onClick = {
+                        isAutoplayOn = !isAutoplayOn
+                        autoplayBannerText = if (isAutoplayOn) "Autoplay on" else "Autoplay off"
+                    },
+                    modifier = Modifier.testTag("flashcards_autoplay_button")
+                ) {
+                    Icon(
+                        imageVector = if (isAutoplayOn) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                        contentDescription = if (isAutoplayOn) "Pause autoplay" else "Start autoplay",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp)
+                    )
                 }
             }
         }
