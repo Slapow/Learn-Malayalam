@@ -276,4 +276,23 @@ class UserStatsRepository(context: Context) {
         prefs.edit().putStringSet("learned_phrases", merged).apply()
         _stats.value = _stats.value.copy(learnedPhraseIds = merged)
     }
+
+    fun resetDeckProgress(deckId: String, phraseIds: Set<String>) {
+        val currentMap = _stats.value.masteryRecords.toMutableMap()
+        for (id in phraseIds) {
+            currentMap.remove(id)
+        }
+        val updatedLearned = _stats.value.learnedPhraseIds - phraseIds
+        val updatedMasteredDecks = _stats.value.masteredDeckIds - deckId
+        saveMasteryRecords(currentMap)
+        prefs.edit()
+            .putStringSet("learned_phrases", updatedLearned)
+            .putStringSet("mastered_decks", updatedMasteredDecks)
+            .apply()
+        _stats.value = _stats.value.copy(
+            learnedPhraseIds = updatedLearned,
+            masteredDeckIds = updatedMasteredDecks,
+            masteryRecords = currentMap
+        )
+    }
 }

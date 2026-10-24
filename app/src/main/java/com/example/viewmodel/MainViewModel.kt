@@ -56,6 +56,8 @@ data class FlashcardState(
     // 1. Classic Flashcards sub-state
     val currentCardIndex: Int = 0,
     val isFlipped: Boolean = false,
+    val isEnglishOnFront: Boolean = true,
+    val isShuffled: Boolean = false,
     val learnedInSession: Set<String> = emptySet(),
     val stillLearningInSession: Set<String> = emptySet(),
     // 2. Adaptive Queue sub-state (MIXED_MASTERY, LEARN, WRITE, SPEAK, TEST)
@@ -492,6 +494,8 @@ class MainViewModel(
                     activeMode = mode,
                     currentCardIndex = 0,
                     isFlipped = false,
+                    isEnglishOnFront = _flashcardState.value.isEnglishOnFront,
+                    isShuffled = false,
                     cardStreaks = initialStreaks
                 )
             }
@@ -651,11 +655,13 @@ class MainViewModel(
             put(currentPhrase.id, ((this[currentPhrase.id] ?: 0) + 1).coerceAtMost(2))
         }
         val newLearned = s.learnedInSession + currentPhrase.id
+        val newStillLearning = s.stillLearningInSession - currentPhrase.id
         val nextIdx = (s.currentCardIndex + 1) % s.currentDeck.phrases.size
         _flashcardState.value = s.copy(
             currentCardIndex = nextIdx,
             isFlipped = false,
             learnedInSession = newLearned,
+            stillLearningInSession = newStillLearning,
             cardStreaks = newStreaks
         )
         syncToCloud()
@@ -675,8 +681,52 @@ class MainViewModel(
         _flashcardState.value = s.copy(
             currentCardIndex = nextIdx,
             isFlipped = false,
+            learnedInSession = s.learnedInSession - currentPhrase.id,
             stillLearningInSession = s.stillLearningInSession + currentPhrase.id,
             cardStreaks = newStreaks
+        )
+        syncToCloud()
+    }
+
+    fun toggleFlashcardFrontLanguage() {
+        val s = _flashcardState.value
+        _flashcardState.value = s.copy(
+            isEnglishOnFront = !s.isEnglishOnFront,
+            isFlipped = false
+        )
+    }
+
+    fun shuffleCurrentFlashcardDeck() {
+        val s = _flashcardState.value
+        val shuffledDeck = s.currentDeck.copy(
+            phrases = s.currentDeck.phrases.shuffled()
+        )
+        _flashcardState.value = s.copy(
+            currentDeck = shuffledDeck,
+            currentCardIndex = 0,
+            isFlipped = false,
+            isShuffled = true
+        )
+    }
+
+    fun restartCurrentFlashcardDeck() {
+        val s = _flashcardState.value
+        val phraseIds = s.currentDeck.phrases.map { it.id }.toSet()
+        statsRepo.resetDeckProgress(s.currentDeck.id, phraseIds)
+        val canonicalDeck = if (s.currentDeck.id == "deck_overall") {
+            DialectRepository.buildOverallDeck(statsRepo.stats.value.learnedPhraseIds.size)
+        } else {
+            DialectRepository.decks.find { it.id == s.currentDeck.id } ?: s.currentDeck
+        }
+        val resetStreaks = canonicalDeck.phrases.associate { it.id to 0 }
+        _flashcardState.value = s.copy(
+            currentDeck = canonicalDeck,
+            currentCardIndex = 0,
+            isFlipped = false,
+            isShuffled = false,
+            learnedInSession = emptySet(),
+            stillLearningInSession = emptySet(),
+            cardStreaks = resetStreaks
         )
         syncToCloud()
     }
