@@ -289,6 +289,7 @@ fun MainFeatureScreen(
                         onToggleTile = { idx -> viewModel.toggleWordTile(idx) },
                         onSelectOption = { idx -> viewModel.selectQuizOption(idx) },
                         onEvaluate = { viewModel.evaluateCurrentQuestion() },
+                        onSkip = { viewModel.skipCurrentQuizQuestion() },
                         onNext = { viewModel.nextQuizQuestion() },
                         onRestart = { viewModel.startNewQuizSession() },
                         onSpeakPhrase = { phrase -> viewModel.speakPhrase(phrase) },

@@ -1,6 +1,9 @@
 package com.example.ui.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -46,6 +50,7 @@ fun LessonQuizScreen(
     onToggleTile: (Int) -> Unit,
     onSelectOption: (Int) -> Unit,
     onEvaluate: () -> Unit,
+    onSkip: () -> Unit = {},
     onNext: () -> Unit,
     onRestart: () -> Unit,
     onSpeakPhrase: (com.example.model.PhraseItem) -> Unit,
@@ -168,283 +173,290 @@ fun LessonQuizScreen(
                     trackColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
                 )
 
-                LazyColumn(
+                AnimatedContent(
+                    targetState = state.currentIndex,
+                    transitionSpec = {
+                        (slideInHorizontally(
+                            initialOffsetX = { fullWidth -> fullWidth },
+                            animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
+                        ) + fadeIn(animationSpec = tween(durationMillis = 250))).togetherWith(
+                            slideOutHorizontally(
+                                targetOffsetX = { fullWidth -> -fullWidth },
+                                animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
+                            ) + fadeOut(animationSpec = tween(durationMillis = 200))
+                        )
+                    },
+                    label = "DrillSlideTransition",
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Surface(
-                                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f),
-                                shape = RoundedCornerShape(10.dp)
+                ) { targetIndex ->
+                    val q = state.questions.getOrNull(targetIndex) ?: currentQ
+                    var hintRevealedThisItem by remember(targetIndex) { mutableStateOf(false) }
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 20.dp, vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    text = when (currentQ.type) {
-                                        QuizType.MANGLISH_TYPING -> "Typing"
-                                        QuizType.SPEAKING_PRACTICE -> "Speaking"
-                                        QuizType.WORD_TILES -> "Tiles"
-                                        QuizType.DIALECT_CHOICE -> "Choice"
-                                    },
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                                )
+                                Surface(
+                                    color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f),
+                                    shape = RoundedCornerShape(10.dp)
+                                ) {
+                                    Text(
+                                        text = when (q.type) {
+                                            QuizType.MANGLISH_TYPING -> "Typing"
+                                            QuizType.SPEAKING_PRACTICE -> "Speaking"
+                                            QuizType.WORD_TILES -> "Tiles"
+                                            QuizType.DIALECT_CHOICE -> "Choice"
+                                        },
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                                    )
+                                }
+
+                                if (state.reshuffledCount > 0) {
+                                    Text(
+                                        text = "🔄 Reshuffled: ${state.reshuffledCount}",
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = TerracottaAccent
+                                    )
+                                }
                             }
 
-                            if (state.reshuffledCount > 0) {
-                                Text(
-                                    text = "🔄 Reshuffled: ${state.reshuffledCount}",
-                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = TerracottaAccent
-                                )
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Text(
+                                text = q.prompt,
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 20.sp,
+                                    lineHeight = 27.sp
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+
+                            if (q.hint.isNotBlank() || q.phrase.wordBreakdown.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                if (!hintRevealedThisItem) {
+                                    Surface(
+                                        onClick = { hintRevealedThisItem = true },
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                        modifier = Modifier.testTag("reveal_hint_button")
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text("💡", fontSize = 12.sp)
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = "Tap to reveal hint",
+                                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    Surface(
+                                        color = PalmContainerLight.copy(alpha = 0.55f),
+                                        shape = RoundedCornerShape(10.dp),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Column(modifier = Modifier.padding(10.dp)) {
+                                            if (q.hint.isNotBlank()) {
+                                                Text(
+                                                    text = "💡 Hint: ${q.hint}",
+                                                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                                                    color = EmeraldDark
+                                                )
+                                            }
+                                            if (q.phrase.wordBreakdown.isNotBlank()) {
+                                                if (q.hint.isNotBlank()) Spacer(modifier = Modifier.height(4.dp))
+                                                Text(
+                                                    text = "🧩 Breakdown: ${q.phrase.wordBreakdown}",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = EmeraldDark
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(10.dp))
+                        item {
+                            when (q.type) {
+                                QuizType.MANGLISH_TYPING -> {
+                                    ManglishTypingCard(
+                                        typedInput = state.typedInput,
+                                        onTypedInputChange = onTypedInputChange,
+                                        onSpeakPrompt = { onSpeakPhrase(q.phrase) },
+                                        onSubmit = {
+                                            focusManager.clearFocus()
+                                            onEvaluate()
+                                        },
+                                        onSkip = onSkip,
+                                        isEvaluated = state.isEvaluated,
+                                        isCorrect = state.isCorrect,
+                                        isSkipped = state.isSkipped,
+                                        correctPhrase = q.phrase
+                                    )
+                                }
 
-                        Text(
-                            text = currentQ.prompt,
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp,
-                                lineHeight = 27.sp
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                                QuizType.SPEAKING_PRACTICE -> {
+                                    SpeakingPracticeCard(
+                                        phrase = q.phrase,
+                                        isListening = isListening,
+                                        speechStatus = speechStatus,
+                                        transcription = state.speechTranscription,
+                                        onListenAudio = { onSpeakPhrase(q.phrase) },
+                                        onStartSpeech = onStartSpeech,
+                                        onStopSpeech = onStopSpeech
+                                    )
+                                }
 
-                        if (currentQ.hint.isNotBlank() || currentQ.phrase.wordBreakdown.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(10.dp))
-                            if (!isHintRevealed) {
-                                Surface(
-                                    onClick = { isHintRevealed = true },
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                                    modifier = Modifier.testTag("reveal_hint_button")
+                                QuizType.WORD_TILES -> {
+                                    WordTilesBuilderCard(
+                                        question = q,
+                                        selectedIndices = state.selectedTileIndices,
+                                        onToggleTile = onToggleTile
+                                    )
+                                }
+
+                                QuizType.DIALECT_CHOICE -> {
+                                    DialectChoiceCard(
+                                        options = q.options,
+                                        selectedIndex = state.selectedOptionIndex,
+                                        onSelectOption = onSelectOption,
+                                        isEvaluated = state.isEvaluated
+                                    )
+                                }
+                            }
+                        }
+
+                        // Mandatory Copy Answer When Wrong
+                        if (state.isEvaluated && state.mustCopyAnswer) {
+                            item {
+                                Card(
+                                    shape = RoundedCornerShape(18.dp),
+                                    colors = CardDefaults.cardColors(containerColor = TerracottaContainer.copy(alpha = 0.55f)),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .border(2.dp, TerracottaAccent, RoundedCornerShape(18.dp))
                                 ) {
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text("💡", fontSize = 12.sp)
-                                        Spacer(modifier = Modifier.width(6.dp))
+                                    Column(modifier = Modifier.padding(16.dp)) {
                                         Text(
-                                            text = "Tap to reveal hint",
-                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                            text = "✍️ Type Correct Answer to Continue",
+                                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.ExtraBold),
+                                            color = TerracottaAccent
+                                        )
+                                        Text(
+                                            text = "We added this card back to the shuffle! Type \"${q.phrase.manglish}\" below to continue:",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            text = "${q.phrase.manglish}  (${q.phrase.phoneticGuide})",
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontFamily = FontFamily.Monospace,
+                                                fontWeight = FontWeight.ExtraBold
+                                            ),
                                             color = MaterialTheme.colorScheme.primary
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        OutlinedTextField(
+                                            value = state.copyAnswerInput,
+                                            onValueChange = onCopyInputChange,
+                                            label = { Text("Type '${q.phrase.manglish}'") },
+                                            singleLine = true,
+                                            shape = RoundedCornerShape(12.dp),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .testTag("quiz_copy_answer_input")
                                         )
                                     }
                                 }
-                            } else {
-                                Surface(
-                                    color = PalmContainerLight.copy(alpha = 0.55f),
-                                    shape = RoundedCornerShape(10.dp),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Column(modifier = Modifier.padding(10.dp)) {
-                                        if (currentQ.hint.isNotBlank()) {
-                                            Text(
-                                                text = "💡 Hint: ${currentQ.hint}",
-                                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                                                color = EmeraldDark
-                                            )
-                                        }
-                                        if (currentQ.phrase.wordBreakdown.isNotBlank()) {
-                                            if (currentQ.hint.isNotBlank()) Spacer(modifier = Modifier.height(4.dp))
-                                            Text(
-                                                text = "🧩 Breakdown: ${currentQ.phrase.wordBreakdown}",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = EmeraldDark
-                                            )
-                                        }
-                                    }
-                                }
                             }
                         }
+
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
                     }
-
-                    item {
-                        when (currentQ.type) {
-                            QuizType.MANGLISH_TYPING -> {
-                                ManglishTypingCard(
-                                    typedInput = state.typedInput,
-                                    onTypedInputChange = onTypedInputChange,
-                                    onSpeakPrompt = { onSpeakPhrase(currentQ.phrase) },
-                                    onSubmit = {
-                                        focusManager.clearFocus()
-                                        onEvaluate()
-                                    },
-                                    isEvaluated = state.isEvaluated
-                                )
-                            }
-
-                            QuizType.SPEAKING_PRACTICE -> {
-                                SpeakingPracticeCard(
-                                    phrase = currentQ.phrase,
-                                    isListening = isListening,
-                                    speechStatus = speechStatus,
-                                    transcription = state.speechTranscription,
-                                    onListenAudio = { onSpeakPhrase(currentQ.phrase) },
-                                    onStartSpeech = onStartSpeech,
-                                    onStopSpeech = onStopSpeech
-                                )
-                            }
-
-                            QuizType.WORD_TILES -> {
-                                WordTilesBuilderCard(
-                                    question = currentQ,
-                                    selectedIndices = state.selectedTileIndices,
-                                    onToggleTile = onToggleTile
-                                )
-                            }
-
-                            QuizType.DIALECT_CHOICE -> {
-                                DialectChoiceCard(
-                                    options = currentQ.options,
-                                    selectedIndex = state.selectedOptionIndex,
-                                    onSelectOption = onSelectOption,
-                                    isEvaluated = state.isEvaluated
-                                )
-                            }
-                        }
-                    }
-
-                    // Mandatory Copy Answer When Wrong
-                    if (state.isEvaluated && state.mustCopyAnswer) {
-                        item {
-                            Card(
-                                shape = RoundedCornerShape(18.dp),
-                                colors = CardDefaults.cardColors(containerColor = TerracottaContainer.copy(alpha = 0.55f)),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .border(2.dp, TerracottaAccent, RoundedCornerShape(18.dp))
-                            ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Text(
-                                        text = "✍️ Type Correct Answer to Continue",
-                                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.ExtraBold),
-                                        color = TerracottaAccent
-                                    )
-                                    Text(
-                                        text = "We added this card back to the shuffle! Type \"${currentQ.phrase.manglish}\" below to continue:",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        text = "${currentQ.phrase.manglish}  (${currentQ.phrase.phoneticGuide})",
-                                        style = MaterialTheme.typography.titleMedium.copy(
-                                            fontFamily = FontFamily.Monospace,
-                                            fontWeight = FontWeight.ExtraBold
-                                        ),
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    OutlinedTextField(
-                                        value = state.copyAnswerInput,
-                                        onValueChange = onCopyInputChange,
-                                        label = { Text("Type '${currentQ.phrase.manglish}'") },
-                                        singleLine = true,
-                                        shape = RoundedCornerShape(12.dp),
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .testTag("quiz_copy_answer_input")
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    item { Spacer(modifier = Modifier.height(16.dp)) }
                 }
 
-                // Bottom Evaluation Drawer
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = if (state.isEvaluated) {
-                        if (state.isCorrect) PalmContainerLight else TerracottaContainer
-                    } else MaterialTheme.colorScheme.surface,
-                    tonalElevation = 8.dp,
-                    shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp, vertical = 14.dp)
+                // Bottom Evaluation Drawer: Only shown when NOT evaluated (Check Answer) OR when evaluated and NOT correct (Continue)
+                if (!state.isEvaluated || !state.isCorrect) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surface,
+                        tonalElevation = 8.dp,
+                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
                     ) {
-                        if (state.isEvaluated) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(bottom = 10.dp)
-                            ) {
-                                Icon(
-                                    imageVector = if (state.isCorrect) Icons.Filled.CheckCircle else Icons.Filled.Error,
-                                    contentDescription = null,
-                                    tint = if (state.isCorrect) EmeraldPrimary else TerracottaAccent,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = state.feedbackMessage,
-                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = if (state.isCorrect) PalmOnContainerLight else TerracottaAccent
-                                )
-                            }
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 14.dp)
+                        ) {
+                            if (state.isEvaluated) {
+                                val canContinue = !state.mustCopyAnswer || state.isCopyAnswerUnlocked
+                                Button(
+                                    onClick = onNext,
+                                    enabled = canContinue,
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = Color.White
+                                    ),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(52.dp)
+                                        .testTag("quiz_continue_button")
+                                ) {
+                                    Text(
+                                        text = if (!canContinue) {
+                                            "Type Correct Answer Above to Continue"
+                                        } else if (state.currentIndex + 1 >= state.questions.size && state.reshuffledCount == 0) {
+                                            "Complete (+20 XP)"
+                                        } else {
+                                            "Continue"
+                                        },
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            } else {
+                                val canCheck = when (currentQ.type) {
+                                    QuizType.MANGLISH_TYPING -> state.typedInput.isNotBlank()
+                                    QuizType.SPEAKING_PRACTICE -> true
+                                    QuizType.WORD_TILES -> state.selectedTileIndices.isNotEmpty()
+                                    QuizType.DIALECT_CHOICE -> state.selectedOptionIndex != null
+                                }
 
-                            val canContinue = !state.mustCopyAnswer || state.isCopyAnswerUnlocked
-                            Button(
-                                onClick = onNext,
-                                enabled = canContinue,
-                                shape = RoundedCornerShape(14.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (state.isCorrect) EmeraldPrimary else TerracottaAccent,
-                                    contentColor = Color.White
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp)
-                                    .testTag("quiz_continue_button")
-                            ) {
-                                Text(
-                                    text = if (!canContinue) {
-                                        "Type Correct Answer Above to Continue"
-                                    } else if (state.currentIndex + 1 >= state.questions.size) {
-                                        "Complete (+20 XP)"
-                                    } else {
-                                        "Continue"
-                                    },
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
-                                )
-                            }
-                        } else {
-                            val canCheck = when (currentQ.type) {
-                                QuizType.MANGLISH_TYPING -> state.typedInput.isNotBlank()
-                                QuizType.SPEAKING_PRACTICE -> true
-                                QuizType.WORD_TILES -> state.selectedTileIndices.isNotEmpty()
-                                QuizType.DIALECT_CHOICE -> state.selectedOptionIndex != null
-                            }
-
-                            Button(
-                                onClick = onEvaluate,
-                                enabled = canCheck,
-                                shape = RoundedCornerShape(14.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary,
-                                    contentColor = Color.White
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp)
-                                    .testTag("quiz_check_answer_button")
-                            ) {
-                                Text("Check Answer", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                Button(
+                                    onClick = onEvaluate,
+                                    enabled = canCheck,
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = Color.White
+                                    ),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(52.dp)
+                                        .testTag("quiz_check_answer_button")
+                                ) {
+                                    Text("Check Answer", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                }
                             }
                         }
                     }
@@ -460,8 +472,33 @@ fun ManglishTypingCard(
     onTypedInputChange: (String) -> Unit,
     onSpeakPrompt: () -> Unit,
     onSubmit: () -> Unit,
-    isEvaluated: Boolean
+    onSkip: () -> Unit,
+    isEvaluated: Boolean,
+    isCorrect: Boolean,
+    isSkipped: Boolean,
+    correctPhrase: com.example.model.PhraseItem
 ) {
+    val headerLabel = when {
+        isEvaluated && isCorrect -> "Correct!"
+        isEvaluated && isSkipped -> "Skipped"
+        isEvaluated && !isCorrect -> "Wrong!"
+        else -> "Type in Manglish:"
+    }
+
+    val headerColor = when {
+        isEvaluated && isCorrect -> EmeraldDark
+        isEvaluated && isSkipped -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+        isEvaluated && !isCorrect -> TerracottaAccent
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    val borderColor = when {
+        isEvaluated && isCorrect -> EmeraldDark
+        isEvaluated && isSkipped -> Color(0xFFB0BEC5)
+        isEvaluated && !isCorrect -> TerracottaAccent
+        else -> MaterialTheme.colorScheme.outline
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
@@ -475,35 +512,184 @@ fun ManglishTypingCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Type in Manglish:",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    text = headerLabel,
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontWeight = if (isEvaluated) FontWeight.ExtraBold else FontWeight.Medium
+                    ),
+                    color = headerColor
                 )
-                IconButton(onClick = onSpeakPrompt) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.VolumeUp,
-                        contentDescription = "Listen prompt",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    if (!isEvaluated) {
+                        Surface(
+                            onClick = onSkip,
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+                            modifier = Modifier.testTag("quiz_dont_know_button")
+                        ) {
+                            Text(
+                                text = "Don't know",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+
+                    IconButton(
+                        onClick = onSpeakPrompt,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                            contentDescription = "Listen prompt",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                value = typedInput,
+                value = if (isSkipped) "Skipped" else typedInput,
                 onValueChange = onTypedInputChange,
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("manglish_text_input"),
-                placeholder = { Text("Type your answer here...") },
+                placeholder = {
+                    Text(if (isSkipped) "Skipped" else "Type your answer here...")
+                },
+                textStyle = LocalTextStyle.current.copy(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontStyle = if (isSkipped) FontStyle.Italic else FontStyle.Normal,
+                    color = when {
+                        isSkipped -> Color(0xFF757575)
+                        isEvaluated && isCorrect -> EmeraldDark
+                        isEvaluated && !isCorrect -> TerracottaAccent
+                        else -> MaterialTheme.colorScheme.onSurface
+                    }
+                ),
                 singleLine = false,
                 maxLines = 3,
                 shape = RoundedCornerShape(14.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = borderColor,
+                    unfocusedBorderColor = borderColor,
+                    disabledBorderColor = borderColor,
+                    focusedContainerColor = when {
+                        isEvaluated && isCorrect -> PalmContainerLight.copy(alpha = 0.25f)
+                        isEvaluated && isSkipped -> Color(0xFFF5F5F5)
+                        isEvaluated && !isCorrect -> TerracottaContainer.copy(alpha = 0.25f)
+                        else -> MaterialTheme.colorScheme.surface
+                    },
+                    unfocusedContainerColor = when {
+                        isEvaluated && isCorrect -> PalmContainerLight.copy(alpha = 0.25f)
+                        isEvaluated && isSkipped -> Color(0xFFF5F5F5)
+                        isEvaluated && !isCorrect -> TerracottaContainer.copy(alpha = 0.25f)
+                        else -> MaterialTheme.colorScheme.surface
+                    },
+                    disabledContainerColor = when {
+                        isEvaluated && isCorrect -> PalmContainerLight.copy(alpha = 0.25f)
+                        isEvaluated && isSkipped -> Color(0xFFF5F5F5)
+                        isEvaluated && !isCorrect -> TerracottaContainer.copy(alpha = 0.25f)
+                        else -> MaterialTheme.colorScheme.surface
+                    },
+                    disabledTextColor = when {
+                        isSkipped -> Color(0xFF757575)
+                        isEvaluated && isCorrect -> EmeraldDark
+                        isEvaluated && !isCorrect -> TerracottaAccent
+                        else -> MaterialTheme.colorScheme.onSurface
+                    }
+                ),
+                leadingIcon = if (isEvaluated && !isSkipped) {
+                    {
+                        AnimatedVisibility(
+                            visible = isEvaluated && !isSkipped,
+                            enter = fadeIn() + expandHorizontally(animationSpec = tween(300))
+                        ) {
+                            if (isCorrect) {
+                                Icon(
+                                    imageVector = Icons.Filled.Check,
+                                    contentDescription = "Correct",
+                                    tint = EmeraldDark,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = "Wrong",
+                                    tint = TerracottaAccent,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+                    }
+                } else null,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onSubmit() }),
                 enabled = !isEvaluated
             )
+
+            // When wrong or skipped: show correct answer below in green
+            AnimatedVisibility(
+                visible = isEvaluated && !isCorrect,
+                enter = fadeIn(animationSpec = tween(300)) + expandVertically()
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = PalmContainerLight.copy(alpha = 0.5f),
+                        border = BorderStroke(1.dp, EmeraldDark.copy(alpha = 0.4f)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Correct answer:",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                    color = EmeraldDark
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = correctPhrase.manglish,
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontFamily = FontFamily.Monospace
+                                    ),
+                                    color = EmeraldDark
+                                )
+                                if (correctPhrase.malayalam.isNotBlank() || correctPhrase.phoneticGuide.isNotBlank()) {
+                                    Text(
+                                        text = "${correctPhrase.malayalam} ${if (correctPhrase.phoneticGuide.isNotBlank()) "(${correctPhrase.phoneticGuide})" else ""}".trim(),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = PalmOnContainerLight
+                                    )
+                                }
+                            }
+                            IconButton(onClick = onSpeakPrompt) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                                    contentDescription = "Listen correct pronunciation",
+                                    tint = EmeraldDark
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

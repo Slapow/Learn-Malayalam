@@ -36,6 +36,7 @@ data class QuizState(
     val selectedOptionIndex: Int? = null,
     val isEvaluated: Boolean = false,
     val isCorrect: Boolean = false,
+    val isSkipped: Boolean = false,
     val feedbackMessage: String = "",
     val speechTranscription: String = "",
     val mustCopyAnswer: Boolean = false,
@@ -1126,6 +1127,8 @@ class MainViewModel(
 
         val updatedQuestions = state.questions.toMutableList()
         var newReshuffled = state.reshuffledCount
+        val mustCopy = !isCorrect && (q.type != QuizType.MANGLISH_TYPING)
+
         if (!isCorrect) {
             // Add back to the shuffle queue so the user practices it again in this session!
             updatedQuestions.add(q.copy(id = "${q.id}_retry_${System.currentTimeMillis()}"))
@@ -1149,11 +1152,40 @@ class MainViewModel(
             questions = updatedQuestions,
             isEvaluated = true,
             isCorrect = isCorrect,
+            isSkipped = false,
             feedbackMessage = feedback,
-            mustCopyAnswer = !isCorrect,
+            mustCopyAnswer = mustCopy,
             copyAnswerInput = "",
-            isCopyAnswerUnlocked = false,
+            isCopyAnswerUnlocked = !mustCopy,
             reshuffledCount = newReshuffled
+        )
+        syncToCloud()
+    }
+
+    fun skipCurrentQuizQuestion() {
+        autoAdvanceQuizJob?.cancel()
+        val state = _quizState.value
+        val q = state.questions.getOrNull(state.currentIndex) ?: return
+
+        val rec = statsRepo.recordPhraseAttempt(q.phrase.id, false)
+        viewModelScope.launch {
+            cloudRepo.saveLearnedPhrase(q.phrase, masteryLevel = if (rec.isKnown) 5 else 1)
+        }
+
+        // Add word back to shuffle queue for the next round
+        val updatedQuestions = state.questions.toMutableList()
+        updatedQuestions.add(q.copy(id = "${q.id}_skipped_${System.currentTimeMillis()}"))
+
+        _quizState.value = state.copy(
+            questions = updatedQuestions,
+            isEvaluated = true,
+            isCorrect = false,
+            isSkipped = true,
+            feedbackMessage = "Skipped — '${q.phrase.manglish}'",
+            mustCopyAnswer = false,
+            copyAnswerInput = "",
+            isCopyAnswerUnlocked = true,
+            reshuffledCount = state.reshuffledCount + 1
         )
         syncToCloud()
     }
@@ -1175,6 +1207,7 @@ class MainViewModel(
                 selectedOptionIndex = null,
                 isEvaluated = false,
                 isCorrect = false,
+                isSkipped = false,
                 feedbackMessage = "",
                 speechTranscription = "",
                 mustCopyAnswer = false,
