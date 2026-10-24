@@ -733,24 +733,9 @@ fun ManglishTypingCard(
                     focusedBorderColor = borderColor,
                     unfocusedBorderColor = borderColor,
                     disabledBorderColor = borderColor,
-                    focusedContainerColor = when {
-                        isEvaluated && isCorrect -> PalmContainerLight.copy(alpha = 0.25f)
-                        isEvaluated && isSkipped -> Color(0xFFF5F5F5)
-                        isEvaluated && !isCorrect -> TerracottaContainer.copy(alpha = 0.25f)
-                        else -> MaterialTheme.colorScheme.surface
-                    },
-                    unfocusedContainerColor = when {
-                        isEvaluated && isCorrect -> PalmContainerLight.copy(alpha = 0.25f)
-                        isEvaluated && isSkipped -> Color(0xFFF5F5F5)
-                        isEvaluated && !isCorrect -> TerracottaContainer.copy(alpha = 0.25f)
-                        else -> MaterialTheme.colorScheme.surface
-                    },
-                    disabledContainerColor = when {
-                        isEvaluated && isCorrect -> PalmContainerLight.copy(alpha = 0.25f)
-                        isEvaluated && isSkipped -> Color(0xFFF5F5F5)
-                        isEvaluated && !isCorrect -> TerracottaContainer.copy(alpha = 0.25f)
-                        else -> MaterialTheme.colorScheme.surface
-                    },
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    disabledContainerColor = MaterialTheme.colorScheme.surface,
                     disabledTextColor = when {
                         isSkipped -> Color(0xFF757575)
                         isEvaluated && isCorrect -> EmeraldDark
@@ -1031,13 +1016,13 @@ fun WordTilesBuilderCard(
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
                                 color = when {
-                                    isWrongSpot -> TerracottaContainer.copy(alpha = 0.35f)
-                                    isRightSpot -> PalmContainerLight.copy(alpha = 0.55f)
+                                    isWrongSpot -> MaterialTheme.colorScheme.surface
+                                    isRightSpot -> MaterialTheme.colorScheme.surface
                                     else -> MaterialTheme.colorScheme.primary
                                 },
                                 border = when {
                                     isWrongSpot -> BorderStroke(2.dp, TerracottaAccent)
-                                    isRightSpot -> BorderStroke(1.5.dp, EmeraldDark)
+                                    isRightSpot -> BorderStroke(2.dp, EmeraldDark)
                                     else -> null
                                 },
                                 modifier = Modifier.clickable(enabled = !isEvaluated) { onToggleTile(idx) }
@@ -1151,11 +1136,26 @@ fun DialectChoiceCard(
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         options.forEachIndexed { index, optionText ->
             val isSelected = selectedIndex == index
-            val cardColor = when {
-                isEvaluated && index == 0 -> PalmContainerLight
-                isEvaluated && isSelected && index != 0 -> TerracottaContainer
-                isSelected -> MaterialTheme.colorScheme.primaryContainer
-                else -> MaterialTheme.colorScheme.surface
+            val isCorrectChoice = index == 0
+            val isWrongChoice = isEvaluated && isSelected && index != 0
+
+            val borderColor = when {
+                isEvaluated && isCorrectChoice -> EmeraldDark
+                isWrongChoice -> TerracottaAccent
+                isSelected -> MaterialTheme.colorScheme.primary
+                else -> MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+            }
+
+            val textColor = when {
+                isEvaluated && isCorrectChoice -> EmeraldDark
+                isWrongChoice -> TerracottaAccent
+                else -> MaterialTheme.colorScheme.onSurface
+            }
+
+            val radioColor = when {
+                isEvaluated && isCorrectChoice -> EmeraldDark
+                isWrongChoice -> TerracottaAccent
+                else -> MaterialTheme.colorScheme.primary
             }
 
             Card(
@@ -1164,32 +1164,59 @@ fun DialectChoiceCard(
                     .clip(RoundedCornerShape(16.dp))
                     .clickable(enabled = !isEvaluated) { onSelectOption(index) }
                     .border(
-                        width = if (isSelected) 2.dp else 1.dp,
-                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+                        width = if (isSelected || (isEvaluated && isCorrectChoice)) 2.dp else 1.dp,
+                        color = borderColor,
                         shape = RoundedCornerShape(16.dp)
                     )
                     .testTag("quiz_option_$index"),
-                colors = CardDefaults.cardColors(containerColor = cardColor)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    RadioButton(
-                        selected = isSelected,
-                        onClick = { if (!isEvaluated) onSelectOption(index) }
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = optionText,
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        RadioButton(
+                            selected = isSelected,
+                            onClick = { if (!isEvaluated) onSelectOption(index) },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = radioColor
+                            )
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = optionText,
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontWeight = if (isSelected || (isEvaluated && isCorrectChoice)) FontWeight.Bold else FontWeight.Normal,
+                                fontSize = 16.sp
+                            ),
+                            color = textColor
+                        )
+                    }
+
+                    if (isEvaluated) {
+                        if (isCorrectChoice) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = "Correct",
+                                tint = EmeraldDark,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        } else if (isWrongChoice) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = "Wrong",
+                                tint = TerracottaAccent,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
                 }
             }
         }

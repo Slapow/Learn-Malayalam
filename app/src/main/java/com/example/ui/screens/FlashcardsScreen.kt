@@ -21,7 +21,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Undo
@@ -30,6 +33,7 @@ import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -43,6 +47,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
@@ -81,6 +87,7 @@ fun FlashcardsScreen(
     onUndo: () -> Unit = {},
     onAdvanceWithoutTally: () -> Unit = {},
     onSpeakPhrase: (PhraseItem) -> Unit,
+    onSpeakEnglish: (String) -> Unit = {},
     onToggleFrontLanguage: () -> Unit = {},
     onShuffleDeck: () -> Unit = {},
     onRestartDeck: () -> Unit = {},
@@ -112,7 +119,7 @@ fun FlashcardsScreen(
         label = "card_flip"
     )
 
-    var levelMenuExpanded by remember { mutableStateOf(false) }
+    var showLevelDialog by remember { mutableStateOf(false) }
     var settingsMenuExpanded by remember { mutableStateOf(false) }
 
     // Autoplay mode state
@@ -144,20 +151,37 @@ fun FlashcardsScreen(
         }
     }
 
-    // Autoplay automated loop: flips card, then swipes it away, advancing without changing tally
+    // Autoplay automated loop: speaks each word, flips card, speaks second word, then swipes it away
     LaunchedEffect(isAutoplayOn, currentPhrase?.id, state.currentCardIndex) {
         if (!isAutoplayOn || currentPhrase == null) return@LaunchedEffect
 
-        // Display front face
-        delay(2200L)
-        if (!isAutoplayOn) return@LaunchedEffect
+        if (state.isEnglishOnFront) {
+            // Front face shows English
+            onSpeakEnglish(currentPhrase.english)
+            delay(2200L)
+            if (!isAutoplayOn) return@LaunchedEffect
 
-        // Automatically flip card
-        onFlipCard()
+            // Automatically flip card
+            onFlipCard()
 
-        // Display back face
-        delay(2200L)
-        if (!isAutoplayOn) return@LaunchedEffect
+            // Back face shows Malayalam
+            onSpeakPhrase(currentPhrase)
+            delay(2400L)
+            if (!isAutoplayOn) return@LaunchedEffect
+        } else {
+            // Front face shows Malayalam
+            onSpeakPhrase(currentPhrase)
+            delay(2200L)
+            if (!isAutoplayOn) return@LaunchedEffect
+
+            // Automatically flip card
+            onFlipCard()
+
+            // Back face shows English
+            onSpeakEnglish(currentPhrase.english)
+            delay(2400L)
+            if (!isAutoplayOn) return@LaunchedEffect
+        }
 
         // Automatically swipe card away
         isAnimatingOut = true
@@ -196,253 +220,162 @@ fun FlashcardsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
-                        .padding(horizontal = 4.dp),
+                        .padding(horizontal = 6.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Left group: Back arrow + Card Count to the right of back arrow
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+                    // Left: Back Arrow
+                    IconButton(
+                        onClick = {
+                            isAutoplayOn = false
+                            onBack()
+                        },
+                        modifier = Modifier.testTag("flashcards_back_button")
                     ) {
-                        IconButton(
-                            onClick = {
-                                isAutoplayOn = false
-                                onBack()
-                            },
-                            modifier = Modifier.testTag("flashcards_back_button")
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
 
+                    // Middle: Question Count centered horizontally
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
                         if (totalCards > 0) {
                             Surface(
                                 color = GoldenContainerLight,
                                 shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier
-                                    .padding(start = 4.dp)
-                                    .testTag("flashcards_count_bubble")
+                                modifier = Modifier.testTag("flashcards_count_bubble")
                             ) {
                                 Text(
                                     text = "${state.currentCardIndex + 1} / $totalCards",
                                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                                     color = GoldenOnContainer,
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
                                 )
                             }
                         }
                     }
 
-                    // Right group: Level dropdown menu to the left of Settings + Settings at top right
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box {
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
-                                modifier = Modifier
-                                    .clickable { levelMenuExpanded = true }
-                                    .testTag("level_selector_dropdown_button")
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = state.currentDeck.levelLabel,
-                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Icon(
-                                        imageVector = Icons.Filled.KeyboardArrowDown,
-                                        contentDescription = "Select Level",
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                }
-                            }
-
-                            DropdownMenu(
-                                expanded = levelMenuExpanded,
-                                onDismissRequest = { levelMenuExpanded = false }
-                            ) {
-                                val isOverallSelected = state.currentDeck.id == "deck_overall"
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = "Overall",
-                                            fontWeight = if (isOverallSelected) FontWeight.ExtraBold else FontWeight.Medium,
-                                            color = if (isOverallSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                                        )
-                                    },
-                                    trailingIcon = if (isOverallSelected) {
-                                        {
-                                            Icon(
-                                                imageVector = Icons.Filled.Check,
-                                                contentDescription = "Selected",
-                                                tint = MaterialTheme.colorScheme.primary,
-                                                modifier = Modifier.size(18.dp)
-                                            )
-                                        }
-                                    } else null,
-                                    onClick = {
-                                        isAutoplayOn = false
-                                        onSelectDeck(DialectRepository.buildOverallDeck(knownCount))
-                                        levelMenuExpanded = false
-                                    },
-                                    modifier = Modifier.testTag("deck_chip_deck_overall")
-                                )
-
-                                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-
-                                DialectRepository.studyPlanStages.forEach { stage ->
-                                    val stageDeck = DialectRepository.decks.find { it.id == stage.deckId }
-                                        ?: DialectRepository.decks.first()
-                                    val isReached = stage.levelIndex == 0 ||
-                                        knownCount >= stage.requiredWordsToUnlock ||
-                                        userStats.masteredDeckIds.contains(stage.deckId)
-                                    val isSelected = state.currentDeck.id == stageDeck.id
-
-                                    DropdownMenuItem(
-                                        enabled = isReached,
-                                        text = {
-                                            Text(
-                                                text = stage.rankTitle,
-                                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
-                                                color = when {
-                                                    !isReached -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                                                    isSelected -> MaterialTheme.colorScheme.primary
-                                                    else -> MaterialTheme.colorScheme.onSurface
-                                                }
-                                            )
-                                        },
-                                        trailingIcon = when {
-                                            !isReached -> {
-                                                {
-                                                    Icon(
-                                                        imageVector = Icons.Filled.Lock,
-                                                        contentDescription = "Locked",
-                                                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-                                                        modifier = Modifier.size(16.dp)
-                                                    )
-                                                }
-                                            }
-                                            isSelected -> {
-                                                {
-                                                    Icon(
-                                                        imageVector = Icons.Filled.Check,
-                                                        contentDescription = "Selected",
-                                                        tint = MaterialTheme.colorScheme.primary,
-                                                        modifier = Modifier.size(18.dp)
-                                                    )
-                                                }
-                                            }
-                                            else -> null
-                                        },
-                                        onClick = {
-                                            if (isReached) {
-                                                isAutoplayOn = false
-                                                onSelectDeck(stageDeck)
-                                                levelMenuExpanded = false
-                                            }
-                                        },
-                                        modifier = Modifier.testTag("deck_chip_${stageDeck.id}")
-                                    )
-                                }
-                            }
+                    // Right: Settings Menu containing Level Selection & Card Options
+                    Box {
+                        IconButton(
+                            onClick = { settingsMenuExpanded = true },
+                            modifier = Modifier.testTag("flashcards_settings_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Settings,
+                                contentDescription = "Flashcard Settings"
+                            )
                         }
 
-                        Box {
-                            IconButton(
-                                onClick = { settingsMenuExpanded = true },
-                                modifier = Modifier.testTag("flashcards_settings_button")
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Settings,
-                                    contentDescription = "Flashcard Settings"
-                                )
-                            }
-
-                            DropdownMenu(
-                                expanded = settingsMenuExpanded,
-                                onDismissRequest = { settingsMenuExpanded = false }
-                            ) {
-                                DropdownMenuItem(
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Filled.SwapHoriz,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    },
-                                    text = {
+                        DropdownMenu(
+                            expanded = settingsMenuExpanded,
+                            onDismissRequest = { settingsMenuExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Filled.Layers,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                },
+                                text = {
+                                    Column {
                                         Text(
-                                            text = if (state.isEnglishOnFront) {
-                                                "Front: English (Switch to Manglish)"
-                                            } else {
-                                                "Front: Manglish (Switch to English)"
-                                            },
-                                            fontWeight = FontWeight.Medium
+                                            text = "Select Level",
+                                            fontWeight = FontWeight.Bold
                                         )
-                                    },
-                                    onClick = {
-                                        onToggleFrontLanguage()
-                                        settingsMenuExpanded = false
-                                    },
-                                    modifier = Modifier.testTag("flashcards_toggle_front_language")
-                                )
-
-                                DropdownMenuItem(
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Filled.Shuffle,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    },
-                                    text = {
                                         Text(
-                                            text = "Shuffle Cards",
-                                            fontWeight = FontWeight.Medium
+                                            text = state.currentDeck.levelLabel,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.primary
                                         )
-                                    },
-                                    onClick = {
-                                        isAutoplayOn = false
-                                        onShuffleDeck()
-                                        settingsMenuExpanded = false
-                                    },
-                                    modifier = Modifier.testTag("flashcards_shuffle_option")
-                                )
+                                    }
+                                },
+                                onClick = {
+                                    settingsMenuExpanded = false
+                                    showLevelDialog = true
+                                },
+                                modifier = Modifier.testTag("flashcards_select_level_option")
+                            )
 
-                                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
-                                DropdownMenuItem(
-                                    leadingIcon = {
-                                        Icon(
-                                            imageVector = Icons.Filled.Refresh,
-                                            contentDescription = null,
-                                            tint = TerracottaAccent
-                                        )
-                                    },
-                                    text = {
-                                        Text(
-                                            text = "Restart Flashcards",
-                                            fontWeight = FontWeight.Bold,
-                                            color = TerracottaAccent
-                                        )
-                                    },
-                                    onClick = {
-                                        isAutoplayOn = false
-                                        onRestartDeck()
-                                        settingsMenuExpanded = false
-                                    },
-                                    modifier = Modifier.testTag("flashcards_restart_option")
-                                )
-                            }
+                            DropdownMenuItem(
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Filled.SwapHoriz,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                },
+                                text = {
+                                    Text(
+                                        text = if (state.isEnglishOnFront) {
+                                            "Front: English (Switch to Manglish)"
+                                        } else {
+                                            "Front: Manglish (Switch to English)"
+                                        },
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                },
+                                onClick = {
+                                    onToggleFrontLanguage()
+                                    settingsMenuExpanded = false
+                                },
+                                modifier = Modifier.testTag("flashcards_toggle_front_language")
+                            )
+
+                            DropdownMenuItem(
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Filled.Shuffle,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                },
+                                text = {
+                                    Text(
+                                        text = "Shuffle Cards",
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                },
+                                onClick = {
+                                    isAutoplayOn = false
+                                    onShuffleDeck()
+                                    settingsMenuExpanded = false
+                                },
+                                modifier = Modifier.testTag("flashcards_shuffle_option")
+                            )
+
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+
+                            DropdownMenuItem(
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Filled.Refresh,
+                                        contentDescription = null,
+                                        tint = TerracottaAccent
+                                    )
+                                },
+                                text = {
+                                    Text(
+                                        text = "Restart Flashcards",
+                                        fontWeight = FontWeight.Bold,
+                                        color = TerracottaAccent
+                                    )
+                                },
+                                onClick = {
+                                    isAutoplayOn = false
+                                    onRestartDeck()
+                                    settingsMenuExpanded = false
+                                },
+                                modifier = Modifier.testTag("flashcards_restart_option")
+                            )
                         }
                     }
                 }
@@ -751,29 +684,7 @@ fun FlashcardsScreen(
                 }
             }
 
-            // Autoplay Status Pill (appears briefly when toggled)
-            this@Column.AnimatedVisibility(
-                visible = autoplayBannerText != null,
-                enter = fadeIn() + scaleIn(initialScale = 0.9f),
-                exit = fadeOut() + scaleOut(targetScale = 0.9f),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Surface(
-                    color = MaterialTheme.colorScheme.inverseSurface,
-                    shape = RoundedCornerShape(16.dp),
-                    shadowElevation = 3.dp,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                ) {
-                    Text(
-                        text = autoplayBannerText ?: "",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.inverseOnSurface,
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 5.dp)
-                    )
-                }
-            }
-
-            // Under the card: Undo Arrow on left, "Tap to reveal..." in middle, Play/Pause on right
+            // Under the card: Undo Arrow on left, "Tap to reveal..." or "Autoplay on/off" in middle, Play/Pause on right
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -797,14 +708,20 @@ fun FlashcardsScreen(
                     )
                 }
 
-                // Middle: Tap to reveal "Malayalam" or "English" depending on card status
+                // Middle: Tap to reveal "Malayalam" or "English", or temporarily "Autoplay on" / "Autoplay off"
                 val currentFaceIsEnglish = if (state.isEnglishOnFront) !state.isFlipped else state.isFlipped
                 val targetRevealLanguage = if (currentFaceIsEnglish) "Malayalam" else "English"
+                val isAutoplayNotice = autoplayBannerText != null
+                val bottomDisplayText = autoplayBannerText ?: "Tap to reveal $targetRevealLanguage"
 
                 Surface(
                     onClick = {
-                        if (isAutoplayOn) isAutoplayOn = false
-                        onFlipCard()
+                        if (isAutoplayOn) {
+                            isAutoplayOn = false
+                            autoplayBannerText = "Autoplay off"
+                        } else {
+                            onFlipCard()
+                        }
                     },
                     color = Color.Transparent,
                     modifier = Modifier
@@ -812,9 +729,11 @@ fun FlashcardsScreen(
                         .testTag("flashcards_tap_to_reveal_button")
                 ) {
                     Text(
-                        text = "Tap to reveal $targetRevealLanguage",
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        text = bottomDisplayText,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = if (isAutoplayNotice) FontWeight.ExtraBold else FontWeight.SemiBold
+                        ),
+                        color = if (isAutoplayNotice) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
@@ -837,6 +756,19 @@ fun FlashcardsScreen(
                 }
             }
         }
+    }
+
+    if (showLevelDialog) {
+        LevelSelectionDialog(
+            currentDeckId = state.currentDeck.id,
+            userStats = userStats,
+            onSelectDeck = { deck ->
+                isAutoplayOn = false
+                onSelectDeck(deck)
+                showLevelDialog = false
+            },
+            onDismiss = { showLevelDialog = false }
+        )
     }
 }
 
@@ -930,3 +862,262 @@ private fun MinimalFlashcardContent(
         )
     }
 }
+
+/**
+ * Level Selection Dialog displayed from the Flashcards Settings menu.
+ * Defaults selection to and clearly highlights the user's current level.
+ */
+@Composable
+fun LevelSelectionDialog(
+    currentDeckId: String,
+    userStats: UserStats,
+    onSelectDeck: (FlashcardDeck) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val knownCount = userStats.learnedPhraseIds.size
+    val currentStage = DialectRepository.getCurrentStage(userStats)
+    val currentLevelDeck = DialectRepository.decks.find { it.id == currentStage.deckId } ?: DialectRepository.decks.first()
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth(0.92f)
+                .fillMaxHeight(0.82f)
+                .clip(RoundedCornerShape(24.dp))
+                .border(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f), RoundedCornerShape(24.dp)),
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 6.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+            ) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Select Study Level",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Current Level: ${currentStage.rankTitle}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    IconButton(onClick = onDismiss) {
+                        Icon(Icons.Filled.Close, contentDescription = "Close")
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Shortcut to Jump to Current Level if not already selected
+                if (currentDeckId != currentLevelDeck.id) {
+                    Surface(
+                        onClick = {
+                            onSelectDeck(currentLevelDeck)
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("select_current_level_shortcut")
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("⭐", fontSize = 18.sp)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Jump to Current Level",
+                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "${currentStage.rankTitle} (${currentStage.topicTitle})",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Overall Deck Option
+                    item {
+                        val isOverallSelected = currentDeckId == "deck_overall"
+                        Surface(
+                            onClick = {
+                                onSelectDeck(DialectRepository.buildOverallDeck(knownCount))
+                            },
+                            shape = RoundedCornerShape(14.dp),
+                            color = if (isOverallSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
+                            border = if (isOverallSelected) BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("level_dialog_deck_overall")
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                    Text("📚", fontSize = 22.sp)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(
+                                            text = "Overall (All Unlocked)",
+                                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = "Cards across all unlocked levels",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                                if (isOverallSelected) {
+                                    Icon(Icons.Filled.Check, contentDescription = "Selected", tint = MaterialTheme.colorScheme.primary)
+                                }
+                            }
+                        }
+                    }
+
+                    // All 12 Study Plan Stages
+                    items(DialectRepository.studyPlanStages) { stage ->
+                        val stageDeck = DialectRepository.decks.find { it.id == stage.deckId } ?: DialectRepository.decks.first()
+                        val isReached = stage.levelIndex == 0 ||
+                            knownCount >= stage.requiredWordsToUnlock ||
+                            userStats.masteredDeckIds.contains(stage.deckId) ||
+                            stage.levelIndex <= userStats.unlockedLevelIndex
+                        val isSelected = currentDeckId == stageDeck.id
+                        val isCurrentLevel = stage.levelIndex == currentStage.levelIndex
+
+                        Surface(
+                            onClick = {
+                                if (isReached) {
+                                    onSelectDeck(stageDeck)
+                                }
+                            },
+                            shape = RoundedCornerShape(14.dp),
+                            color = when {
+                                isSelected -> MaterialTheme.colorScheme.primaryContainer
+                                isReached -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
+                                else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)
+                            },
+                            border = if (isSelected) BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("level_dialog_${stage.deckId}")
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                    Text(stage.iconEmoji, fontSize = 22.sp)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text(
+                                                text = stage.rankTitle,
+                                                style = MaterialTheme.typography.labelMedium.copy(
+                                                    fontWeight = if (isSelected || isCurrentLevel) FontWeight.ExtraBold else FontWeight.Bold
+                                                ),
+                                                color = when {
+                                                    !isReached -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                                    isSelected -> MaterialTheme.colorScheme.primary
+                                                    else -> MaterialTheme.colorScheme.onSurface
+                                                }
+                                            )
+                                            if (isCurrentLevel) {
+                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Surface(
+                                                    shape = RoundedCornerShape(6.dp),
+                                                    color = GoldenSpice.copy(alpha = 0.3f)
+                                                ) {
+                                                    Text(
+                                                        text = "Current",
+                                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
+                                                        color = GoldenOnContainer,
+                                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        Text(
+                                            text = stage.topicTitle,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = if (isReached) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                        )
+                                    }
+                                }
+
+                                if (isSelected) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Check,
+                                        contentDescription = "Selected",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                } else if (!isReached) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Lock,
+                                            contentDescription = "Locked",
+                                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = "${stage.requiredWordsToUnlock}w",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = onDismiss,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Close", fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+    }
+}
+

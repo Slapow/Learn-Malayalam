@@ -29,6 +29,8 @@ enum class Screen {
 }
 
 data class QuizState(
+    val levelIndex: Int = 0,
+    val levelTitle: String = "Novice Level 1",
     val currentIndex: Int = 0,
     val questions: List<QuizQuestion> = emptyList(),
     val typedInput: String = "",
@@ -150,6 +152,77 @@ class MainViewModel(
 
     private val _tierGraduationState = MutableStateFlow<TierGraduationExamState?>(null)
     val tierGraduationState: StateFlow<TierGraduationExamState?> = _tierGraduationState.asStateFlow()
+
+    private val _levelUpEvent = MutableStateFlow<LevelUpEvent?>(null)
+    val levelUpEvent: StateFlow<LevelUpEvent?> = _levelUpEvent.asStateFlow()
+
+    fun dismissLevelUpEvent() {
+        _levelUpEvent.value = null
+    }
+
+    fun checkForLevelUp() {
+        val currentStats = statsRepo.stats.value
+        val currentLevel = currentStats.unlockedLevelIndex
+        val status = DialectRepository.getLevelMasteryStatus(currentLevel, currentStats)
+        if (status.isLevelMastered && currentLevel + 1 < DialectRepository.studyPlanStages.size) {
+            val nextLevel = currentLevel + 1
+            val completedStage = DialectRepository.studyPlanStages[currentLevel]
+            val newStage = DialectRepository.studyPlanStages[nextLevel]
+            val newDeck = DialectRepository.decks.find { it.id == newStage.deckId }
+
+            statsRepo.setUnlockedLevelIndex(nextLevel)
+            statsRepo.addXp(50)
+
+            _levelUpEvent.value = LevelUpEvent(
+                newLevelIndex = nextLevel,
+                rankTitle = newStage.rankTitle,
+                completedLevelTitle = completedStage.rankTitle,
+                unlockedDeckTitle = newDeck?.title ?: newStage.topicTitle,
+                xpBonus = 50
+            )
+            syncToCloud()
+        }
+    }
+
+    fun setDevLevel(levelIndex: Int) {
+        val safeIndex = levelIndex.coerceIn(0, DialectRepository.studyPlanStages.size - 1)
+        statsRepo.setUnlockedLevelIndex(safeIndex)
+        val stage = DialectRepository.studyPlanStages[safeIndex]
+        val stageDeck = DialectRepository.decks.find { it.id == stage.deckId } ?: DialectRepository.decks.first()
+        _flashcardState.value = _flashcardState.value.copy(
+            currentDeck = stageDeck,
+            currentCardIndex = 0,
+            isFlipped = false
+        )
+        syncToCloud()
+    }
+
+    fun setDevXp(xp: Int) {
+        statsRepo.setCustomXp(xp)
+        syncToCloud()
+    }
+
+    fun setDevStreak(days: Int) {
+        statsRepo.setCustomStreak(days)
+        syncToCloud()
+    }
+
+    fun queueDevLevelUp(isDrill: Boolean) {
+        val currentLevel = statsRepo.stats.value.unlockedLevelIndex
+        val nextLevel = (currentLevel + 1).coerceAtMost(DialectRepository.studyPlanStages.size - 1)
+        val completedStage = DialectRepository.studyPlanStages[currentLevel]
+        val newStage = DialectRepository.studyPlanStages[nextLevel]
+        val newDeck = DialectRepository.decks.find { it.id == newStage.deckId }
+        val modeLabel = if (isDrill) "3-Round Drill" else "Flashcard Deck"
+
+        _levelUpEvent.value = LevelUpEvent(
+            newLevelIndex = nextLevel,
+            rankTitle = newStage.rankTitle,
+            completedLevelTitle = "${completedStage.rankTitle} ($modeLabel)",
+            unlockedDeckTitle = newDeck?.title ?: newStage.topicTitle,
+            xpBonus = 50
+        )
+    }
 
     private var autoAdvanceQuizJob: Job? = null
     private var autoAdvanceDeckJob: Job? = null
@@ -282,6 +355,18 @@ class MainViewModel(
     fun navigateTo(screen: Screen) {
         autoAdvanceQuizJob?.cancel()
         autoAdvanceDeckJob?.cancel()
+        if (screen == Screen.FLASHCARDS) {
+            val curDeck = _flashcardState.value.currentDeck
+            val currentStage = DialectRepository.getCurrentStage(statsRepo.stats.value)
+            val currentLevelDeck = DialectRepository.decks.find { it.id == currentStage.deckId } ?: DialectRepository.decks.first()
+            if (curDeck.id == "deck_level0_words" && currentStage.deckId != "deck_level0_words") {
+                _flashcardState.value = _flashcardState.value.copy(
+                    currentDeck = currentLevelDeck,
+                    currentCardIndex = 0,
+                    isFlipped = false
+                )
+            }
+        }
         _currentScreen.value = screen
         syncToCloud()
     }
@@ -312,6 +397,10 @@ class MainViewModel(
     // === Audio Functions ===
     fun speakPhrase(phrase: PhraseItem) {
         audioHelper.speak(phrase.malayalam, phrase.manglish)
+    }
+
+    fun speakEnglish(text: String) {
+        audioHelper.speakEnglish(text)
     }
 
     fun speakText(malayalamText: String, manglishText: String = "") {
@@ -693,6 +782,13 @@ class MainViewModel(
             swipeHistory = s.swipeHistory + historyItem,
             cardStreaks = newStreaks
         )
+        val isDeckFullyKnown = s.currentDeck.phrases.isNotEmpty() && s.currentDeck.phrases.all {
+            newLearned.contains(it.id) || statsRepo.stats.value.learnedPhraseIds.contains(it.id)
+        }
+        if (isDeckFullyKnown) {
+            statsRepo.recordDeckMastered(s.currentDeck.id)
+        }
+        checkForLevelUp()
         syncToCloud()
     }
 
@@ -1080,6 +1176,14 @@ class MainViewModel(
             reshuffleEventsCount = s.reshuffleEventsCount + reshuffleIncrement
         )
 
+        val isDeckMastered = s.currentDeck.phrases.isNotEmpty() && s.currentDeck.phrases.all {
+            statsRepo.stats.value.learnedPhraseIds.contains(it.id) || (updatedStreaks[it.id] ?: 0) >= 2
+        }
+        if (isDeckMastered) {
+            statsRepo.recordDeckMastered(s.currentDeck.id)
+        }
+        checkForLevelUp()
+
         if (gradeResult.isCorrect) {
             speakPhrase(phrase)
             autoAdvanceDeckJob?.cancel()
@@ -1198,11 +1302,16 @@ class MainViewModel(
     // LEGACY / QUICK DAILY DRILLS TAB (With Copy Answer When Wrong & Shuffle Back)
     // =========================================================================
 
-    fun startNewQuizSession() {
+    fun startNewQuizSession(levelIndex: Int? = null) {
         autoAdvanceQuizJob?.cancel()
+        val targetLevel = levelIndex ?: statsRepo.stats.value.unlockedLevelIndex
+        val stage = DialectRepository.studyPlanStages.getOrNull(targetLevel)
+        val levelQuestions = DialectRepository.generateDrillQuestionsForLevel(targetLevel)
         _quizState.value = QuizState(
             currentIndex = 0,
-            questions = DialectRepository.quizQuestions,
+            questions = levelQuestions,
+            levelIndex = targetLevel,
+            levelTitle = stage?.rankTitle ?: "Novice Level ${targetLevel + 1}",
             typedInput = "",
             selectedTileIndices = emptyList(),
             selectedOptionIndex = null,
@@ -1370,8 +1479,9 @@ class MainViewModel(
 
         val nextIdx = state.currentIndex + 1
         if (nextIdx >= state.questions.size) {
-            statsRepo.incrementQuizCompleted()
+            statsRepo.recordDrillCompletedForLevel(state.levelIndex)
             _quizState.value = state.copy(isFinished = true)
+            checkForLevelUp()
         } else {
             _quizState.value = state.copy(
                 currentIndex = nextIdx,

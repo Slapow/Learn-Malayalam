@@ -41,9 +41,28 @@ class AudioHelper(private val context: Context) : TextToSpeech.OnInitListener {
     }
 
     fun speak(malayalamText: String, manglishPhonetic: String = "") {
+        speakMalayalam(malayalamText, manglishPhonetic)
+    }
+
+    fun speakMalayalam(malayalamText: String, manglishPhonetic: String = "", queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
         if (!isTtsReady || tts == null) return
+        try {
+            val malayalamLocale = Locale("ml", "IN")
+            val langResult = tts?.setLanguage(malayalamLocale)
+            if (langResult == TextToSpeech.LANG_MISSING_DATA || langResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+                tts?.setLanguage(Locale("en", "IN"))
+            }
+        } catch (_: Exception) {}
         val textToSpeak = if (malayalamText.isNotBlank()) malayalamText else manglishPhonetic
-        tts?.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, "UtteranceId_${System.currentTimeMillis()}")
+        tts?.speak(textToSpeak, queueMode, null, "Utterance_ML_${System.currentTimeMillis()}")
+    }
+
+    fun speakEnglish(englishText: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
+        if (!isTtsReady || tts == null) return
+        try {
+            tts?.setLanguage(Locale.US)
+        } catch (_: Exception) {}
+        tts?.speak(englishText, queueMode, null, "Utterance_EN_${System.currentTimeMillis()}")
     }
 
     fun stopSpeaking() {

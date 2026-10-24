@@ -289,12 +289,27 @@ fun DeckAdaptiveQuestionPanel(
                             currentQ.options.forEachIndexed { idx, optText ->
                                 val isSelected = state.selectedMcOption == idx
                                 val isCorrectOpt = idx == currentQ.correctOptionIndex
-                                val bgColor = when {
-                                    state.isQuestionEvaluated && isCorrectOpt -> PalmContainerLight
-                                    state.isQuestionEvaluated && isSelected && !isCorrectOpt -> TerracottaContainer
-                                    isSelected -> MaterialTheme.colorScheme.primaryContainer
-                                    else -> MaterialTheme.colorScheme.surface
+                                val isWrongSelection = state.isQuestionEvaluated && isSelected && !isCorrectOpt
+
+                                val borderColor = when {
+                                    state.isQuestionEvaluated && isCorrectOpt -> EmeraldDark
+                                    isWrongSelection -> TerracottaAccent
+                                    isSelected -> MaterialTheme.colorScheme.primary
+                                    else -> MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                                 }
+
+                                val textColor = when {
+                                    state.isQuestionEvaluated && isCorrectOpt -> EmeraldDark
+                                    isWrongSelection -> TerracottaAccent
+                                    else -> MaterialTheme.colorScheme.onSurface
+                                }
+
+                                val radioColor = when {
+                                    state.isQuestionEvaluated && isCorrectOpt -> EmeraldDark
+                                    isWrongSelection -> TerracottaAccent
+                                    else -> MaterialTheme.colorScheme.primary
+                                }
+
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -303,29 +318,58 @@ fun DeckAdaptiveQuestionPanel(
                                             onSelectMcOption(idx)
                                         }
                                         .border(
-                                            width = if (isSelected) 2.dp else 1.dp,
-                                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+                                            width = if (isSelected || (state.isQuestionEvaluated && isCorrectOpt)) 2.dp else 1.dp,
+                                            color = borderColor,
                                             shape = RoundedCornerShape(14.dp)
                                         )
                                         .testTag("study_mc_option_$idx"),
-                                    colors = CardDefaults.cardColors(containerColor = bgColor)
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                                 ) {
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(14.dp),
-                                        verticalAlignment = Alignment.CenterVertically
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
-                                        RadioButton(
-                                            selected = isSelected,
-                                            onClick = { if (!state.isQuestionEvaluated) onSelectMcOption(idx) }
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = optText,
-                                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            RadioButton(
+                                                selected = isSelected,
+                                                onClick = { if (!state.isQuestionEvaluated) onSelectMcOption(idx) },
+                                                colors = RadioButtonDefaults.colors(
+                                                    selectedColor = radioColor
+                                                )
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(
+                                                text = optText,
+                                                style = MaterialTheme.typography.bodyLarge.copy(
+                                                    fontWeight = if (isSelected || (state.isQuestionEvaluated && isCorrectOpt)) FontWeight.Bold else FontWeight.Normal
+                                                ),
+                                                color = textColor
+                                            )
+                                        }
+
+                                        if (state.isQuestionEvaluated) {
+                                            if (isCorrectOpt) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Check,
+                                                    contentDescription = "Correct",
+                                                    tint = EmeraldDark,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            } else if (isWrongSelection) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Close,
+                                                    contentDescription = "Wrong",
+                                                    tint = TerracottaAccent,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -339,17 +383,38 @@ fun DeckAdaptiveQuestionPanel(
                         ) {
                             listOf(true to "✅ True", false to "❌ False").forEach { (boolVal, label) ->
                                 val isSelected = state.selectedTrueFalse == boolVal
+                                val isCorrectChoice = boolVal == currentQ.isTruePair
+                                val isWrongSelection = state.isQuestionEvaluated && isSelected && !isCorrectChoice
+
+                                val btnBorderColor = when {
+                                    state.isQuestionEvaluated && isCorrectChoice -> EmeraldDark
+                                    isWrongSelection -> TerracottaAccent
+                                    isSelected -> MaterialTheme.colorScheme.primary
+                                    else -> MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                                }
+
+                                val btnTextColor = when {
+                                    state.isQuestionEvaluated && isCorrectChoice -> EmeraldDark
+                                    isWrongSelection -> TerracottaAccent
+                                    else -> MaterialTheme.colorScheme.onSurface
+                                }
+
                                 OutlinedButton(
                                     onClick = { if (!state.isQuestionEvaluated) onSelectTrueFalse(boolVal) },
                                     shape = RoundedCornerShape(14.dp),
+                                    border = androidx.compose.foundation.BorderStroke(
+                                        width = if (isSelected || (state.isQuestionEvaluated && isCorrectChoice)) 2.dp else 1.dp,
+                                        color = btnBorderColor
+                                    ),
                                     colors = ButtonDefaults.outlinedButtonColors(
-                                        containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+                                        containerColor = MaterialTheme.colorScheme.surface,
+                                        contentColor = btnTextColor
                                     ),
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(54.dp)
                                 ) {
-                                    Text(label, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                    Text(label, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = btnTextColor)
                                 }
                             }
                         }

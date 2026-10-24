@@ -46,6 +46,8 @@ class UserStatsRepository(context: Context) {
         val quizCount = prefs.getInt("quiz_count", 0)
         val spokenCount = prefs.getInt("spoken_count", 0)
         val graduatedTiers = prefs.getStringSet("graduated_tiers", emptySet()) ?: emptySet()
+        val masteredDrills = prefs.getStringSet("mastered_drills", emptySet())?.mapNotNull { it.toIntOrNull() }?.toSet() ?: emptySet()
+        val unlockedLevel = prefs.getInt("unlocked_level", 0)
         val masteryRecords = loadMasteryRecords()
 
         return UserStats(
@@ -56,7 +58,9 @@ class UserStatsRepository(context: Context) {
             completedQuizCount = quizCount,
             spokenPhrasesCount = spokenCount,
             masteryRecords = masteryRecords,
-            graduatedTiers = graduatedTiers
+            graduatedTiers = graduatedTiers,
+            masteredDrillLevelIndices = masteredDrills,
+            unlockedLevelIndex = unlockedLevel
         )
     }
 
@@ -180,11 +184,47 @@ class UserStatsRepository(context: Context) {
         addXp(20)
     }
 
+    fun recordDrillCompletedForLevel(levelIndex: Int) {
+        val updated = _stats.value.masteredDrillLevelIndices + levelIndex
+        prefs.edit()
+            .putStringSet("mastered_drills", updated.map { it.toString() }.toSet())
+            .putInt("quiz_count", _stats.value.completedQuizCount + 1)
+            .apply()
+        _stats.value = _stats.value.copy(
+            masteredDrillLevelIndices = updated,
+            completedQuizCount = _stats.value.completedQuizCount + 1
+        )
+        addXp(20)
+    }
+
+    fun recordDeckMastered(deckId: String) {
+        val updated = _stats.value.masteredDeckIds + deckId
+        prefs.edit().putStringSet("mastered_decks", updated).apply()
+        _stats.value = _stats.value.copy(masteredDeckIds = updated)
+    }
+
+    fun setUnlockedLevelIndex(newLevel: Int) {
+        prefs.edit().putInt("unlocked_level", newLevel).apply()
+        _stats.value = _stats.value.copy(unlockedLevelIndex = newLevel)
+    }
+
     fun incrementSpokenCount() {
         val newCount = _stats.value.spokenPhrasesCount + 1
         prefs.edit().putInt("spoken_count", newCount).apply()
         _stats.value = _stats.value.copy(spokenPhrasesCount = newCount)
         addXp(10)
+    }
+
+    fun setCustomXp(xp: Int) {
+        val safeXp = xp.coerceAtLeast(0)
+        prefs.edit().putInt("user_xp", safeXp).apply()
+        _stats.value = _stats.value.copy(xp = safeXp)
+    }
+
+    fun setCustomStreak(days: Int) {
+        val safeDays = days.coerceAtLeast(0)
+        prefs.edit().putInt("user_streak", safeDays).apply()
+        _stats.value = _stats.value.copy(streakDays = safeDays)
     }
 
     /**
@@ -206,6 +246,8 @@ class UserStatsRepository(context: Context) {
             .putInt("spoken_count", 0)
             .putStringSet("learned_phrases", emptySet())
             .putStringSet("mastered_decks", emptySet())
+            .putStringSet("mastered_drills", emptySet())
+            .putInt("unlocked_level", 0)
             .putStringSet("graduated_tiers", emptySet())
             .remove("mastery_records_json")
             .apply()
@@ -217,7 +259,9 @@ class UserStatsRepository(context: Context) {
             completedQuizCount = 0,
             spokenPhrasesCount = 0,
             masteryRecords = emptyMap(),
-            graduatedTiers = emptySet()
+            graduatedTiers = emptySet(),
+            masteredDrillLevelIndices = emptySet(),
+            unlockedLevelIndex = 0
         )
     }
 

@@ -34,6 +34,7 @@ import com.example.audio.AudioHelper
 import com.example.data.CloudProgressRepository
 import com.example.data.UserStatsRepository
 import com.example.ui.components.LaptopSyncSheet
+import com.example.ui.components.LevelUpCelebrationDialog
 import com.example.ui.components.SpokenGraduationDialog
 import com.example.ui.screens.*
 import com.example.ui.theme.MyApplicationTheme
@@ -131,6 +132,7 @@ fun MainFeatureScreen(
     val lastSyncedDevice by viewModel.lastSyncedDevice.collectAsStateWithLifecycle()
     val lastActiveCloudScreen by viewModel.lastActiveCloudScreen.collectAsStateWithLifecycle()
     val tierGraduationState by viewModel.tierGraduationState.collectAsStateWithLifecycle()
+    val levelUpEvent by viewModel.levelUpEvent.collectAsStateWithLifecycle()
 
     val webCompanionServer = remember(viewModel) {
         WebCompanionServer(
@@ -272,6 +274,10 @@ fun MainFeatureScreen(
                         onSpeakPhrase = { phrase -> viewModel.speakPhrase(phrase) },
                         onToggleLearned = { id -> viewModel.toggleLearned(id) },
                         onOpenDeckInMode = { deck, mode -> viewModel.openDeckWithMode(deck, mode) },
+                        onStartDrill = { levelIndex ->
+                            viewModel.startNewQuizSession(levelIndex)
+                            viewModel.navigateTo(Screen.QUIZ)
+                        },
                         onLaunchAdaptiveFocus = { viewModel.launchDynamicAdaptiveReview() },
                         onOpenCloudSync = { viewModel.navigateTo(Screen.SETTINGS) },
                         lastSyncedDevice = lastSyncedDevice,
@@ -315,6 +321,7 @@ fun MainFeatureScreen(
                         onMarkKnown = { viewModel.markCardKnown() },
                         onMarkLearning = { viewModel.markCardLearning() },
                         onSpeakPhrase = { phrase -> viewModel.speakPhrase(phrase) },
+                        onSpeakEnglish = { englishText -> viewModel.speakEnglish(englishText) },
                         onUndo = { viewModel.undoLastFlashcardSwipe() },
                         onAdvanceWithoutTally = { viewModel.advanceCardWithoutTally() },
                         onToggleFrontLanguage = { viewModel.toggleFlashcardFrontLanguage() },
@@ -370,7 +377,12 @@ fun MainFeatureScreen(
                         cloudSyncStatus = cloudSyncStatus,
                         lastSyncedDevice = lastSyncedDevice,
                         hostingUrl = "https://parayu-learn-malayalam.web.app",
-                        localLanUrl = lanUrl
+                        localLanUrl = lanUrl,
+                        onResetAllProgress = { viewModel.resetAllProgressToZero() },
+                        onSetDevLevel = { idx -> viewModel.setDevLevel(idx) },
+                        onSetDevXp = { xp -> viewModel.setDevXp(xp) },
+                        onSetDevStreak = { days -> viewModel.setDevStreak(days) },
+                        onQueueDevLevelUp = { isDrill -> viewModel.queueDevLevelUp(isDrill) }
                     )
                 }
             }
@@ -394,6 +406,14 @@ fun MainFeatureScreen(
                     onNextPrompt = { viewModel.nextGraduationPrompt() },
                     onSelfVerifySpoken = { viewModel.evaluateGraduationPrompt(overridePassed = true) },
                     onDismiss = { viewModel.dismissGraduationExam() }
+                )
+            }
+
+            // Level Up Celebration Dialog
+            levelUpEvent?.let { event ->
+                LevelUpCelebrationDialog(
+                    event = event,
+                    onDismiss = { viewModel.dismissLevelUpEvent() }
                 )
             }
         }

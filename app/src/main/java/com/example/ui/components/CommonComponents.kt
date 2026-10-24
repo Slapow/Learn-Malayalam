@@ -418,7 +418,8 @@ fun SpeechPracticeBar(
 }
 
 /**
- * Top App Header with current Level rank, streak, XP, and Cloud/Laptop button
+ * Top App Header with App Name centered in the top middle,
+ * streak on the top left, and XP on the top right, each clickable.
  */
 @Composable
 fun TopHeaderBar(
@@ -427,97 +428,81 @@ fun TopHeaderBar(
     modifier: Modifier = Modifier,
     levelLabel: String = "Novice Level 1",
     isCloudSynced: Boolean = true,
-    onOpenCloudSync: () -> Unit = {}
+    onOpenCloudSync: () -> Unit = {},
+    onStreakClick: (() -> Unit)? = null,
+    onXpClick: (() -> Unit)? = null
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 2.dp
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            // Level badge on left with title
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.weight(1f, fill = false)
+            // Top Left: Streak badge (Clickable)
+            Surface(
+                color = TerracottaContainer.copy(alpha = 0.85f),
+                shape = RoundedCornerShape(14.dp),
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .clickable(enabled = onStreakClick != null) { onStreakClick?.invoke() }
+                    .testTag("top_header_streak_badge")
             ) {
-                Text(
-                    text = "Learn Malayalam",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 17.sp,
-                        letterSpacing = (-0.2).sp
-                    )
-                )
-
-                Surface(
-                    color = GoldenContainerLight.copy(alpha = 0.9f),
-                    shape = RoundedCornerShape(8.dp)
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Text("🔥", fontSize = 14.sp)
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = levelLabel,
-                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                        color = GoldenOnContainer,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                        text = "$streakDays",
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 13.sp
+                        ),
+                        color = TerracottaAccent
                     )
                 }
             }
 
-            // Streak and XP badges on right with generous spacing and clear breathing room
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                // Streak badge
-                Surface(
-                    color = TerracottaContainer.copy(alpha = 0.85f),
-                    shape = RoundedCornerShape(14.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("🔥", fontSize = 13.sp)
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "$streakDays",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 13.sp
-                            ),
-                            color = TerracottaAccent
-                        )
-                    }
-                }
+            // Top Middle: Centered App Name "Learn Malayalam"
+            Text(
+                text = "Learn Malayalam",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 18.sp,
+                    letterSpacing = (-0.2).sp
+                ),
+                modifier = Modifier.align(Alignment.Center)
+            )
 
-                // XP badge
-                Surface(
-                    color = GoldenContainerLight.copy(alpha = 0.9f),
-                    shape = RoundedCornerShape(14.dp)
+            // Top Right: XP badge (Clickable)
+            Surface(
+                color = GoldenContainerLight.copy(alpha = 0.9f),
+                shape = RoundedCornerShape(14.dp),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .clickable(enabled = onXpClick != null) { onXpClick?.invoke() }
+                    .testTag("top_header_xp_badge")
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("⚡", fontSize = 13.sp)
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "$xp",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 13.sp
-                            ),
-                            color = GoldenOnContainer
-                        )
-                    }
+                    Text("⚡", fontSize = 14.sp)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "$xp XP",
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 13.sp
+                        ),
+                        color = GoldenOnContainer
+                    )
                 }
             }
         }
