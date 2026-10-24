@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -22,6 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
@@ -68,30 +74,96 @@ fun LessonQuizScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = "Practice Drills",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+            Surface(
+                color = MaterialTheme.colorScheme.surface,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .padding(horizontal = 4.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // 1. Far Left: Back arrow
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .testTag("quiz_back_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
                         )
                     }
-                },
-                actions = {
-                    Surface(
-                        color = GoldenContainerLight,
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.padding(end = 12.dp)
-                    ) {
+
+                    // 2. Center: Question Type bubble (left of center) & Questions Count bubble (right of center)
+                    if (currentQ != null && !state.isFinished) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier.weight(1f),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                Surface(
+                                    color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.65f),
+                                    shape = RoundedCornerShape(12.dp),
+                                    modifier = Modifier.padding(end = 4.dp)
+                                ) {
+                                    Text(
+                                        text = when (currentQ.type) {
+                                            QuizType.MANGLISH_TYPING -> "Typing"
+                                            QuizType.SPEAKING_PRACTICE -> "Speaking"
+                                            QuizType.WORD_TILES -> "Tiles"
+                                            QuizType.DIALECT_CHOICE -> "Choice"
+                                        },
+                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                                    )
+                                }
+                            }
+
+                            Box(
+                                modifier = Modifier.weight(1f),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                Surface(
+                                    color = GoldenContainerLight,
+                                    shape = RoundedCornerShape(12.dp),
+                                    modifier = Modifier.padding(start = 4.dp)
+                                ) {
+                                    Text(
+                                        text = "Q ${state.currentIndex + 1}/${state.questions.size}",
+                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = GoldenOnContainer,
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // 3. Far Right: Reshuffled count
+                    if (!state.isFinished) {
                         Text(
-                            text = "Q ${state.currentIndex + 1}/${state.questions.size}",
+                            text = "🔄 ${state.reshuffledCount}",
                             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                            color = GoldenOnContainer,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            color = if (state.reshuffledCount > 0) {
+                                TerracottaAccent
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            },
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(end = 12.dp)
                         )
                     }
                 }
-            )
+            }
         }
     ) { innerPadding ->
         if (state.isFinished) {
@@ -201,39 +273,6 @@ fun LessonQuizScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         item {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Surface(
-                                    color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f),
-                                    shape = RoundedCornerShape(10.dp)
-                                ) {
-                                    Text(
-                                        text = when (q.type) {
-                                            QuizType.MANGLISH_TYPING -> "Typing"
-                                            QuizType.SPEAKING_PRACTICE -> "Speaking"
-                                            QuizType.WORD_TILES -> "Tiles"
-                                            QuizType.DIALECT_CHOICE -> "Choice"
-                                        },
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                                    )
-                                }
-
-                                if (state.reshuffledCount > 0) {
-                                    Text(
-                                        text = "🔄 Reshuffled: ${state.reshuffledCount}",
-                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                        color = TerracottaAccent
-                                    )
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(10.dp))
-
                             Text(
                                 text = q.prompt,
                                 style = MaterialTheme.typography.titleLarge.copy(
@@ -244,7 +283,7 @@ fun LessonQuizScreen(
                                 color = MaterialTheme.colorScheme.onSurface
                             )
 
-                            if (q.hint.isNotBlank() || q.phrase.wordBreakdown.isNotBlank()) {
+                            if ((q.hint.isNotBlank() || q.phrase.wordBreakdown.isNotBlank()) && q.type != QuizType.MANGLISH_TYPING) {
                                 Spacer(modifier = Modifier.height(10.dp))
                                 if (!hintRevealedThisItem) {
                                     Surface(
@@ -253,18 +292,12 @@ fun LessonQuizScreen(
                                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                                         modifier = Modifier.testTag("reveal_hint_button")
                                     ) {
-                                        Row(
-                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text("💡", fontSize = 12.sp)
-                                            Spacer(modifier = Modifier.width(6.dp))
-                                            Text(
-                                                text = "Tap to reveal hint",
-                                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                                                color = MaterialTheme.colorScheme.primary
-                                            )
-                                        }
+                                        Text(
+                                            text = "💡 Hint",
+                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                            color = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                        )
                                     }
                                 } else {
                                     Surface(
@@ -309,7 +342,11 @@ fun LessonQuizScreen(
                                         isEvaluated = state.isEvaluated,
                                         isCorrect = state.isCorrect,
                                         isSkipped = state.isSkipped,
-                                        correctPhrase = q.phrase
+                                        correctPhrase = q.phrase,
+                                        hintText = q.hint,
+                                        wordBreakdown = q.phrase.wordBreakdown,
+                                        isHintRevealed = hintRevealedThisItem,
+                                        onToggleHint = { hintRevealedThisItem = !hintRevealedThisItem }
                                     )
                                 }
 
@@ -329,7 +366,10 @@ fun LessonQuizScreen(
                                     WordTilesBuilderCard(
                                         question = q,
                                         selectedIndices = state.selectedTileIndices,
-                                        onToggleTile = onToggleTile
+                                        onToggleTile = onToggleTile,
+                                        isEvaluated = state.isEvaluated,
+                                        isCorrect = state.isCorrect,
+                                        onSpeakPrompt = { onSpeakPhrase(q.phrase) }
                                     )
                                 }
 
@@ -367,7 +407,7 @@ fun LessonQuizScreen(
                                         )
                                         Spacer(modifier = Modifier.height(8.dp))
                                         Text(
-                                            text = "${q.phrase.manglish}  (${q.phrase.phoneticGuide})",
+                                            text = q.phrase.manglish,
                                             style = MaterialTheme.typography.titleMedium.copy(
                                                 fontFamily = FontFamily.Monospace,
                                                 fontWeight = FontWeight.ExtraBold
@@ -394,8 +434,15 @@ fun LessonQuizScreen(
                     }
                 }
 
-                // Bottom Evaluation Drawer: Only shown when NOT evaluated (Check Answer) OR when evaluated and NOT correct (Continue)
-                if (!state.isEvaluated || !state.isCorrect) {
+                // Bottom Evaluation Drawer:
+                // For MANGLISH_TYPING: no "Check Answer" button (user presses Enter on keyboard); only shown when wrong/skipped to click Continue.
+                // For other question types: shown when not evaluated ("Check Answer") or when wrong/skipped ("Continue").
+                val showBottomDrawer = if (currentQ.type == QuizType.MANGLISH_TYPING) {
+                    state.isEvaluated && !state.isCorrect
+                } else {
+                    !state.isEvaluated || !state.isCorrect
+                }
+                if (showBottomDrawer) {
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         color = MaterialTheme.colorScheme.surface,
@@ -476,7 +523,11 @@ fun ManglishTypingCard(
     isEvaluated: Boolean,
     isCorrect: Boolean,
     isSkipped: Boolean,
-    correctPhrase: com.example.model.PhraseItem
+    correctPhrase: com.example.model.PhraseItem,
+    hintText: String = "",
+    wordBreakdown: String = "",
+    isHintRevealed: Boolean = false,
+    onToggleHint: () -> Unit = {}
 ) {
     val headerLabel = when {
         isEvaluated && isCorrect -> "Correct!"
@@ -521,20 +572,24 @@ fun ManglishTypingCard(
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    if (!isEvaluated) {
+                    if (hintText.isNotBlank() || wordBreakdown.isNotBlank()) {
                         Surface(
-                            onClick = onSkip,
+                            onClick = onToggleHint,
                             shape = RoundedCornerShape(8.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
-                            modifier = Modifier.testTag("quiz_dont_know_button")
+                            color = if (isHintRevealed) {
+                                PalmContainerLight.copy(alpha = 0.7f)
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                            },
+                            modifier = Modifier.testTag("reveal_hint_button")
                         ) {
                             Text(
-                                text = "Don't know",
+                                text = "💡 Hint",
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                color = if (isHintRevealed) EmeraldDark else MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
                             )
                         }
                     }
@@ -553,13 +608,63 @@ fun ManglishTypingCard(
                 }
             }
 
+            AnimatedVisibility(visible = isHintRevealed && (hintText.isNotBlank() || wordBreakdown.isNotBlank())) {
+                Surface(
+                    color = PalmContainerLight.copy(alpha = 0.55f),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 6.dp)
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        if (hintText.isNotBlank()) {
+                            Text(
+                                text = "💡 Hint: $hintText",
+                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
+                                color = EmeraldDark
+                            )
+                        }
+                        if (wordBreakdown.isNotBlank()) {
+                            if (hintText.isNotBlank()) Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "🧩 Breakdown: $wordBreakdown",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = EmeraldDark
+                            )
+                        }
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = if (isSkipped) "Skipped" else typedInput,
-                onValueChange = onTypedInputChange,
+                onValueChange = { newText ->
+                    if (newText.contains('\n')) {
+                        val cleaned = newText.replace("\n", "")
+                        onTypedInputChange(cleaned)
+                        if (!isEvaluated && cleaned.isNotBlank()) {
+                            onSubmit()
+                        }
+                    } else {
+                        onTypedInputChange(newText)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .onPreviewKeyEvent { keyEvent ->
+                        if (keyEvent.type == KeyEventType.KeyDown &&
+                            (keyEvent.key == Key.Enter || keyEvent.key == Key.NumPadEnter)
+                        ) {
+                            if (!isEvaluated && typedInput.isNotBlank()) {
+                                onSubmit()
+                            }
+                            true
+                        } else {
+                            false
+                        }
+                    }
                     .testTag("manglish_text_input"),
                 placeholder = {
                     Text(if (isSkipped) "Skipped" else "Type your answer here...")
@@ -575,8 +680,7 @@ fun ManglishTypingCard(
                         else -> MaterialTheme.colorScheme.onSurface
                     }
                 ),
-                singleLine = false,
-                maxLines = 3,
+                singleLine = true,
                 shape = RoundedCornerShape(14.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = borderColor,
@@ -631,8 +735,33 @@ fun ManglishTypingCard(
                         }
                     }
                 } else null,
+                trailingIcon = if (!isEvaluated && !isSkipped && typedInput.isEmpty()) {
+                    {
+                        Surface(
+                            onClick = onSkip,
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.75f),
+                            modifier = Modifier
+                                .padding(end = 8.dp)
+                                .testTag("quiz_dont_know_button")
+                        ) {
+                            Text(
+                                text = "Don't know",
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                } else null,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { onSubmit() }),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (!isEvaluated && typedInput.isNotBlank()) {
+                            onSubmit()
+                        }
+                    }
+                ),
                 enabled = !isEvaluated
             )
 
@@ -671,9 +800,9 @@ fun ManglishTypingCard(
                                     ),
                                     color = EmeraldDark
                                 )
-                                if (correctPhrase.malayalam.isNotBlank() || correctPhrase.phoneticGuide.isNotBlank()) {
+                                if (correctPhrase.malayalam.isNotBlank()) {
                                     Text(
-                                        text = "${correctPhrase.malayalam} ${if (correctPhrase.phoneticGuide.isNotBlank()) "(${correctPhrase.phoneticGuide})" else ""}".trim(),
+                                        text = correctPhrase.malayalam,
                                         style = MaterialTheme.typography.bodySmall,
                                         color = PalmOnContainerLight
                                     )
@@ -777,10 +906,25 @@ fun SpeakingPracticeCard(
 fun WordTilesBuilderCard(
     question: QuizQuestion,
     selectedIndices: List<Int>,
-    onToggleTile: (Int) -> Unit
+    onToggleTile: (Int) -> Unit,
+    isEvaluated: Boolean = false,
+    isCorrect: Boolean = false,
+    onSpeakPrompt: () -> Unit = {}
 ) {
     val shuffledOrder = remember(question.id) {
         question.correctTileOrder.indices.shuffled()
+    }
+
+    val headerLabel = when {
+        isEvaluated && isCorrect -> "Correct!"
+        isEvaluated && !isCorrect -> "Wrong!"
+        else -> "Assembled Answer:"
+    }
+
+    val headerColor = when {
+        isEvaluated && isCorrect -> EmeraldDark
+        isEvaluated && !isCorrect -> TerracottaAccent
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     Card(
@@ -791,9 +935,11 @@ fun WordTilesBuilderCard(
     ) {
         Column(modifier = Modifier.padding(18.dp)) {
             Text(
-                text = "Assembled Answer:",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = headerLabel,
+                style = MaterialTheme.typography.titleSmall.copy(
+                    fontWeight = if (isEvaluated) FontWeight.ExtraBold else FontWeight.Medium
+                ),
+                color = headerColor
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -807,8 +953,12 @@ fun WordTilesBuilderCard(
                         shape = RoundedCornerShape(12.dp)
                     )
                     .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
+                        width = if (isEvaluated) 2.dp else 1.dp,
+                        color = when {
+                            isEvaluated && isCorrect -> EmeraldDark
+                            isEvaluated && !isCorrect -> TerracottaAccent.copy(alpha = 0.6f)
+                            else -> MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        },
                         shape = RoundedCornerShape(12.dp)
                     )
                     .padding(10.dp)
@@ -825,15 +975,33 @@ fun WordTilesBuilderCard(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        selectedIndices.forEach { idx ->
+                        selectedIndices.forEachIndexed { posIndex, idx ->
+                            val word = question.correctTileOrder[idx]
+                            val expectedAtPos = question.correctTileOrder.getOrNull(posIndex)
+                            val isWrongSpot = isEvaluated && (word != expectedAtPos)
+                            val isRightSpot = isEvaluated && (word == expectedAtPos)
+
                             Surface(
                                 shape = RoundedCornerShape(8.dp),
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.clickable { onToggleTile(idx) }
+                                color = when {
+                                    isWrongSpot -> TerracottaContainer.copy(alpha = 0.35f)
+                                    isRightSpot -> PalmContainerLight.copy(alpha = 0.55f)
+                                    else -> MaterialTheme.colorScheme.primary
+                                },
+                                border = when {
+                                    isWrongSpot -> BorderStroke(2.dp, TerracottaAccent)
+                                    isRightSpot -> BorderStroke(1.5.dp, EmeraldDark)
+                                    else -> null
+                                },
+                                modifier = Modifier.clickable(enabled = !isEvaluated) { onToggleTile(idx) }
                             ) {
                                 Text(
-                                    text = question.correctTileOrder[idx],
-                                    color = Color.White,
+                                    text = word,
+                                    color = when {
+                                        isWrongSpot -> TerracottaAccent
+                                        isRightSpot -> EmeraldDark
+                                        else -> Color.White
+                                    },
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                                 )
@@ -855,7 +1023,7 @@ fun WordTilesBuilderCard(
                         shape = RoundedCornerShape(8.dp),
                         color = if (isUsed) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f) else MaterialTheme.colorScheme.primaryContainer,
                         modifier = Modifier
-                            .clickable(enabled = !isUsed) { onToggleTile(tileIdx) }
+                            .clickable(enabled = !isUsed && !isEvaluated) { onToggleTile(tileIdx) }
                             .testTag("tile_${question.correctTileOrder[tileIdx]}")
                     ) {
                         Text(
@@ -864,6 +1032,61 @@ fun WordTilesBuilderCard(
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                         )
+                    }
+                }
+            }
+
+            // Show correct answer below in green when wrong
+            AnimatedVisibility(
+                visible = isEvaluated && !isCorrect,
+                enter = fadeIn(animationSpec = tween(300)) + expandVertically()
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = PalmContainerLight.copy(alpha = 0.5f),
+                        border = BorderStroke(1.dp, EmeraldDark.copy(alpha = 0.4f)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Correct answer:",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
+                                    color = EmeraldDark
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = question.correctTileOrder.joinToString(" "),
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontFamily = FontFamily.Monospace
+                                    ),
+                                    color = EmeraldDark
+                                )
+                                if (question.phrase.malayalam.isNotBlank()) {
+                                    Text(
+                                        text = question.phrase.malayalam,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = PalmOnContainerLight
+                                    )
+                                }
+                            }
+                            IconButton(onClick = onSpeakPrompt) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                                    contentDescription = "Listen correct pronunciation",
+                                    tint = EmeraldDark
+                                )
+                            }
+                        }
                     }
                 }
             }

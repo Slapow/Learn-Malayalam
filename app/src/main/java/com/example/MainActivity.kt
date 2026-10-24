@@ -183,77 +183,79 @@ fun MainFeatureScreen(
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing),
         bottomBar = {
-            NavigationBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("main_bottom_nav"),
-                windowInsets = WindowInsets.navigationBars,
-                tonalElevation = 6.dp
-            ) {
-                NavigationBarItem(
-                    selected = currentScreen == Screen.HOME,
-                    onClick = { viewModel.navigateTo(Screen.HOME) },
-                    icon = {
-                        Icon(
-                            imageVector = if (currentScreen == Screen.HOME) Icons.Filled.Home else Icons.Outlined.Home,
-                            contentDescription = "Home"
-                        )
-                    },
-                    label = { Text("Home", style = MaterialTheme.typography.labelSmall) },
-                    modifier = Modifier.testTag("nav_home")
-                )
+            if (currentScreen != Screen.QUIZ && currentScreen != Screen.FLASHCARDS) {
+                NavigationBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("main_bottom_nav"),
+                    windowInsets = WindowInsets.navigationBars,
+                    tonalElevation = 6.dp
+                ) {
+                    NavigationBarItem(
+                        selected = currentScreen == Screen.HOME,
+                        onClick = { viewModel.navigateTo(Screen.HOME) },
+                        icon = {
+                            Icon(
+                                imageVector = if (currentScreen == Screen.HOME) Icons.Filled.Home else Icons.Outlined.Home,
+                                contentDescription = "Home"
+                            )
+                        },
+                        label = { Text("Home", style = MaterialTheme.typography.labelSmall) },
+                        modifier = Modifier.testTag("nav_home")
+                    )
 
-                NavigationBarItem(
-                    selected = currentScreen == Screen.FLASHCARDS,
-                    onClick = { viewModel.navigateTo(Screen.FLASHCARDS) },
-                    icon = {
-                        Icon(
-                            imageVector = if (currentScreen == Screen.FLASHCARDS) Icons.Filled.ViewCarousel else Icons.Outlined.ViewCarousel,
-                            contentDescription = "Study Decks"
-                        )
-                    },
-                    label = { Text("Decks", style = MaterialTheme.typography.labelSmall) },
-                    modifier = Modifier.testTag("nav_flashcards")
-                )
+                    NavigationBarItem(
+                        selected = currentScreen == Screen.FLASHCARDS,
+                        onClick = { viewModel.navigateTo(Screen.FLASHCARDS) },
+                        icon = {
+                            Icon(
+                                imageVector = if (currentScreen == Screen.FLASHCARDS) Icons.Filled.ViewCarousel else Icons.Outlined.ViewCarousel,
+                                contentDescription = "Study Decks"
+                            )
+                        },
+                        label = { Text("Decks", style = MaterialTheme.typography.labelSmall) },
+                        modifier = Modifier.testTag("nav_flashcards")
+                    )
 
-                NavigationBarItem(
-                    selected = currentScreen == Screen.QUIZ,
-                    onClick = { viewModel.navigateTo(Screen.QUIZ) },
-                    icon = {
-                        Icon(
-                            imageVector = if (currentScreen == Screen.QUIZ) Icons.Filled.FitnessCenter else Icons.Outlined.FitnessCenter,
-                            contentDescription = "Practice"
-                        )
-                    },
-                    label = { Text("Drills", style = MaterialTheme.typography.labelSmall) },
-                    modifier = Modifier.testTag("nav_quiz")
-                )
+                    NavigationBarItem(
+                        selected = currentScreen == Screen.QUIZ,
+                        onClick = { viewModel.navigateTo(Screen.QUIZ) },
+                        icon = {
+                            Icon(
+                                imageVector = if (currentScreen == Screen.QUIZ) Icons.Filled.FitnessCenter else Icons.Outlined.FitnessCenter,
+                                contentDescription = "Practice"
+                            )
+                        },
+                        label = { Text("Drills", style = MaterialTheme.typography.labelSmall) },
+                        modifier = Modifier.testTag("nav_quiz")
+                    )
 
-                NavigationBarItem(
-                    selected = currentScreen == Screen.DIALECT_GUIDE,
-                    onClick = { viewModel.navigateTo(Screen.DIALECT_GUIDE) },
-                    icon = {
-                        Icon(
-                            imageVector = if (currentScreen == Screen.DIALECT_GUIDE) Icons.AutoMirrored.Filled.MenuBook else Icons.AutoMirrored.Outlined.MenuBook,
-                            contentDescription = "Study Plan & Known Words"
-                        )
-                    },
-                    label = { Text("Plan", style = MaterialTheme.typography.labelSmall) },
-                    modifier = Modifier.testTag("nav_guide")
-                )
+                    NavigationBarItem(
+                        selected = currentScreen == Screen.DIALECT_GUIDE,
+                        onClick = { viewModel.navigateTo(Screen.DIALECT_GUIDE) },
+                        icon = {
+                            Icon(
+                                imageVector = if (currentScreen == Screen.DIALECT_GUIDE) Icons.AutoMirrored.Filled.MenuBook else Icons.AutoMirrored.Outlined.MenuBook,
+                                contentDescription = "Study Plan & Known Words"
+                            )
+                        },
+                        label = { Text("Plan", style = MaterialTheme.typography.labelSmall) },
+                        modifier = Modifier.testTag("nav_guide")
+                    )
 
-                NavigationBarItem(
-                    selected = currentScreen == Screen.SETTINGS,
-                    onClick = { viewModel.navigateTo(Screen.SETTINGS) },
-                    icon = {
-                        Icon(
-                            imageVector = if (currentScreen == Screen.SETTINGS) Icons.Filled.Settings else Icons.Outlined.Settings,
-                            contentDescription = "Settings"
-                        )
-                    },
-                    label = { Text("Settings", style = MaterialTheme.typography.labelSmall) },
-                    modifier = Modifier.testTag("nav_settings")
-                )
+                    NavigationBarItem(
+                        selected = currentScreen == Screen.SETTINGS,
+                        onClick = { viewModel.navigateTo(Screen.SETTINGS) },
+                        icon = {
+                            Icon(
+                                imageVector = if (currentScreen == Screen.SETTINGS) Icons.Filled.Settings else Icons.Outlined.Settings,
+                                contentDescription = "Settings"
+                            )
+                        },
+                        label = { Text("Settings", style = MaterialTheme.typography.labelSmall) },
+                        modifier = Modifier.testTag("nav_settings")
+                    )
+                }
             }
         }
     ) { innerPadding ->
@@ -301,6 +303,7 @@ fun MainFeatureScreen(
                 Screen.FLASHCARDS -> {
                     FlashcardsScreen(
                         state = flashcardState,
+                        userStats = userStats,
                         isListening = isListening,
                         speechStatus = speechStatus,
                         onBack = { viewModel.navigateTo(Screen.HOME) },

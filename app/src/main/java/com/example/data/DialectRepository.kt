@@ -1387,7 +1387,7 @@ object DialectRepository {
             iconEmoji = "⚡",
             levelIndex = 2,
             levelLabel = "Novice Level 3",
-            phrases = allPhrases.filter { it.levelNumber == 2 }
+            phrases = allPhrases.filter { it.levelNumber == 2 || it.levelNumber == 3 }
         ),
         FlashcardDeck(
             id = "deck_contractions",
@@ -1422,7 +1422,7 @@ object DialectRepository {
             description = "Sunday Holy Mass (Qurbana), evening family rosary, Hail Mary, parish priest greetings & feasts.",
             iconEmoji = "⛪",
             levelIndex = 6,
-            levelLabel = "Intermediate Level 3 • Catholic",
+            levelLabel = "Intermediate Level 3",
             phrases = allPhrases.filter { it.levelNumber == 6 }
         ),
         FlashcardDeck(
@@ -1449,7 +1449,7 @@ object DialectRepository {
             description = "Rapid Central Travancore cadence, humorous exclamations ('pulli', 'aadey'), and witty retorts.",
             iconEmoji = "🔥",
             levelIndex = 9,
-            levelLabel = "Superior Level 1 • Near-Native Banter",
+            levelLabel = "Superior Level 1",
             phrases = allPhrases.filter { it.levelNumber == 9 }
         ),
         FlashcardDeck(
@@ -1458,7 +1458,7 @@ object DialectRepository {
             description = "Famous Pazhamchollukal ('Minnumathellam ponnalla') that native speakers drop into conversations.",
             iconEmoji = "🦉",
             levelIndex = 10,
-            levelLabel = "Superior Level 2 • Proverbs",
+            levelLabel = "Superior Level 2",
             phrases = allPhrases.filter { it.levelNumber == 10 }
         ),
         FlashcardDeck(
@@ -1467,7 +1467,7 @@ object DialectRepository {
             description = "Exceptional mastery: cultural hospitality, parish speeches, and gracious community counsel.",
             iconEmoji = "👑",
             levelIndex = 11,
-            levelLabel = "Distinguished • Master Speaker",
+            levelLabel = "Distinguished Level 1",
             phrases = allPhrases.filter { it.levelNumber == 11 }
         )
     )
@@ -1537,7 +1537,7 @@ object DialectRepository {
             levelIndex = 5,
             tierId = "intermediate",
             tierName = "Intermediate Tier",
-            rankTitle = "Intermediate Level 3 (Catholic & Church)",
+            rankTitle = "Intermediate Level 3",
             topicTitle = "Catholic Church, Mass & Daily Prayers",
             description = "Holy Mass (Qurbana), evening family rosary, Hail Mary, parish priest greetings, and festive Perunnal. Pass Spoken Graduation to reach Advanced!",
             iconEmoji = "⛪",
@@ -1606,6 +1606,25 @@ object DialectRepository {
             isTierFinalStage = true
         )
     )
+
+    fun buildOverallDeck(knownCount: Int): FlashcardDeck {
+        val reachedStages = studyPlanStages.filter { stage ->
+            stage.levelIndex == 0 || knownCount >= stage.requiredWordsToUnlock
+        }
+        val reachedPhrases = reachedStages.flatMap { stage ->
+            decks.find { it.id == stage.deckId }?.phrases.orEmpty()
+        }.distinctBy { it.id }.ifEmpty { decks.first().phrases }
+
+        return FlashcardDeck(
+            id = "deck_overall",
+            title = "Overall",
+            description = "All flashcards across your unlocked & mastered levels.",
+            iconEmoji = "📚",
+            levelIndex = -1,
+            levelLabel = "Overall",
+            phrases = reachedPhrases
+        )
+    }
 
     fun getCurrentStageForKnownCount(knownCount: Int): StudyLevelStage {
         return studyPlanStages.lastOrNull { knownCount >= it.requiredWordsToUnlock } ?: studyPlanStages.first()
@@ -1821,7 +1840,7 @@ object DialectRepository {
             type = QuizType.DIALECT_CHOICE,
             phrase = allPhrases[0], // Njaan
             prompt = "I / Me",
-            hint = "Pronounced NYAAN (rhymes with naan)",
+            hint = "First-person singular pronoun ('I / Me')",
             options = listOf("Njaan", "Nee", "Illa", "Evide")
         ),
         QuizQuestion(
@@ -1829,7 +1848,7 @@ object DialectRepository {
             type = QuizType.MANGLISH_TYPING,
             phrase = allPhrases[2], // Athe
             prompt = "Yes",
-            hint = "Starts with 'A...' (pronounced UH-they)",
+            hint = "Starts with 'A...'",
             acceptedManglishVariants = listOf("athe", "athey", "ade")
         ),
         QuizQuestion(
@@ -1852,7 +1871,7 @@ object DialectRepository {
             type = QuizType.MANGLISH_TYPING,
             phrase = allPhrases[22], // Varoolla
             prompt = "Won't come",
-            hint = "Ends with '-oolla' (vuh-ROO-lah)",
+            hint = "Ends with '-oolla'",
             acceptedManglishVariants = listOf("varoolla", "varoola", "varathilla")
         ),
         QuizQuestion(

@@ -53,7 +53,7 @@ object SmartGrader {
                 isCorrect = false,
                 scorePercent = 0,
                 feedbackHeadline = "Try typing the Manglish!",
-                detailedExplanation = "Correct answer: \"${phrase.manglish}\" (${phrase.phoneticGuide})"
+                detailedExplanation = "Correct answer: \"${phrase.manglish}\""
             )
         }
 
@@ -78,8 +78,8 @@ object SmartGrader {
                 isCorrect = true,
                 isAlmostExactTypo = true,
                 scorePercent = 95,
-                feedbackHeadline = "Correct! (Nice phonetic spelling!)",
-                detailedExplanation = "Full cadence spelling: \"${phrase.manglish}\" (${phrase.phoneticGuide})"
+                feedbackHeadline = "Correct! (Nice spelling!)",
+                detailedExplanation = "Exact spelling: \"${phrase.manglish}\""
             )
         }
 

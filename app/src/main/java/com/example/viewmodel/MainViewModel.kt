@@ -282,19 +282,19 @@ class MainViewModel(
     /**
      * Launches any specific deck & Quizlet study mode directly from Home or the Study Plan Ladder
      */
-    fun openDeckWithMode(deck: FlashcardDeck, mode: QuizletStudyMode) {
-        initializeDeckStudySession(deck, mode)
+    fun openDeckWithMode(deck: FlashcardDeck, mode: QuizletStudyMode = QuizletStudyMode.FLASHCARDS) {
+        initializeDeckStudySession(deck, QuizletStudyMode.FLASHCARDS)
         _currentScreen.value = Screen.FLASHCARDS
         syncToCloud()
     }
 
     /**
      * Dynamically builds an Adaptive Struggle Deck of missed words + Level 0 prerequisites
-     * and launches it in the Mixed Written + Spoken Shuffle mode!
+     * and launches it in Flashcards mode!
      */
-    fun launchDynamicAdaptiveReview(mode: QuizletStudyMode = QuizletStudyMode.MIXED_MASTERY) {
+    fun launchDynamicAdaptiveReview(mode: QuizletStudyMode = QuizletStudyMode.FLASHCARDS) {
         val adaptiveDeck = DialectRepository.buildAdaptiveStruggleDeck(statsRepo.stats.value.masteryRecords)
-        openDeckWithMode(adaptiveDeck, mode)
+        openDeckWithMode(adaptiveDeck, QuizletStudyMode.FLASHCARDS)
     }
 
     // === Audio Functions ===
@@ -473,12 +473,12 @@ class MainViewModel(
     // =========================================================================
 
     fun selectDeck(deck: FlashcardDeck) {
-        initializeDeckStudySession(deck, _flashcardState.value.activeMode)
+        initializeDeckStudySession(deck, QuizletStudyMode.FLASHCARDS)
         syncToCloud()
     }
 
     fun selectQuizletMode(mode: QuizletStudyMode) {
-        initializeDeckStudySession(_flashcardState.value.currentDeck, mode)
+        initializeDeckStudySession(_flashcardState.value.currentDeck, QuizletStudyMode.FLASHCARDS)
         syncToCloud()
     }
 
@@ -607,7 +607,7 @@ class MainViewModel(
         }
 
         val subPrompt = buildString {
-            if (phrase.phoneticGuide.isNotBlank()) {
+            if (phrase.phoneticGuide.isNotBlank() && format == StudyPromptFormat.SPOKEN_OUT_LOUD) {
                 append("🔊 Phonetic hint: ${phrase.phoneticGuide}")
             }
             if (phrase.wordBreakdown.isNotBlank()) {
@@ -1104,18 +1104,18 @@ class MainViewModel(
                 val assembled = state.selectedTileIndices.map { q.correctTileOrder[it] }
                 isCorrect = assembled == q.correctTileOrder
                 feedback = if (isCorrect) {
-                    "Correct order! '${q.phrase.manglish}' (${q.phrase.phoneticGuide})"
+                    "Correct order! '${q.phrase.manglish}'"
                 } else {
-                    "Natural order: ${q.correctTileOrder.joinToString(" ")} — Type it below to continue!"
+                    "Correct order: ${q.correctTileOrder.joinToString(" ")}"
                 }
             }
 
             QuizType.DIALECT_CHOICE -> {
                 isCorrect = (state.selectedOptionIndex == 0)
                 feedback = if (isCorrect) {
-                    "Spot on! '${q.options.getOrNull(0)}' (${q.phrase.phoneticGuide})"
+                    "Spot on! '${q.options.getOrNull(0)}'"
                 } else {
-                    "The correct word is '${q.options.getOrNull(0)}'! Type it below to lock it in."
+                    "The correct word is '${q.options.getOrNull(0)}'!"
                 }
             }
         }
@@ -1127,7 +1127,7 @@ class MainViewModel(
 
         val updatedQuestions = state.questions.toMutableList()
         var newReshuffled = state.reshuffledCount
-        val mustCopy = !isCorrect && (q.type != QuizType.MANGLISH_TYPING)
+        val mustCopy = false
 
         if (!isCorrect) {
             // Add back to the shuffle queue so the user practices it again in this session!
