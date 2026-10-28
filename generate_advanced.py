@@ -1,0 +1,161 @@
+# Advanced Data Generator (Tier 4: Levels 14 to 18, 140 words)
+
+def get_advanced_phrases():
+    # Level 14: Advanced 1 - Nuance Tags & Suffix Flow (25 items)
+    adv_1 = [
+        ('a1_01', '-allo', '-അല്ലോ', 'As you know', "Added to end of verb: 'Athe-allo' (Indeed it is so!).", 'Allo', 'AL-LOH', '-allo = As you know', ['-allo', 'allo']),
+        ('a1_02', '-tto', '-ട്ടോ', 'Okay?', "'Varaane-tto' (Make sure you come, okay!).", 'Ketto', 'T-TOH', '-tto = Okay?', ['-tto', 'tto']),
+        ('a1_03', '-ketto', '-കേട്ടോ', 'Did you hear?', 'Standard Central Travancore conversational cadence.', 'Ketto', 'KAYT-TOH', '-ketto = Did you hear?', ['-ketto', 'ketto']),
+        ('a1_04', '-enne', 'എന്നേ', 'Emphatic particle', '', '', '', '-enne = Emphatic particle', ['-enne']),
+        ('a1_05', '-thanne', '-തന്നെ', 'Exactly', "'Athu-thanne' (That exact thing!).", 'Thanne', 'THAN-NAY', '-thanne = Exactly', ['-thanne', 'thanne']),
+        ('a1_06', '-aayirikkum', '-ആയിരിക്കും', 'Must be', "'Avan-aayirikkum' (It must probably be him).", 'Aayirikkum', 'AA-YI-RIK-KUM', '-aayirikkum = Must be', ['-aayirikkum', 'aayirikkum']),
+        ('a1_07', '-alle?', '-അല്ലേ?', "Isn't it so?", 'Tag question checking agreement with the listener.', 'Alleyo', 'AL-LAY', "-alle? = Isn't it so?", ['-alle', 'alle', 'alle?']),
+        ('a1_08', '-pole', '-പോലെ', 'Like', "'Kunjine-pole' (Like a sweet child).", 'Pole', 'POH-LAY', '-pole = Like', ['-pole', 'pole']),
+        ('a1_09', '-maathram', '-മാത്രം', 'Only', "'Ithu-maathram' (Only this very item).", 'Mathram', 'MAATH-RAM', '-maathram = Only', ['-maathram', 'maathram']),
+        ('a1_10', '-thaane', '-താനേ', 'All by itself', '', '', '', '-thaane = All by itself', ['-thaane']),
+        ('a1_11', '-aayallo', '-ആയല്ലോ', 'Has become', "'Samayam aayallo' (The time has come indeed!).", 'Aayallo', 'AA-YAL-LOH', '-aayallo = Has become', ['-aayallo', 'aayallo']),
+        ('a1_12', '-engaanum', '-എങ്ങാനും', 'By any chance', "'Mazha poyengaanum' (If by chance rain comes).", 'Engaanum', 'ENG-AA-NUM', '-engaanum = By any chance', ['-engaanum', 'engaanum']),
+        ('a1_13', '-theerne', '-തീർന്നേ', 'Finished!', "'Pani theerne' (The whole task is done!).", 'Theernnallo', 'THEER-NAY', '-theerne = Finished!', ['-theerne', 'theerne']),
+        ('a1_14', 'Athu thanne!', 'അതു തന്നെ!', 'Exactly that!', "Enthusiastic validation of someone's point.", 'Athu thanne', 'A-THU THAN-NAY', 'Athu thanne! = Exactly that!', ['athu thanne', 'athuthanne']),
+        ('a1_15', 'Aano ketto', 'ആണോ കേട്ടോ', 'Oh, really!', 'Playful double-tag expressing surprise.', 'Aano ketto', 'AA-NOH KAYT-TOH', 'Aano ketto = Oh, really!', ['aano ketto']),
+        ('a1_16', 'Nallathaano ketto', 'നല്ലതാണോ കേട്ടോ', 'Is it good?', 'Asking for honest opinion with warm tone.', 'Nallathano', 'NAL-LA-THAA-NOH KAYT-TOH', 'Nallathaano ketto = Is it good?', ['nallathaano ketto']),
+        ('a1_17', 'Avan thanne aanu', 'അവൻ തന്നെയാണ്', 'It is him', 'Confirming identity with emphasis.', 'Avan thanneyaanu', 'A-VAN THAN-NAY AA-NU', 'Avan thanne aanu = It is him', ['avan thanne aanu']),
+        ('a1_18', 'Enthukondaanennu vachal', 'എന്തുകൊണ്ടാണെന്ന് വെച്ചാൽ', 'Because…', 'Fluent oratorical connector.', 'Enthukondennal', 'EN-THU-KON-DAA-NEN-NU VA-CHAAL', 'Enthukondaanennu vachal = Because…', ['enthukondaanennu vachal']),
+        ('a1_19', 'Athu thanne kaaryam', 'അതു തന്നെ കാര്യം', "That's the point", '', '', '', "Athu thanne kaaryam = That's the point", ['athu thanne kaaryam']),
+        ('a1_20', 'Varum ennu thonnunnu', 'വരും എന്ന് തോന്നുന്നു', 'I think they will come', 'Nuanced expression of likelihood.', 'Varumennu vishwasikkunnu', 'VA-RUM EN-NU THON-NUN-NU', 'Varum ennu thonnunnu = I think they will come', ['varum ennu thonnunnu']),
+        ('a1_21', 'Nammal kettallo', 'നമ്മൾ കേട്ടല്ലോ', "We heard it, didn't we?", 'Calling on shared memory among cousins.', 'Nammal kettathaanallo', 'NAM-MAL KAYT-TAL-LOH', "Nammal kettallo = We heard it, didn't we?", ['nammal kettallo']),
+        ('a1_22', 'Poraathe', 'പോരാതെ', 'Besides', 'Noting that portion or effort needs more.', 'Pora', 'POH-RAA-THAY', 'Poraathe = Besides', ['poraathe']),
+        ('a1_23', 'Athra thanne', 'അത്ര തന്നെ', 'Just that much', 'Polite moderation in portion or debate.', 'Athramathram', 'ATH-RA THAN-NAY', 'Athra thanne = Just that much', ['athra thanne']),
+        ('a1_24', 'Poyikkoloo-tto', 'പോയിക്കോളൂട്ടോ', 'Go ahead, okay?', '', '', '', 'Poyikkoloo-tto = Go ahead, okay?', ['poyikkoloo-tto']),
+        ('a1_25', 'Poyittu varaam-tto', 'പോയിട്ട് വരാംട്ടോ', "I'll be going, okay?", '', '', '', "Poyittu varaam-tto = I'll be going, okay?", ['poyittu varaam-tto'])
+    ]
+
+    # Level 15: Advanced 2 - Complex Emotional States & Dispositions (30 words)
+    adv_2 = [
+        ('a2_01', 'Deshyam', 'ദേഷ്യം', 'Anger', 'Feeling annoyed or upset at a situation.', 'Krodham', 'DAY-SHYAM', 'Deshyam = Anger', ['deshyam', 'desham']),
+        ('a2_02', 'Sankadam', 'സങ്കടം', 'Sorrow', 'Deep empathetic grief shared in family.', 'Dhukham', 'SANG-KA-DAM', 'Sankadam = Sorrow', ['sankadam']),
+        ('a2_03', 'Kothiyaavunnu', 'കൊതിയാവുന്നു', "I'm craving it", "Craving Ammachi's fish curry or beef roast.", 'Aagraham thonnunnu', 'KO-THI-YAA-VUN-NU', "Kothiyaavunnu = I'm craving it", ['kothiyaavunnu', 'kothiyavunnu']),
+        ('a2_04', 'Ashwasam', 'ആശ്വാസം', 'Relief', 'Feeling huge relief after worry passes.', 'Aashwasam', 'AASH-WAA-SAM', 'Ashwasam = Relief', ['ashwasam', 'aashwasam']),
+        ('a2_05', 'Pedi', 'പേടി', 'Fear', 'Being scared of dogs, dark, or test results.', 'Bhayam', 'PAY-DI', 'Pedi = Fear', ['pedi']),
+        ('a2_06', 'Bharam', 'ഭാരം', 'Burden', 'Feeling mental or physical heaviness.', 'Bhaaram', 'BHAA-RAM', 'Bharam = Burden', ['bharam', 'bhaaram']),
+        ('a2_07', 'Asooya', 'അസൂയ', 'Envy', "Playfully calling out someone's extra luck.", 'Asooya', 'A-SOO-YA', 'Asooya = Envy', ['asooya']),
+        ('a2_08', 'Lajja', 'ലജ്ജ', 'Shyness', 'Modest blush or bashfulness.', 'Naanam', 'LAJ-JA', 'Lajja = Shyness', ['lajja']),
+        ('a2_09', 'Nombaram', 'നൊമ്പരം', 'Sorrow', 'Poetic longing or tender ache.', 'Hrudaya vedhana', 'NOM-BA-RAM', 'Nombaram = Sorrow', ['nombaram']),
+        ('a2_10', 'Aakulam', 'ആകുലം', 'Anxious', 'Being worried about travel delays.', 'Aakulam', 'AA-KU-LAM', 'Aakulam = Anxious', ['aakulam']),
+        ('a2_11', 'Dhukham', 'ദുഃഖം', 'Grief', 'Deep family bereavement.', 'Dhukham', 'DUK-KHAM', 'Dhukham = Grief', ['dhukham', 'dukham']),
+        ('a2_12', 'Pratheeksha', 'പ്രതീക്ഷ', 'Hope', 'Looking forward with hopeful optimism.', 'Pratheeksha', 'PRA-THEEK-SHA', 'Pratheeksha = Hope', ['pratheeksha']),
+        ('a2_13', 'Thalparyam', 'താൽപര്യം', 'Interest', 'Showing enthusiasm to learn Malayalam traditions.', 'Thalparyam', 'THAAL-PA-RYAM', 'Thalparyam = Interest', ['thalparyam']),
+        ('a2_14', 'Sneham', 'സ്നേഹം', 'Love', 'The unconditional warmth of family.', 'Prema', 'SNAY-HAM', 'Sneham = Love', ['sneham']),
+        ('a2_15', 'Krupa', 'കൃപ', 'Grace', "Christian Syrian concept of God's blessing.", 'Dhaivakrupa', 'KRU-PA', 'Krupa = Grace', ['krupa']),
+        ('a2_16', 'Manassinu vishamam', 'മനസ്സിന് വിഷമം', 'Feeling upset', '', '', '', 'Manassinu vishamam = Feeling upset', ['manassinu vishamam']),
+        ('a2_17', 'Deshyam pidikkalle', 'ദേഷ്യം പിടിക്കല്ലേ', "Don't lose your temper", 'Soothing someone when upset.', 'Kopikkalle', 'DAY-SHYAM PI-DIK-KAL-LAY', "Deshyam pidikkalle = Don't lose your temper", ['deshyam pidikkalle']),
+        ('a2_18', 'Valya ashwasam', 'വലിയ ആശ്വാസം', 'Great relief', 'Reacting to safe travel arrival.', 'Valiya aashwasam', 'VAL-YA AASH-WAA-SAM', 'Valya ashwasam = Great relief', ['valya ashwasam']),
+        ('a2_19', 'Pedi thonni', 'പേടി തോന്നി', 'Felt afraid', 'Recounting a close call on the highway.', 'Bhayamundaayi', 'PAY-DI THON-NI', 'Pedi thonni = Felt afraid', ['pedi thonni']),
+        ('a2_20', 'Enikku sankadam aayi', 'എനിക്ക് സങ്കടമായി', 'I felt sad', 'Expressing sincere emotional vulnerability.', 'Enikku dhukhamundaayi', 'E-NIK-KU SANG-KA-DAM AA-YI', 'Enikku sankadam aayi = I felt sad', ['enikku sankadam aayi']),
+        ('a2_21', 'Snehamulla', 'സ്നേഹമുള്ള', 'Loving', 'Describing a warm grandmother or friend.', 'Anbulla', 'SNAY-HA-MUL-LA', 'Snehamulla = Loving', ['snehamulla']),
+        ('a2_22', 'Manassamaadhaanam', 'മനസ്സമാധാനം', 'Peace of mind', '', '', '', 'Manassamaadhaanam = Peace of mind', ['manassamaadhaanam']),
+        ('a2_23', 'Snehavum bahaumaanavum', 'സ്നേഹവും ബഹുമാനവും', 'Love and respect', 'The two foundational pillars of Kerala family culture.', 'Sneham bahaumaanam', 'SNAY-HA-VUM BA-HU-MAA-NA-VUM', 'Snehavum bahaumaanavum = Love and respect', ['snehavum bahaumaanavum']),
+        ('a2_24', 'Kothipichu', 'കൊതിപ്പിച്ചു', 'Made my mouth water', 'Smelling hot fried snacks from the kitchen.', 'Aagrahippichu', 'KO-THI-PI-CHU', 'Kothipichu = Made my mouth water', ['kothipichu']),
+        ('a2_25', 'Chinthichu', 'ചിന്തിച്ചു', 'Thought', 'Weighing an important career choice.', 'Aalochichu', 'CHIN-THI-CHU', 'Chinthichu = Thought', ['chinthichu']),
+        ('a2_26', 'Aakulappedalle', 'ആകുലപ്പെടല്ലേ', "Don't be anxious", '', '', '', "Aakulappedalle = Don't be anxious", ['aakulappedalle']),
+        ('a2_27', 'Pratheekshayode', 'പ്രതീക്ഷയോടെ', 'With hope', 'Looking forward to wedding festivities.', 'Pratheekshayode', 'PRA-THEEK-SHA-YOH-DAY', 'Pratheekshayode = With hope', ['pratheekshayode']),
+        ('a2_28', 'Dhairyam', 'ധൈര്യം', 'Courage', 'Urging courage before a big interview.', 'Dhairyam', 'DHAI-RYAM', 'Dhairyam = Courage', ['dhairyam']),
+        ('a2_29', 'Dhairyam vekku', 'ധൈര്യം വെയ്ക്ക്', 'Take heart', 'Comforting a sibling in tough times.', 'Dhairyamayi irikku', 'DHAI-RYAM VEY-KU', 'Dhairyam vekku = Take heart', ['dhairyam vekku']),
+        ('a2_30', 'Kshama', 'ക്ഷമ', 'Patience', '', '', '', 'Kshama = Patience', ['kshama'])
+    ]
+
+    # Level 16: Advanced 3 - Compound Verbs & Natural Contractions (30 words)
+    adv_3 = [
+        ('a3_01', 'Kondubovaam', 'കൊണ്ടുപോകാം', "Let's take it along", "Central Travancore spoken contraction of 'kondupokaam'.", 'Kondupokaam', 'KON-DU-BOH-VAAM', "Kondubovaam = Let's take it along", ['kondubovaam', 'kondupovaam']),
+        ('a3_02', 'Ittekku', 'ഇട്ടേക്ക്', 'Put it down', '', '', '', 'Ittekku = Put it down', ['ittekku']),
+        ('a3_03', 'Paranjukodukku', 'പറഞ്ഞുകൊടുക്ക്', 'Explain it to them', 'Asking you to convey information gently.', 'Vivarakkuka', 'PA-RAN-JU-KO-DUK-KU', 'Paranjukodukku = Explain it to them', ['paranjukodukku']),
+        ('a3_04', 'Nokkikkollu', 'നോക്കിക്കൊള്ളൂ', 'Take care of it', 'Entrusting an errand or child to a relative.', 'Nokkikolluka', 'NOK-KIK-KOL-LU', 'Nokkikkollu = Take care of it', ['nokkikkollu']),
+        ('a3_05', 'Aayi-theernnu', 'ആയിത്തീർന്നു', 'Became', 'Reflecting on how an affair finally concluded.', 'Sambhavichu', 'AA-YI-THEER-NNU', 'Aayi-theernnu = Became', ['aayi-theernnu', 'aayitheernnu']),
+        ('a3_06', 'Konduvaa', 'കൊണ്ടുവാ', 'Bring it', '', '', '', 'Konduvaa = Bring it', ['konduvaa']),
+        ('a3_07', 'Eduthuvekku', 'എടുത്തുവെക്ക്', 'Put it away', 'Putting valuables or leftovers in the fridge.', 'Sookshichu vekkuka', 'E-DU-THU-VEK-KU', 'Eduthuvekku = Put it away', ['eduthuvekku']),
+        ('a3_08', 'Paranjuvidu', 'പറഞ്ഞുവിട്', 'Send word', 'Sending a messenger or letting them leave.', 'Ariyichu viduka', 'PA-RAN-JU-VI-DU', 'Paranjuvidu = Send word', ['paranjuvidu']),
+        ('a3_09', 'Cheythu-theerkku', 'ചെയ്തുതീർക്ക്', 'Finish it', "Working through all the day's tasks.", 'Purna maakkuka', 'CHEY-THU-THEER-KU', 'Cheythu-theerkku = Finish it', ['cheythu-theerkku', 'cheythutheerkku']),
+        ('a3_10', 'Nokkikkolaam', 'നോക്കിക്കോളാം', "I'll take care of it", 'Giving a firm reassuring guarantee to elders.', 'Njan nokkikollam', 'NOK-KIK-KOH-LAAM', "Nokkikkolaam = I'll take care of it", ['nokkikkolaam']),
+        ('a3_11', 'Kettivekku', 'കെട്ടിവെക്ക്', 'Tie it up', '', '', '', 'Kettivekku = Tie it up', ['kettivekku']),
+        ('a3_12', 'Poyikkollu', 'പോയിക്കോളൂ', 'Go ahead', 'Gracious dismissal by grandfather.', 'Poyikolluka', 'POH-YIK-KOL-LU', 'Poyikkollu = Go ahead', ['poyikkollu']),
+        ('a3_13', 'Koduthuvidu', 'കൊടുത്തുവിട്', 'Send it along', 'Sending snacks home with visiting relatives.', 'Koduthu viduka', 'KO-DU-THU-VI-DU', 'Koduthuvidu = Send it along', ['koduthuvidu']),
+        ('a3_14', 'Vilichupara', 'വിളിച്ചുപറ', 'Call out and tell them', 'Urgent reminder to phone the family.', 'Phone cheythu parayu', 'VI-LI-CHU-PA-RA', 'Vilichupara = Call out and tell them', ['vilichupara']),
+        ('a3_15', 'Kandupidikku', 'കണ്ടുപിടിക്ക്', 'Figure it out', 'Finding lost keys or diagnosing a car issue.', 'Kandupidikkuka', 'KAN-DU-PI-DIK-KU', 'Kandupidikku = Figure it out', ['kandupidikku']),
+        ('a3_16', 'Ezhuthivekku', 'എഴുതിവെക്ക്', 'Write it down', 'Taking down grocery list or phone numbers.', 'Kurippu vekkuka', 'E-ZHU-THI-VEK-KU', 'Ezhuthivekku = Write it down', ['ezhuthivekku']),
+        ('a3_17', 'Ariyichukodukku', 'അറിയിച്ചുകൊടുക്ക്', 'Let them know', 'Letting the parish know about an event.', 'Ariyikkuka', 'A-RI-YI-CHU-KO-DUK-KU', 'Ariyichukodukku = Let them know', ['ariyichukodukku']),
+        ('a3_18', 'Theerthu-thaa', 'തീർത്തുതാ', 'Finish it up for me', 'Asking a favor to conclude a pending chore.', 'Theerthu tharuka', 'THEER-THU-THAA', 'Theerthu-thaa = Finish it up for me', ['theerthu-thaa', 'theerthuthaa']),
+        ('a3_19', 'Njan kondubovaam', 'ഞാൻ കൊണ്ടുപോകാം', 'I will take it with me', 'Offering to carry packages for Ammachi.', 'Njan kondubovaam', 'NYAAN KON-DU-BOH-VAAM', 'Njan kondubovaam = I will take it with me', ['njan kondubovaam']),
+        ('a3_20', 'Veezhathe nokku', 'വീഴാതെ നോക്ക്', "Watch that it doesn't fall!", 'Warning someone carrying fragile tea glasses.', 'Sookshikku', 'VEE-ZHA-THAY NOK-KU', "Veezhathe nokku = Watch that it doesn't fall!", ['veezhathe nokku']),
+        ('a3_21', 'Njan paranjolaam', 'ഞാൻ പറഞ്ഞോളാം', "I'll tell them", 'Taking responsibility to break news to parents.', 'Njan paranjukollam', 'NYAAN PA-RAN-JOH-LAAM', "Njan paranjolaam = I'll tell them", ['njan paranjolaam']),
+        ('a3_22', 'Kandollu', 'കണ്ടോളൂ', 'Have a look', 'Handing photos or good news.', 'Kandukolluka', 'KAN-DOL-LU', 'Kandollu = Have a look', ['kandollu']),
+        ('a3_23', 'Pidi kittiyo?', 'പിടി കിട്ടിയോ?', 'Did you get the hang of it?', 'Checking understanding of a tricky Malayalam idiom.', 'Manassilaayo', 'PI-DI KIT-TI-YOH', 'Pidi kittiyo? = Did you get the hang of it?', ['pidi kittiyo', 'pidikittiyo?']),
+        ('a3_24', 'Valanju poyi', 'വളഞ്ഞുപോയി', 'Got bent', 'Describing a confusing road detour.', 'Valavu patti', 'VA-LA-NJU POH-YI', 'Valanju poyi = Got bent', ['valanju poyi']),
+        ('a3_25', 'Nannayi varatte', 'നന്നായി വരട്ടെ', 'May it turn out well', "Traditional elder's blessing before a venture.", 'Mangalam varatte', 'NAN-NAA-YI VA-RAT-TAY', 'Nannayi varatte = May it turn out well', ['nannayi varatte']),
+        ('a3_26', 'Mindathiri', 'മിണ്ടാതിരി', 'Be quiet', 'Gentle parental reprimand to keep peace.', 'Shanthanaayiri', 'MIN-DAA-THI-RI', 'Mindathiri = Be quiet', ['mindathiri']),
+        ('a3_27', 'Kelkkathilla', 'കേൾക്കത്തില്ല', "Won't listen", "Fond exasperation: 'He simply won't heed advice!'.", 'Kaelkkunnilla', 'KAYL-KAT-THIL-LA', "Kelkkathilla = Won't listen", ['kelkkathilla']),
+        ('a3_28', 'Varathilla', 'വരത്തില്ല', "Won't come", "Adoor/Central Travancore form of 'varoolla'.", 'Varunnilla', 'VA-RAT-THIL-LA', "Varathilla = Won't come", ['varathilla']),
+        ('a3_29', 'Pattathilla', 'പറ്റത്തില്ല', 'Not possible', 'Firm regional assertion of impossibility.', 'Pattilla', 'PAT-TAT-THIL-LA', 'Pattathilla = Not possible', ['pattathilla']),
+        ('a3_30', 'Koodi-chernnu', 'കൂടിച്ചേർന്നു', 'Came together', 'The joy of festival reunion under one roof.', 'Onnichu chernnu', 'KOO-DI-CHER-NNU', 'Koodi-chernnu = Came together', ['koodi-chernnu', 'koodichernnu'])
+    ]
+
+    # Level 17: Advanced 4 - Family Lore, Tradition & Festive Vocabulary (25 words)
+    adv_4 = [
+        ('a4_01', 'Sadya', 'സദ്യ', 'Feast', 'Elaborate multi-course Kerala feast served on banana leaf.', 'Vibhava samrudha sadya', 'SAD-YA', 'Sadya = Feast', ['sadya']),
+        ('a4_02', 'Kalyanam', 'കല്യാണം', 'Wedding', 'Massive celebration bringing hundreds of kin together.', 'Vivaaham', 'KAL-YAA-NAM', 'Kalyanam = Wedding', ['kalyanam']),
+        ('a4_03', 'Perunnal', 'പെരുന്നാൾ', 'Parish Feast', "Saint's feast day celebration in Syrian Christian churches.", 'Ulsavam', 'PE-RUN-NAAL', 'Perunnal = Parish Feast', ['perunnal']),
+        ('a4_04', 'Acharam', 'ആചാരം', 'Custom', 'Honored ritual practices passed down generations.', 'Paramparyam', 'AA-CHAA-RAM', 'Acharam = Custom', ['acharam']),
+        ('a4_05', 'Anugraham', 'അനുഗ്രഹം', 'Blessing', 'Elders placing hands on heads to bless young couple.', 'Aashirvaadam', 'A-NU-GRA-HAM', 'Anugraham = Blessing', ['anugraham']),
+        ('a4_06', 'Bandhangal', 'ബന്ധങ്ങൾ', 'Relationships', 'The enduring bond connecting extended generations.', 'Kudumba bandhangal', 'BAN-DHANG-NGAL', 'Bandhangal = Relationships', ['bandhangal']),
+        ('a4_07', 'Tharavadu', 'തറവാട്', 'Ancestral home', 'The heritage root home where all cousins gather.', 'Kudumba veedu', 'THA-RA-VAA-DU', 'Tharavadu = Ancestral home', ['tharavadu']),
+        ('a4_08', 'Koodasha', 'കൂദാശ', 'Sacrament', 'Holy sacraments of the church (Baptism, Communion, Marriage).', 'Sacrament', 'KOO-DAA-SHA', 'Koodasha = Sacrament', ['koodasha']),
+        ('a4_09', 'Maamoodeesa', 'മാമോദീസ', 'Baptism', 'Syrian Christian baptismal christening ceremony.', 'Gnanananam', 'MAA-MOO-DEE-SA', 'Maamoodeesa = Baptism', ['maamoodeesa', 'mamodeesa']),
+        ('a4_10', 'Vayana', 'വായന', 'Reading', 'Evening Bible reading aloud before the rosary.', 'Veda vayana', 'VAA-YA-NA', 'Vayana = Reading', ['vayana']),
+        ('a4_11', 'Snehavirunnu', 'സ്നേഹവിരുന്ന്', 'Love feast', 'Shared celebratory banquet after church service.', 'Aagape', 'SNAY-HA-VI-RUN-NU', 'Snehavirunnu = Love feast', ['snehavirunnu']),
+        ('a4_12', 'Aashirvaadam', 'ആശീർവാദം', 'Benediction', 'Sacerdotal or patriarchal blessing.', 'Vazhvu', 'AA-SHEER-VAA-DAM', 'Aashirvaadam = Benediction', ['aashirvaadam']),
+        ('a4_13', 'Paithrukam', 'പൈതൃകം', 'Heritage', 'The deep roots of Syrian Christian culture in Kerala.', 'Paramparyam', 'PAI-THRU-KAM', 'Paithrukam = Heritage', ['paithrukam']),
+        ('a4_14', 'Perunnal pradakshinam', 'പെരുന്നാൾ പ്രദക്ഷിണം', 'Parish festival procession', '', '', '', 'Perunnal pradakshinam = Parish festival procession', ['perunnal pradakshinam']),
+        ('a4_15', 'Qurbana', 'കുർബാന', 'Holy Mass', 'The central Sunday liturgy in Malayalam.', 'Divyabali', 'QUR-BAA-NA', 'Qurbana = Holy Mass', ['qurbana', 'kurbana']),
+        ('a4_16', 'Vibhava samrudham', 'വിഭവസമൃദ്ധം', 'An abundance of dishes', 'Describing an extraordinary spread of dishes.', 'Samrudham', 'VI-BHA-VA SAM-RUD-HAM', 'Vibhava samrudham = An abundance of dishes', ['vibhava samrudham']),
+        ('a4_17', 'Ammachiyude kaippunyam', 'അമ്മച്ചിയുടെ കൈപ്പുണ്യം', "Grandmother's cooking skill", '', '', '', "Ammachiyude kaippunyam = Grandmother's cooking skill", ['ammachiyude kaippunyam']),
+        ('a4_18', 'Valyammachi', 'വല്യമ്മച്ചി', 'Great-grandmother', '', '', '', 'Valyammachi = Great-grandmother', ['valyammachi']),
+        ('a4_19', 'Valyappachan', 'വല്യപ്പച്ചൻ', 'Great-grandfather', 'Revered great-grandfather.', 'Muthashan', 'VAL-YAP-PA-CHAN', 'Valyappachan = Great-grandfather', ['valyappachan']),
+        ('a4_20', 'Thala murakal', 'തലമുറകൾ', 'Generations', 'Preserving Christian Syrian faith across generations.', 'Vamshangal', 'THA-LA MU-RA-KAL', 'Thala murakal = Generations', ['thalamurakal', 'thala murakal']),
+        ('a4_21', 'Sneha bandham', 'സ്നേഹബന്ധം', 'Bond of affection', 'Ties of affection that distance never erodes.', 'Prema bandham', 'SNAY-HA BAN-DHAM', 'Sneha bandham = Bond of affection', ['sneha bandham']),
+        ('a4_22', 'Kudumba koottaayma', 'കുടുംബക്കൂട്ടായ്മ', 'Family gathering', 'Neighborhood monthly Christian prayer gathering.', 'Unit prayer', 'KU-DUM-BA KOOT-TAAY-MA', 'Kudumba koottaayma = Family gathering', ['kudumba koottaayma']),
+        ('a4_23', 'Dhaivathinu sthuthi', 'ദൈവത്തിന് സ്തുതി', 'Praise be to God', 'Spoken constantly upon hearing blessings or safe news.', 'Sthuthi', 'DHAI-VA-THI-NU STHU-THI', 'Dhaivathinu sthuthi = Praise be to God', ['dhaivathinu sthuthi', 'daivathinu sthuthi']),
+        ('a4_24', 'Adoor perunnal', 'അടൂർ പെരുന്നാൾ', 'Adoor church festival', 'The famous festive parish celebrations in town.', 'Adoor thirunal', 'A-DOOR PE-RUN-NAAL', 'Adoor perunnal = Adoor church festival', ['adoor perunnal']),
+        ('a4_25', 'Nanma niranju', 'നന്മ നിറഞ്ഞു', 'Filled with goodness', "Expressing that someone's household is full of virtue.", 'Nanmayulla', 'NAN-MA NI-RAN-JU', 'Nanma niranju = Filled with goodness', ['nanma niranju'])
+    ]
+
+    # Level 18: Advanced 5 - Expressing Disagreement & Tactful Pushback (25 words)
+    adv_5 = [
+        ('a5_01', 'Athalla njan paranjathu', 'അതല്ല ഞാൻ പറഞ്ഞത്', "That's not what I said", 'Politely rectifying a misunderstanding in debate.', 'Athalla ente udeshyam', 'A-THAL-LA NYAAN PA-RAN-JA-THU', "Athalla njan paranjathu = That's not what I said", ['athalla njan paranjathu']),
+        ('a5_02', 'Anganeyonnum alla', 'അങ്ങനെയൊന്നുമല്ല', "It's nothing like that at all", 'Dispelling an exaggerated rumor gently.', 'Anganeyalla', 'ANG-A-NAY-YON-NUM AL-LA', "Anganeyonnum alla = It's nothing like that at all", ['anganeyonnum alla']),
+        ('a5_03', 'Athil karyamilla', 'അതിൽ കാര്യമില്ല', "There's no point in that", 'Pointing out an unfounded objection.', 'Athil arthamilla', 'A-THIL KAA-RYA-MIL-LA', "Athil karyamilla = There's no point in that", ['athil karyamilla']),
+        ('a5_04', 'Sammathikkilla', 'സമ്മതിക്കില്ല', 'I will not agree', 'Firm polite stand on an important principle.', 'Yojikkunnilla', 'SAM-MA-THIK-KIL-LA', 'Sammathikkilla = I will not agree', ['sammathikkilla']),
+        ('a5_05', 'Njaan yojikkunnilla', 'ഞാൻ യോജിക്കുന്നില്ല', 'I disagree', '', '', '', 'Njaan yojikkunnilla = I disagree', ['njaan yojikkunnilla']),
+        ('a5_06', 'Thirichu chinthikku', 'തിരിച്ചു ചിന്തിക്കൂ', 'Think about the other side', 'Encouraging empathetic perspective-taking.', 'Maronnu chinthikku', 'THI-RI-CHU CHIN-THIK-KOO', 'Thirichu chinthikku = Think about the other side', ['thirichu chinthikku']),
+        ('a5_07', 'Angane parayan pattilla', 'അങ്ങനെ പറയാൻ പറ്റില്ല', "You can't say that", 'Checking unfair generalizations.', 'Angane parayaruthu', 'ANG-A-NAY PA-RA-YAAN PAT-TIL-LA', "Angane parayan pattilla = You can't say that", ['angane parayan pattilla']),
+        ('a5_08', 'Athil thettundu', 'അതിൽ തെറ്റുണ്ട്', 'There is an error', 'Spotting a flaw in a plan.', 'Pizhachupoyi', 'A-THIL THET-TUN-DU', 'Athil thettundu = There is an error', ['athil thettundu']),
+        ('a5_09', 'Ningal paranjathu shari, pakshe...', 'നിങ്ങൾ പറഞ്ഞത് ശരി, പക്ഷേ...', 'What you said is true, but...', 'Classic diplomatic negotiation pivot.', 'Ningal paranjathu nallathu', 'NIN-GAL PA-RAN-JA-THU SHE-RI PAK-SHAY', 'Ningal paranjathu shari, pakshe... = What you said is true, but...', ['ningal paranjathu shari pakshe']),
+        ('a5_10', 'Athra eluppamalla', 'അത്ര എളുപ്പമല്ല', 'It is not that simple', 'Reminding someone of real-world complexities.', 'Sramakaram aanu', 'ATH-RA E-LUP-PA-MAL-LA', 'Athra eluppamalla = It is not that simple', ['athra eluppamalla']),
+        ('a5_11', 'Avasyamillaatha charcha', 'ആവശ്യമില്ലാത്ത ചർച്ച', 'An unnecessary debate', 'Diffusing a heated argument before dinner.', 'Vyartha samvaadam', 'AA-VA-SHYA-MIL-LAA-THA CHAR-CHA', 'Avasyamillaatha charcha = An unnecessary debate', ['avasyamillaatha charcha']),
+        ('a5_12', 'Tharkkam venda', 'തർക്കം വേണ്ട', "Let's not argue", 'Promoting family harmony at the table.', 'Kalaham venda', 'THAR-KKAM VAYN-DA', "Tharkkam venda = Let's not argue", ['tharkkam venda']),
+        ('a5_13', 'Enikku vere abhiprayam undu', 'എനിക്ക് വേറെ അഭിപ്രായമുണ്ട്', 'I have a different opinion', 'Introducing an alternative view respectfully.', 'Vyakthamaaya abhiprayam', 'E-NIK-KU VAY-RAY A-BHI-PRAA-YAM UN-DU', 'Enikku vere abhiprayam undu = I have a different opinion', ['enikku vere abhiprayam undu']),
+        ('a5_14', 'Athu paranjathu thetti poyi', 'അത് പറഞ്ഞത് തെറ്റിപ്പോയി', 'That was wrong to say', 'Humble admission of a slip of tongue.', 'Thettu patti', 'A-THU PA-RAN-JA-THU THET-TI POH-YI', 'Athu paranjathu thetti poyi = That was wrong to say', ['athu paranjathu thetti poyi']),
+        ('a5_15', 'Kshamikkanam', 'ക്ഷമിക്കണം', 'Forgive me', '', '', '', 'Kshamikkanam = Forgive me', ['kshamikkanam']),
+        ('a5_16', 'Njan udheshichathu', 'ഞാൻ ഉദ്ദേശിച്ചത്', 'What I meant was…', 'Clarifying your genuine good intention.', 'Ente udeshyam', 'NYAAN U-DHAY-SHI-CHA-THU', 'Njan udheshichathu = What I meant was…', ['njan udheshichathu']),
+        ('a5_17', 'Avastha manassilaakku', 'അവസ്ഥ മനസ്സിലാക്കൂ', 'Understand the situation', 'Asking for empathy in extenuating circumstances.', 'Saahacharyam kaanoo', 'A-VAS-THA MA-NAS-SI-LAAK-KOO', 'Avastha manassilaakku = Understand the situation', ['avastha manassilaakku']),
+        ('a5_18', 'Dhruthiyil theerumaanam venda', 'ധൃതിയിൽ തീരുമാനം വേണ്ട', 'No hasty decision', '', '', '', 'Dhruthiyil theerumaanam venda = No hasty decision', ['dhruthiyil theerumaanam venda']),
+        ('a5_19', 'Kaaryam parayoo', 'കാര്യം പറയൂ', 'Get to the point', 'Cutting through hesitation to hear the truth.', 'Visheelikkuka', 'KAA-RYAM PA-RA-YOO', 'Kaaryam parayoo = Get to the point', ['kaaryam parayoo']),
+        ('a5_20', 'Thettidharikkalle', 'തെറ്റിദ്ധരിക്കല്ലേ', 'Please do not misunderstand me', 'Crucial preface when delivering sensitive advice.', 'Thettayi dharikkaruthu', 'THET-TI-DHA-RIK-KAL-LAY', 'Thettidharikkalle = Please do not misunderstand me', ['thettidharikkalle', 'thettidharikalle']),
+        ('a5_21', 'Samadhanapara-maayi theerkkaam', 'സമാധാനപരമായി തീർക്കാം', "Let's resolve this peacefully", 'Seeking calm reconciliation.', 'Yojippode theerkkaam', 'SA-MAA-DHAA-NA-PA-RA MAA-YI THEER-KAAM', "Samadhanapara-maayi theerkkaam = Let's resolve this peacefully", ['samadhanaparamaayi theerkkaam']),
+        ('a5_22', 'Athukondu enikku yojikkan aavilla', 'അതുകൊണ്ട് എനിക്ക് യോജിക്കാൻ ആവില്ല', "So I can't agree", 'Diplomatic formal disagreement.', 'Sammathamilla', 'A-THU-KON-DU E-NIK-KU YOH-JIK-KAAN AA-VIL-LA', "Athukondu enikku yojikkan aavilla = So I can't agree", ['athukondu enikku yojikkan aavilla']),
+        ('a5_23', 'Shari allaathathu njan parayilla', 'ശരിയല്ലാത്തത് ഞാൻ പറയില്ല', "I won't say what's wrong", 'Standing by ethical integrity.', 'Njan sathyam parayum', 'SHE-RI AL-LAA-THA-THU NYAAN PA-RA-YIL-LA', "Shari allaathathu njan parayilla = I won't say what's wrong", ['shari allaathathu njan parayilla']),
+        ('a5_24', 'Namukku nokkam', 'നമുക്ക് നോക്കാം', "Let's see", 'Constructive compromise proposal.', 'Parishodhikkam', 'NA-MUK-KU NOK-KAAM', "Namukku nokkam = Let's see", ['namukku nokkam']),
+        ('a5_25', 'Ellam nannayi varum', 'എല്ലാം നന്നായി വരും', 'Everything will turn out well', 'Warm faith-filled reassurance closing discussion.', 'Subhamaayi theerum', 'EL-LAAM NAN-NAA-YI VA-RUM', 'Ellam nannayi varum = Everything will turn out well', ['ellam nannayi varum'])
+    ]
+
+    return adv_1 + adv_2 + adv_3 + adv_4 + adv_5
+
+print("Advanced phrases ready: 135 phrases (5 levels).")

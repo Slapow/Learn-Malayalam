@@ -1,0 +1,997 @@
+level_index	tier	level	topic	id	manglish	malayalam	english
+0	novice	Novice Level 1	Kinship & Addressing People	n0_01	Njaan	ഞാൻ	I
+0	novice	Novice Level 1	Kinship & Addressing People	n0_02	Nee	നീ	You (casual)
+0	novice	Novice Level 1	Kinship & Addressing People	n0_03	Ningal	നിങ്ങൾ	You (respectful)
+0	novice	Novice Level 1	Kinship & Addressing People	n0_04	Njangal	ഞങ്ങൾ	We (excluding you)
+0	novice	Novice Level 1	Kinship & Addressing People	n0_05	Nammal	നമ്മൾ	We (including you)
+0	novice	Novice Level 1	Kinship & Addressing People	n0_06	Avan	അവൻ	He
+0	novice	Novice Level 1	Kinship & Addressing People	n0_07	Aval	അവൾ	She
+0	novice	Novice Level 1	Kinship & Addressing People	n0_08	Avar	അവർ	They
+0	novice	Novice Level 1	Kinship & Addressing People	n0_09	Appa	അപ്പാ	Dad
+0	novice	Novice Level 1	Kinship & Addressing People	n0_10	Amma	അമ്മ	Mom
+0	novice	Novice Level 1	Kinship & Addressing People	n0_11	Achayan	അച്ചായൻ	Husband
+0	novice	Novice Level 1	Kinship & Addressing People	n0_12	Chechi	ചേച്ചി	Older sister
+0	novice	Novice Level 1	Kinship & Addressing People	n0_13	Ammachi	അമ്മച്ചി	Grandmother
+0	novice	Novice Level 1	Kinship & Addressing People	n0_14	Appachan	അപ്പച്ചൻ	Grandfather
+0	novice	Novice Level 1	Kinship & Addressing People	n0_15	Chettan	ചേട്ടൻ	Older brother
+0	novice	Novice Level 1	Kinship & Addressing People	n0_16	Aniyan	അനിയൻ	Younger Brother
+0	novice	Novice Level 1	Kinship & Addressing People	n0_17	Aniyathi	അനിയത്തി	Younger Sister
+0	novice	Novice Level 1	Kinship & Addressing People	n0_18	Ammayi	അമ്മായി	Aunt
+0	novice	Novice Level 1	Kinship & Addressing People	n0_19	Ammavan	അമ്മാവൻ	Maternal Uncle
+0	novice	Novice Level 1	Kinship & Addressing People	n0_20	Aliyā	അളിയാ	Brother-in-law
+0	novice	Novice Level 1	Kinship & Addressing People	n0_21	Naathoon	നാത്തൂൻ	Sister-in-law
+0	novice	Novice Level 1	Kinship & Addressing People	n0_22	Mon	മോൻ	Son
+0	novice	Novice Level 1	Kinship & Addressing People	n0_23	Mole	മോളേ	Daughter
+0	novice	Novice Level 1	Kinship & Addressing People	n0_24	Kudumbam	കുടുംബം	Family
+0	novice	Novice Level 1	Kinship & Addressing People	n0_25	Bandhukkal	ബന്ധുക്കൾ	Relatives
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_01	Namaskaaram	നമസ്കാരം	Hello
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_02	Sukhamaano?	സുഖമാണോ?	How are you?
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_03	Sukhamaanu	സുഖമാണ്	I am well
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_04	Ente peru	എന്റെ പേര്	My name
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_05	Ningalude peru enthaanu?	നിങ്ങളുടെ പേര് എന്താണ്?	What is your name?
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_06	Njaan Malayalam padikkunnu	ഞാൻ മലയാളം പഠിക്കുന്നു	I am learning Malayalam
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_07	Enikku manassilaayilla	എനിക്ക് മനസ്സിലായില്ല	I did not understand
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_08	Onnu koodi parayaamo?	ഒന്നു കൂടി പറയാമോ?	Could you say that once more?
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_09	Pathukke parayaamo?	പതുക്കെ പറയാമോ?	Could you speak slowly?
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_10	Ithinte artham enthaanu?	ഇതിന്റെ അർത്ഥം എന്താണ്?	What does this mean?
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_11	Malayalathil engane parayum?	മലയാളത്തിൽ എങ്ങനെ പറയും?	How do you say it in Malayalam?
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_12	Enikku ariyilla	എനിക്ക് അറിയില്ല	I do not know
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_13	Enikku kurachu Malayalam ariyaam	എനിക്ക് കുറച്ചു മലയാളം അറിയാം	I know a little Malayalam
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_14	Parichayappettathil santhosham	പരിചയപ്പെട്ടതിൽ സന്തോഷം	Nice to meet you
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_15	Nanni	നന്ദി	Thank you
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_16	Kshamikkanam	ക്ഷമിക്കണം	Please excuse me
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_17	Sahaayikkaamo?	സഹായിക്കാമോ?	Could you help?
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_18	Pinne kaanaam	പിന്നെ കാണാം	See you later
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_19	Shubharaathri	ശുഭരാത്രി	Good night
+1	novice	Novice Level 2	Greetings, Introductions & Repair	ng_20	Akathu varaamo?	അകത്തു വരാമോ?	May I come inside?
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_01	Poojyam	പൂജ്യം	Zero
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_02	Onnu	ഒന്ന്	One
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_03	Randu	രണ്ട്	Two
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_04	Moonnu	മൂന്ന്	Three
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_05	Naalu	നാല്	Four
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_06	Anchu	അഞ്ച്	Five
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_07	Aaru	ആറ്	Six
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_08	Ezhu	ഏഴ്	Seven
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_09	Ettu	എട്ട്	Eight
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_10	Onpathu	ഒൻപത്	Nine
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_11	Pathu	പത്ത്	Ten
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_12	Pathinonnu	പതിനൊന്ന്	Eleven
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_13	Panthrandu	പന്ത്രണ്ട്	Twelve
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_14	Irupathu	ഇരുപത്	Twenty
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_15	Muppathu	മുപ്പത്	Thirty
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_16	Nalpathu	നാൽപത്	Forty
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_17	Anpathu	അൻപത്	Fifty
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_18	Nooru	നൂറ്	One hundred
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_19	Aayiram	ആയിരം	One thousand
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_20	Pakuthi	പകുതി	Half
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_21	Oru kilo	ഒരു കിലോ	One kilogram
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_22	Randu ennam	രണ്ട് എണ്ണം	Two items
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_23	Ethra roopa?	എത്ര രൂപ?	How many rupees?
+2	novice	Novice Level 3	Numbers, Prices & Quantities	nn_24	Aake ethra?	ആകെ എത്ര?	How much altogether?
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_01	Choru	ചോറ്	Cooked rice
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_02	Vellam	വെള്ളം	Water
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_03	Chaaya	ചായ	Tea
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_04	Kaappi	കാപ്പി	Coffee
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_05	Meen	മീൻ	Fish
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_06	Erachi	ഇറച്ചി	Meat
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_07	Appam	അപ്പം	Rice pancake
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_08	Puttu	പുട്ട്	Steamed Rice Cake
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_09	Kadala	കടല	Chickpeas
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_10	Parotta	പൊറോട്ട	Flaky Flatbread
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_11	Pazham	പഴം	Banana
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_12	Paal	പാൽ	Milk
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_13	Moru	മോര്	Buttermilk
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_14	Sambar	സാമ്പാർ	Lentil & Vegetable Stew
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_15	Achar	അച്ചാർ	Pickle
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_16	Venam	വേണം	Want
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_17	Venda	വേണ്ട	Don't want
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_18	Mathi	മതി	Enough
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_19	Kurachu	കുറച്ച്	A little bit
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_20	Kooduthal	കൂടുതൽ	More
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_21	Theere venda	തീരെ വേണ്ട	Don't want it at all
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_22	Kazhichu	കഴിച്ചു	Ate
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_23	Vishakkunnu	വിശക്കുന്നു	Feeling hungry
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_24	Madhuram	മധുരം	Sweetness
+3	novice	Novice Level 4	Kitchen Essentials & Food Preferences	n1_25	Erivu	എരിവ്	Spiciness
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_01	Vaa	വാ	Come
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_02	Po	പോ	Go
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_03	Kazhikku	കഴിക്ക്	Eat
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_04	Kudi	കുടി	Drink
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_05	Iri	ഇരി	Sit
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_06	Para	പറ	Say
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_07	Kelkku	കേൾക്ക്	Listen
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_08	Thaa	താ	Give me
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_09	Edu	എടു	Take
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_10	Cheyyu	ചെയ്യൂ	Do
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_11	Nokku	നോക്ക്	Look
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_12	Nadakku	നടക്ക്	Walk
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_13	Urangu	ഉറങ്ങ്	Sleep
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_14	Vaangikku	വാങ്ങിക്ക്	Buy
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_15	Nilkku	നിൽക്ക്	Stand
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_16	Vaa povaam	വാ പോകാം	Come, let's go
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_17	Ivide iri	ഇവിടെ ഇരി	Sit here
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_18	Chaya kudi	ചായ കുടി	Drink tea
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_19	Ippo para	ഇപ്പോ പറ	Tell me now
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_20	Athu thaa	അത് താ	Give me that
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_21	Ithu edu	ഇത് എടു	Take this
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_22	Onnu nokku	ഒന്ന് നോക്ക്	Take a quick look
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_23	Vegam cheyyu	വേഗം ചെയ്യ്	Do it quickly
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_24	Evide nilkkunnu	എവിടെ നിൽക്കുന്നു	Where are you standing?
+4	novice	Novice Level 5	The 15 Survival Verbs	n2_25	Nannayi urangu	നന്നായി ഉറങ്ങ്	Sleep well
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_01	Ithu	ഇത്	This thing
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_02	Athu	അത്	That thing
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_03	Ente	എന്റെ	My
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_04	Ninte	നിന്റെ	Your (casual)
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_05	Nammude	നമ്മുടെ	Our (including you)
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_06	Valuthu	വലുത്	Big thing
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_07	Cheruthu	ചെറുത്	Small thing
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_08	Puthiyathu	പുതിയത്	New thing
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_09	Pazhayathu	പഴയത്	Old thing
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_10	Nallathu	നല്ലത്	Good thing
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_11	Cheeththa	ചീത്ത	Bad
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_12	Neelam	നീലം	Blue
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_13	Pacha	പച്ച	Green
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_14	Chuvappu	ചുവപ്പ്	Red
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_15	Manja	മഞ്ഞ	Yellow
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_16	Karuppu	കറുപ്പ്	Black
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_17	Vella	വെള്ള	White
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_18	Ithu enthaanu?	ഇത് എന്താണ്?	What is this?
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_19	Ithu entethaanu	ഇത് എന്റേതാണ്	This is mine
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_20	Athu enikku venam	അത് എനിക്ക് വേണം	I want that
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_21	Ithu nallathaanu	ഇത് നല്ലതാണ്	This is good
+5	novice	Novice Level 6	People, Things & Simple Descriptions	nd_22	Ithu puthiyathaano?	ഇത് പുതിയതാണോ?	Is this new?
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_01	Ayyo	അയ്യോ	Oh no!
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_02	Saramilla	സാരമില്ല	No problem
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_03	Sathyam	സത്യം	Really!
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_04	Aano?	ആണോ?	Is that so?
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_05	Sherikkum?	ശരിക്കും?	Really?
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_06	Pinne!	പിന്നെ!	Of course!
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_07	Athre ullu	അത്രേ ഉള്ളൂ	That's all
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_08	Enthaa?	എന്താ?	What?
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_09	Athe	അതെ	Yes
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_10	Alla	അല്ല	No
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_11	Kashtam	കഷ്ടം	What a pity!
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_12	Nannayi	നന്നായി	Well done!
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_13	Enthoru	എന്തൊരു	What a…!
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_14	Aaha	ആഹാ	Aha!
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_15	Oh ho	ഓ ഹോ	Oh, I see!
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_16	Ente ponno!	എന്റെ പൊന്നോ!	My goodness!
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_17	Kollam	കൊള്ളാം	Nice
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_18	Potte	പോട്ടെ	Let it be
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_19	Sheri	ശരി	Okay
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_20	Ketto?	കേട്ടോ?	Did you hear?
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_21	Scene illa	സീൻ ഇല്ല	No problem
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_22	Veruthe	വെറുതെ	Just like that
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_23	Mindalle	മിണ്ടല്ലേ	Don't speak
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_24	Shock aayi	ഷോക്ക് ആയി	Got shocked
+6	novice	Novice Level 7	Fast Reactions & Conversational Fillers	n3_25	Nokkatte	നോക്കട്ടെ	Let me see
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_01	Evideya?	എവിടെയാ?	Where is it?
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_02	Eppozha?	എപ്പോഴാ?	When is it?
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_03	Entha?	എന്താ?	What is it?
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_04	Aara?	ആരാ?	Who is it?
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_05	Engane?	എങ്ങനെ?	How?
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_06	Enthinaa?	എന്തിനാ?	Why?
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_07	Ethra?	എത്ര?	How much?
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_08	Eethaa?	ഏതാ?	Which one?
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_09	Ivide	ഇവിടെ	Here
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_10	Avide	അവിടെ	There
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_11	Nere	നേരെ	Straight ahead
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_12	Appurathu	അപ്പുറത്ത്	On the other side
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_13	Ippurathu	ഇപ്പുറത്ത്	On this side
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_14	Ullil	ഉള്ളിൽ	Inside
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_15	Veliyil	വെളിയിൽ	Outside
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_16	Thazhe	താഴെ	Below
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_17	Mukalil	മുകളിൽ	Above
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_18	Aduthu	അടുത്ത്	Near
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_19	Doore	ദൂരെ	Far away
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_20	Valathu	വലത്ത്	Right side
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_21	Idathu	ഇടത്ത്	Left side
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_22	Munnil	മുന്നിൽ	In front
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_23	Purakil	പുറകിൽ	Behind
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_24	Koodi	കൂടി	Together
+7	elementary	Elementary Level 1	Conversational Questions & Direction	e1_25	Maathram	മാത്രം	Only
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_01	Thingalaazhcha	തിങ്കളാഴ്ച	Monday
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_02	Chovvaazhcha	ചൊവ്വാഴ്ച	Tuesday
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_03	Budhanaazhcha	ബുധനാഴ്ച	Wednesday
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_04	Vyaazhaazhcha	വ്യാഴാഴ്ച	Thursday
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_05	Velliyaazhcha	വെള്ളിയാഴ്ച	Friday
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_06	Shaniyaazhcha	ശനിയാഴ്ച	Saturday
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_07	Njaayaraazhcha	ഞായറാഴ്ച	Sunday
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_08	Aazhcha	ആഴ്ച	Week
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_09	Maasam	മാസം	Month
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_10	Varsham	വർഷം	Year
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_11	Theeyathi	തീയതി	Date
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_12	Raavile	രാവിലെ	In the morning
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_13	Uchaykku	ഉച്ചയ്ക്ക്	At noon
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_14	Vaikunneram	വൈകുന്നേരം	Evening
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_15	Raathri	രാത്രി	Night
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_16	Manikkoor	മണിക്കൂർ	Hour
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_17	Minute	മിനിറ്റ്	Minute
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_18	Ara manikkoor	അര മണിക്കൂർ	Half an hour
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_19	Ethra maniyaayi?	എത്ര മണിയായി?	What time is it?
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_20	Moonnu manikku kaanaam	മൂന്ന് മണിക്ക് കാണാം	Let us meet at three
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_21	Adutha aazhcha	അടുത്ത ആഴ്ച	Next week
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_22	Kazhinja maasam	കഴിഞ്ഞ മാസം	Last month
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_23	Samayam maattaamo?	സമയം മാറ്റാമോ?	Could we change the time?
+8	elementary	Elementary Level 2	Calendar, Time & Appointments	ec_24	Enikku samayamilla	എനിക്ക് സമയമില്ല	I do not have time
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_01	Bus stop	ബസ് സ്റ്റോപ്പ്	Bus stop
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_02	Railway station	റെയിൽവേ സ്റ്റേഷൻ	Railway station
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_03	Vimaanathaavalam	വിമാനത്താവളം	Airport
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_04	Ticket	ടിക്കറ്റ്	Ticket
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_05	Yaathra	യാത്ര	Journey
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_06	Yaathrakkaar	യാത്രക്കാർ	Passengers
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_07	Driver	ഡ്രൈവർ	Driver
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_08	Seetu	സീറ്റ്	Seat
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_09	Kooli	കൂലി	Fare
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_10	Dooram	ദൂരം	Distance
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_11	Paatha	പാത	Route
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_12	Paalam	പാലം	Bridge
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_13	Valathottu	വലത്തോട്ട്	To the right
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_14	Idathottu	ഇടത്തോട്ട്	To the left
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_15	Thiriyanam	തിരിയണം	Need to turn
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_16	Ivide nirthaamo?	ഇവിടെ നിർത്താമോ?	Could you stop here?
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_17	Oru ticket tharoo	ഒരു ടിക്കറ്റ് തരൂ	Please give me one ticket
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_18	Ee bus Kottayathinu pokumo?	ഈ ബസ് കോട്ടയത്തിനു പോകുമോ?	Does this bus go to Kottayam?
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_19	Ethra samayam edukkum?	എത്ര സമയം എടുക്കും?	How long will it take?
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_20	Adutha stop ethaanu?	അടുത്ത സ്റ്റോപ്പ് ഏതാണ്?	Which is the next stop?
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_21	Enikku iranganam	എനിക്ക് ഇറങ്ങണം	I need to get off
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_22	Auto kittumo?	ഓട്ടോ കിട്ടുമോ?	Can I get an auto?
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_23	Vaiki ethum	വൈകി എത്തും	Will arrive late
+9	elementary	Elementary Level 3	Buses, Autos & Travel	et_24	Vazhi thetti	വഴി തെറ്റി	Lost the way
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_01	Pachakkari	പച്ചക്കറി	Vegetables
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_02	Ulli	ഉള്ളി	Onion
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_03	Thakkaali	തക്കാളി	Tomato
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_04	Urulakkizhangu	ഉരുളക്കിഴങ്ങ്	Potato
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_05	Mulaku	മുളക്	Chilli
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_06	Uppu	ഉപ്പ്	Salt
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_07	Panchasaara	പഞ്ചസാര	Sugar
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_08	Enna	എണ്ണ	Oil
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_09	Thenga	തേങ്ങ	Coconut
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_10	Ari	അരി	Uncooked rice
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_11	Mutta	മുട്ട	Egg
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_12	Thairu	തൈര്	Curd
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_13	Pachamulaku	പച്ചമുളക്	Green chilli
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_14	Inchi	ഇഞ്ചി	Ginger
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_15	Veluthulli	വെളുത്തുള്ളി	Garlic
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_16	Manjal	മഞ്ഞൾ	Turmeric
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_17	Kada	കട	Shop
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_18	Chantha	ചന്ത	Market
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_19	Sanchi	സഞ്ചി	Bag
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_20	Raseethu	രസീത്	Receipt
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_21	Panam	പണം	Money
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_22	Chillara	ചില്ലറ	Small change
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_23	Bill tharaamo?	ബിൽ തരാമോ?	Could you give me the bill?
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_24	Kaaram kurachu mathi	കാരം കുറച്ചു മതി	Just a little spice is enough
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_25	Irachi venda	ഇറച്ചി വേണ്ട	No meat please
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_26	Ithu puthiyathaano?	ഇത് പുതിയതാണോ?	Is this new?
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_27	Pothinju tharaamo?	പൊതിഞ്ഞു തരാമോ?	Could you wrap it up?
+10	elementary	Elementary Level 4	Groceries, Money & Ordering	es_28	Vere enthenkilum undo?	വേറെ എന്തെങ്കിലും ഉണ്ടോ?	Is there anything else?
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_01	Kazhicho?	കഴിച്ചോ?	Did you eat?
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_02	Poyi	പോയി	Went
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_03	Vannu	വന്നു	Came
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_04	Urangiyo?	ഉറങ്ങിയോ?	Did you sleep?
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_05	Kandu	കണ്ടു	Saw
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_06	Cheythu	ചെയ്തു	Did
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_07	Paranju	പറഞ്ഞു	Said
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_08	Kettu	കേട്ടു	Heard
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_09	Vaangi	വാങ്ങി	Bought
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_10	Koduthu	കൊടുത്തു	Gave
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_11	Thudangi	തുടങ്ങി	Started
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_12	Theernnu	തീർന്നു	Finished
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_13	Innale	ഇന്നലെ	Yesterday
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_14	Innu	ഇന്ന്	Today
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_15	Nerathe	നേരത്തെ	Earlier
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_16	Vaiki	വൈകി	Was late
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_17	Ravile	രാവിലെ	In the morning
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_18	Uchakku	ഉച്ചയ്ക്ക്	At noon
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_19	Vaikittu	വൈകിട്ട്	In the evening
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_20	Rathri	രാത്രി	Night
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_21	Ippo	ഇപ്പോ	Now
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_22	Pinne	പിന്നെ	Later
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_23	Kazhinja aazhcha	കഴിഞ്ഞ ആഴ്ച	Last week
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_24	Kulichu	കുളിച്ചു	Took a bath
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_25	Vannirunnu	വന്നിരുന്നു	Had come
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_26	Poyirunnu	പോയിരുന്നു	Had gone earlier
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_27	Njan paranju	ഞാൻ പറഞ്ഞു	I said
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_28	Avar vannu	അവർ വന്നു	They arrived
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_29	Palli-yil poyi	പള്ളിയിൽ പോയി	Went to church
+11	elementary	Elementary Level 5	Spoken Past Tense & Everyday Routines	e2_30	Chaya kudichu	ചായ കുടിച്ചു	Drank tea
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_01	Varaam	വരാം	I will come
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_02	Povaam	പോകാം	Let's go
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_03	Kazhikkaam	കഴിക്കാം	Let's eat
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_04	Nokkam	നോക്കാം	Let's see
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_05	Cheyyaam	ചെയ്യാം	I'll do it
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_06	Tharaam	തരാം	I'll give it to you
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_07	Parayaam	പറയാം	I will tell you
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_08	Kelkkaam	കേൾക്കാം	I'll listen
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_09	Naale	നാളെ	Tomorrow
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_10	Mattannaal	മറ്റന്നാൾ	Day after tomorrow
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_11	Ini	ഇനി	From now on
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_12	Varum	വരും	Will come
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_13	Pokum	പോകും	Will go
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_14	Cheyyum	ചെയ്യും	Will do
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_15	Kazhikkum	കഴിക്കും	Will eat
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_16	Undaakkum	ഉണ്ടാക്കും	Will make
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_17	Varoolla	വരൂല്ല	Won't come
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_18	Pokoolla	പോകൂല്ല	Won't go
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_19	Cheyyoolla	ചെയ്യൂല്ല	Won't do
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_20	Pattilla	പറ്റില്ല	Cannot
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_21	Naale kaanaam	നാളെ കാണാം	See you tomorrow!
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_22	Ippo tharaam	ഇപ്പോ തരാം	I will give it right now
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_23	Njan cheyyaam	ഞാൻ ചെയ്യാം	I'll do it myself
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_24	Povaan samayam aayi	പോകാൻ സമയം ആയി	It's time to go
+12	elementary	Elementary Level 6	Future Intentions & Casual Commitments	e3_25	Pinne kaanaam	പിന്നെ കാണാം	See you later!
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_01	Choodu	ചൂട്	Heat
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_02	Thanuppu	തണുപ്പ്	Cold
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_03	Urakkam varunnu	ഉറക്കം വരുന്നു	Feeling sleepy
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_04	Sheenam	ക്ഷീണം	Tiredness
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_05	Vayya	വയ്യ	Feeling unwell
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_06	Dhaaham	ദാഹം	Thirst
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_07	Vedhana	വേദന	Pain
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_08	Thalavedhana	തലവേദന	Headache
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_09	Vayaruvedana	വയറുവേദന	Stomach ache
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_10	Maduppu	മടുപ്പ്	Boredom
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_11	Sukham	സുഖം	Well-being
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_12	Sukhamano?	സുഖമാണോ?	How are you?
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_13	Enikku sukham aanu	എനിക്ക് സുഖമാണ്	I am doing well
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_14	Pani	പനി	Fever
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_15	Chuma	ചുമ	Cough
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_16	Jaladosham	ജലദോഷം	Common cold
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_17	Marunnu	മരുന്ന്	Medicine
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_18	Kaalvedhana	കാൽവേദന	Leg pain
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_19	Choodu vellam	ചൂടുവെള്ളം	Hot water
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_20	Vellam thaa	വെള്ളം താ	Give me some water
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_21	Enikku vayya	എനിക്ക് വയ്യ	I'm not feeling well
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_22	Ksheenam undu	ക്ഷീണം ഉണ്ട്	I feel tired
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_23	Shanthatha	ശാന്തത	Peace
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_24	Santhosham	സന്തോഷം	Happiness
+13	elementary	Elementary Level 7	Describing Physical States & Desires	e4_25	Santhosham aayi	സന്തോഷമായി	Felt happy
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_01	Thala	തല	Head
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_02	Kai	കൈ	Hand
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_03	Kaal	കാൽ	Leg
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_04	Kannu	കണ്ണ്	Eye
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_05	Chevi	ചെവി	Ear
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_06	Mookku	മൂക്ക്	Nose
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_07	Vaaya	വായ	Mouth
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_08	Pallu	പല്ല്	Tooth
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_09	Vayaru	വയറ്	Stomach
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_10	Thonda	തൊണ്ട	Throat
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_11	Pani	പനി	Fever
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_12	Chuma	ചുമ	Cough
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_13	Jaladosham	ജലദോഷം	Common cold
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_14	Thalavedana	തലവേദന	Headache
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_15	Vayar vedanikkunnu	വയർ വേദനിക്കുന്നു	My stomach hurts
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_16	Marunnu	മരുന്ന്	Medicine
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_17	Aashupathri	ആശുപത്രി	Hospital
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_18	Doctor	ഡോക്ടർ	Doctor
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_19	Murivu	മുറിവ്	Wound
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_20	Raktham	രക്തം	Blood
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_21	Enikku sukhamilla	എനിക്ക് സുഖമില്ല	I am unwell
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_22	Doctor-e kaananam	ഡോക്ടറെ കാണണം	I need to see a doctor
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_23	Adiyanthira sahaayam venam	അടിയന്തര സഹായം വേണം	I need urgent help
+14	elementary	Elementary Level 8	Body, Health & Asking for Help	eh_24	Enikku allergy undu	എനിക്ക് അലർജി ഉണ്ട്	I have an allergy
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_01	Vaathil	വാതിൽ	Door
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_02	Janala	ജനൽ	Window
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_03	Kaasu	കാശ്	Money
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_04	Phone	ഫോൺ	Phone
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_05	Thaakkol	താക്കോൽ	Key
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_06	Vandi	വണ്ടി	Vehicle
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_07	Bhaagyam	ഭാഗ്യം	Luck
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_08	Light	ലൈറ്റ്	Light
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_09	Fan	ഫാൻ	Fan
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_10	Pusthakam	പുസ്തകം	Book
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_11	Mesha	മേശ	Table
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_12	Kasera	കസേര	Chair
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_13	Thuni	തുണി	Cloth
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_14	Paathram	പാത്രം	Vessel
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_15	Adukkala	അടുക്കള	Kitchen
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_16	Muttam	മുറ്റം	Courtyard
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_17	Purathu	പുറത്ത്	Outside
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_18	Vaathil adaykku	വാതിൽ അടയ്ക്ക്	Shut the door
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_19	Light idu	ലൈറ്റ് ഇട്	Turn on the light
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_20	Fan idu	ഫാൻ ഇട്	Turn on the fan
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_21	Thaakkol evide?	താക്കോൽ എവിടെ?	Where is the key?
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_22	Phone pravarthikkunnilla	ഫോൺ പ്രവർത്തിക്കുന്നില്ല	The phone isn't working
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_23	Vandi edukku	വണ്ടി എടുക്ക്	Take out the vehicle
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_24	Paathram kazhuku	പാത്രം കഴുകു	Wash the dishes
+15	elementary	Elementary Level 9	Home, Chores & Daily Objects	e5_25	Nalla bhaagyam	നല്ല ഭാഗ്യം	Great luck!
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_01	Uduppu	ഉടുപ്പ്	Clothing
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_02	Shirt	ഷർട്ട്	Shirt
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_03	Mundu	മുണ്ട്	Mundu
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_04	Saari	സാരി	Sari
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_05	Cheruppu	ചെരുപ്പ്	Footwear
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_06	Thorthu	തോർത്ത്	Bath towel
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_07	Soppu	സോപ്പ്	Soap
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_08	Cheeppu	ചീപ്പ്	Comb
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_09	Kannaadi	കണ്ണാടി	Mirror
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_10	Mudi	മുടി	Hair
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_11	Alakku	അലക്ക്	Wash clothes
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_12	Unakku	ഉണക്കു	Dry something
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_13	Kulikkaan ponam	കുളിക്കാൻ പോണം	Need to go bathe
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_14	Uduppu maattanam	ഉടുപ്പ് മാറ്റണം	Need to change clothes
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_15	Ithu cheruthaanu	ഇത് ചെറുതാണ്	This is small
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_16	Vere valuppam undo?	വേറെ വലുപ്പം ഉണ്ടോ?	Is another size available?
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_17	Ithu cherunnundu	ഇത് ചേരുന്നുണ്ട്	This fits
+16	elementary	Elementary Level 10	Clothes, Washing & Getting Ready	ed_18	Njaan thayyaaraayi	ഞാൻ തയ്യാറായി	I am ready
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_01	Mazha	മഴ	Rain
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_02	Veyil	വെയിൽ	Sunshine
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_03	Kaattu	കാറ്റ്	Wind
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_04	Megham	മേഘം	Cloud
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_05	Aakaasham	ആകാശം	Sky
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_06	Thanuppu	തണുപ്പ്	Cold weather
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_07	Mazhakkaalam	മഴക്കാലം	Rainy season
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_08	Venalkkaalam	വേനൽക്കാലം	Summer
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_09	Kuda	കുട	Umbrella
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_10	Maram	മരം	Tree
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_11	Poovu	പൂവ്	Flower
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_12	Ila	ഇല	Leaf
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_13	Puzha	പുഴ	River
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_14	Kadal	കടൽ	Sea
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_15	Mala	മല	Mountain
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_16	Vayal	വയൽ	Paddy field
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_17	Thottam	തോട്ടം	Garden
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_18	Mrugam	മൃഗം	Animal
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_19	Pakshi	പക്ഷി	Bird
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_20	Naaya	നായ	Dog
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_21	Poocha	പൂച്ച	Cat
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_22	Mazha peyyunnu	മഴ പെയ്യുന്നു	It is raining
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_23	Kuda edutho?	കുട എടുത്തോ?	Did you take an umbrella?
+17	elementary	Elementary Level 11	Weather, Outdoors & Places	ew_24	Purathu pokaam	പുറത്തു പോകാം	Let us go outside
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_01	Ennittum	എന്നിട്ടും	Even then
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_02	Athukondu	അതുകൊണ്ട്	Therefore
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_03	Pakshe	പക്ഷേ	But
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_04	Athinaale	അതിനാൽ	Hence
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_05	Allenkil	അല്ലെങ്കിൽ	Otherwise
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_06	Ennaalum	എന്നാലും	Even so
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_07	Athu maathramalla	അത് മാത്രമല്ല	Not only that
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_08	Pinneyum	പിന്നെയും	Again
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_09	Athupole	അതുപോലെ	Similarly
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_10	Kaaranam	കാരണം	Because
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_11	Ennu vechaal	എന്ന് വെച്ചാൽ	That means…
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_12	Athode	അതോടെ	With that
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_13	Athukondaanu	അതുകൊണ്ടാണ്	That is precisely why
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_14	Engilum	എങ്കിലും	Even if
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_15	Athrem	അത്രേം	That much
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_16	Ithrem	ഇത്രേം	This much
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_17	Avasanam	അവസാനം	Finally
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_18	Athukondu	അതുകൊണ്ട്	So
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_19	Enthenkilum	എന്തെങ്കിലും	Something
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_20	Eppozhenkilum	എപ്പോഴെങ്കിലും	Sometime
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_21	Evideyengilum	എവിടെയെങ്കിലും	Somewhere
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_22	Aarenkilum	ആരെങ്കിലും	Someone
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_23	Pakshe oru karyam	പക്ഷേ ഒരു കാര്യം	But one thing
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_24	Athukondu njan paranju	അതുകൊണ്ട് ഞാൻ പറഞ്ഞു	So that's why I said
+18	intermediate	Intermediate Level 1	Conjunctions & Sentence Connectors	i1_25	Ennittum avan vannilla	എന്നിട്ടും അവൻ വന്നില്ല	Even after that, he didn't come
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_01	Aadyam	ആദ്യം	First
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_02	Athinu shesham	അതിനു ശേഷം	After that
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_03	Avasaanam	അവസാനം	Finally
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_04	Athinidayil	അതിനിടയിൽ	Meanwhile
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_05	Pettennu	പെട്ടെന്ന്	Suddenly
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_06	Orikkal	ഒരിക്കൽ	Once
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_07	Pandu	പണ്ട്	Long ago
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_08	Annu	അന്ന്	On that day
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_09	Anneram	അന്നേരം	At that time
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_10	Sambhavam	സംഭവം	Incident
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_11	Anubhavam	അനുഭവം	Experience
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_12	Orma	ഓർമ്മ	Memory
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_13	Katha	കഥ	Story
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_14	Kaaranam	കാരണം	Reason
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_15	Phalam	ഫലം	Result
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_16	Marannu poyi	മറന്നു പോയി	Forgot
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_17	Orthu nokku	ഓർത്തു നോക്ക്	Try to remember
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_18	Avan paranju	അവൻ പറഞ്ഞു	He said
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_19	Aval chodichu	അവൾ ചോദിച്ചു	She asked
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_20	Njaan veettil ethiyappol	ഞാൻ വീട്ടിൽ എത്തിയപ്പോൾ	When I reached home
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_21	Mazha peythathukondu	മഴ പെയ്തതുകൊണ്ട്	Because it rained
+19	intermediate	Intermediate Level 2	Telling a Story & Sequencing Events	in_22	Angane sambhavichu	അങ്ങനെ സംഭവിച്ചു	That is how it happened
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_01	Vannaal	വന്നാൽ	If someone comes
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_02	Paranjaal	പറഞ്ഞാൽ	If you say
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_03	Kandappol	കണ്ടപ്പോൾ	When I saw
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_04	Poyappol	പോയപ്പോൾ	When I went
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_05	Cheythaal nannaayirikkum	ചെയ്താൽ നന്നായിരിക്കും	It would be good to do it
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_06	Varumpol	വരുമ്പോൾ	When coming
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_07	Kazhichappol	കഴിച്ചപ്പോൾ	When I ate it
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_08	Kelkkumbol	കേൾക്കുമ്പോൾ	When hearing
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_09	Nokkiyaal	നോക്കിയാൽ	If you look
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_10	Undenkil	ഉണ്ടെങ്കിൽ	If there is
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_11	Illenkil	ഇല്ലെങ്കിൽ	If not
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_12	Pattumenkil	പറ്റുമെങ്കിൽ	If possible
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_13	Kettappol	കേട്ടപ്പോൾ	When I heard
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_14	Poyaal	പോയാൽ	If you go
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_15	Cheythaal	ചെയ്താൽ	If you do
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_16	Kandaal	കണ്ടാൽ	If you see
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_17	Kudichaal	കുടിച്ചാൽ	If you drink
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_18	Choichaal	ചോദിച്ചാൽ	If you ask
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_19	Choichappol	ചോദിച്ചപ്പോൾ	When I asked
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_20	Vannaal mathi	വന്നാൽ മതി	It's enough if you just come
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_21	Nee paranjaal	നീ പറഞ്ഞാൽ	If you say so
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_22	Ippo poyaal	ഇപ്പോ പോയാൽ	If we leave right now
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_23	Varumpol konduvaa	വരുമ്പോൾ കൊണ്ടുവരൂ	Bring it when you come
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_24	Samayam undenkil	സമയം ഉണ്ടെങ്കിൽ	If you have time
+20	intermediate	Intermediate Level 3	Conditional Statements ('If / When')	i2_25	Vayyaathaayaal	വയ്യാതായാൽ	If you feel unwell
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_01	Joli	ജോലി	Work
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_02	Shambalam	ശമ്പളം	Salary
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_03	Avadhi	അവധി	Leave
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_04	Yogam	യോഗം	Meeting
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_05	Sahapravarthakan	സഹപ്രവർത്തകൻ	Male colleague
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_06	Sahapravarthaka	സഹപ്രവർത്തക	Female colleague
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_07	Utharavaaditham	ഉത്തരവാദിത്തം	Responsibility
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_08	Parisheelanam	പരിശീലനം	Training
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_09	Parichayam	പരിചയം	Familiarity
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_10	Nirdesham	നിർദ്ദേശം	Instruction
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_11	Pravrithi	പ്രവൃത്തി	Task
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_12	Samayaparidhi	സമയപരിധി	Time limit
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_13	Vilichirunno?	വിളിച്ചിരുന്നോ?	Had you called?
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_14	Pinne vilikkaam	പിന്നെ വിളിക്കാം	I will call later
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_15	Shabdam kelkkunnilla	ശബ്ദം കേൾക്കുന്നില്ല	I cannot hear the sound
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_16	Message ayakkaamo?	മെസേജ് അയക്കാമോ?	Could you send a message?
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_17	Vishadeekarikkaamo?	വിശദീകരിക്കാമോ?	Could you explain?
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_18	Ithu eppozhekkum venam?	ഇത് എപ്പോഴേക്കും വേണം?	By when is this needed?
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_19	Njaan poorthiyaakki	ഞാൻ പൂർത്തിയാക്കി	I have completed it
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_20	Iniyum samayam venam	ഇനിയും സമയം വേണം	More time is needed
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_21	Namakku orumichu cheyyaam	നമുക്ക് ഒരുമിച്ചു ചെയ്യാം	We can do it together
+21	intermediate	Intermediate Level 4	Work, Tasks & Phone Calls	iw_22	Ee bhaagam njaan cheyyaam	ഈ ഭാഗം ഞാൻ ചെയ്യാം	I will do this part
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_01	Vidyaalayam	വിദ്യാലയം	School
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_02	Class	ക്ലാസ്	Class
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_03	Paadam	പാഠം	Lesson
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_04	Pareeksha	പരീക്ഷ	Examination
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_05	Chodyapaper	ചോദ്യപേപ്പർ	Question paper
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_06	Utharam	ഉത്തരം	Answer
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_07	Vidyarthi	വിദ്യാർത്ഥി	Student
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_08	Adhyaapakan	അധ്യാപകൻ	Male teacher
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_09	Adhyaapika	അധ്യാപിക	Female teacher
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_10	Pusthakam	പുസ്തകം	Book
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_11	Vaayana	വായന	Reading
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_12	Ezhuthu	എഴുത്ത്	Writing
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_13	Pena	പേന	Pen
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_14	Kadalaasu	കടലാസ്	Paper
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_15	Computer	കമ്പ്യൂട്ടർ	Computer
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_16	Internet	ഇന്റർനെറ്റ്	Internet
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_17	Password	പാസ്‌വേഡ്	Password
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_18	File	ഫയൽ	File
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_19	Thurakkaan pattunnilla	തുറക്കാൻ പറ്റുന്നില്ല	Cannot open it
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_20	Save cheytho?	സേവ് ചെയ്തോ?	Did you save it?
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_21	Ithu engane pravarthikkum?	ഇത് എങ്ങനെ പ്രവർത്തിക്കും?	How does this work?
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_22	Oru udaaharanam tharaamo?	ഒരു ഉദാഹരണം തരാമോ?	Could you give an example?
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_23	Thettu thiruthanam	തെറ്റ് തിരുത്തണം	Need to correct the mistake
+22	intermediate	Intermediate Level 5	School, Learning & Technology	il_24	Veendum shramikkaam	വീണ്ടും ശ്രമിക്കാം	Let us try again
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_01	Ishtam	ഇഷ്ടം	Liking
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_02	Thaalparyam	താൽപര്യം	Interest
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_03	Vinodam	വിനോദം	Recreation
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_04	Cinema	സിനിമ	Film
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_05	Paattu	പാട്ട്	Song
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_06	Sangeetham	സംഗീതം	Music
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_07	Nritham	നൃത്തം	Dance
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_08	Kali	കളി	Game
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_09	Kalikkaar	കളിക്കാർ	Players
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_10	Jayam	ജയം	Victory
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_11	Tholvi	തോൽവി	Defeat
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_12	Chithram	ചിത്രം	Picture
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_13	Photo	ഫോട്ടോ	Photograph
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_14	Vaartha	വാർത്ത	News
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_15	Paripaadi	പരിപാടി	Event
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_16	Abhinayam	അഭിനയം	Acting
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_17	Samvidhaayakan	സംവിധായകൻ	Film director
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_18	Enikku vaayikkaan ishtamaanu	എനിക്ക് വായിക്കാൻ ഇഷ്ടമാണ്	I like reading
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_19	Ee cinema kandittundo?	ഈ സിനിമ കണ്ടിട്ടുണ്ടോ?	Have you seen this film?
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_20	Katha engane undu?	കഥ എങ്ങനെ ഉണ്ട്?	What is the story like?
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_21	Enikku athra ishtappettilla	എനിക്ക് അത്ര ഇഷ്ടപ്പെട്ടില്ല	I did not like it very much
+23	intermediate	Intermediate Level 6	Hobbies, Media & Preferences	im_22	Nee enthu parayunnu?	നീ എന്തു പറയുന്നു?	What do you think?
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_01	Thonnunnu	തോന്നുന്നു	It seems
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_02	Vishwasamilla	വിശ്വാസമില്ല	I don't believe it
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_03	Athekkaal nallathu	അതിനേക്കാൾ നല്ലത്	Better than that
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_04	Chilappol	ചിലപ്പോൾ	Sometimes
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_05	Oru karyam parayatte?	ഒരു കാര്യം പറയട്ടെ?	May I say one thing?
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_06	Enikku thonniyathu	എനിക്ക് തോന്നിയത്	What I thought
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_07	Kooduthal nallathu	കൂടുതൽ നല്ലത്	Much better
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_08	Kuravalla	കുറവല്ല	Quite a lot
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_09	Nallapole	നല്ലപോലെ	Properly
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_10	Sathyam paranjaal	സത്യം പറഞ്ഞാൽ	To be honest
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_11	Urappilla	ഉറപ്പില്ല	Not sure
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_12	Theerchayaayum	തീർച്ചയായും	Definitely
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_13	Ente abhiprayathil	എന്റെ അഭിപ്രായത്തിൽ	In my opinion
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_14	Athu shari aanu	അത് ശരിയാണ്	That is correct
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_15	Anganeyalla	അങ്ങനെയല്ല	It's not quite like that
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_16	Ithreyum nallathu	ഇത്രയും നല്ലത്	This good
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_17	Avasyamundu	ആവശ്യമുണ്ട്	There is a need
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_18	Karyamilla	കാര്യമില്ല	No point in it
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_19	Ente thonnal	എന്റെ തോന്നൽ	My impression
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_20	Orkkunnu	ഓർക്കുന്നു	I remember
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_21	Marannupoyi	മറന്നുപോയി	I forgot
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_22	Thiricharinju	തിരിച്ചറിഞ്ഞു	Realized
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_23	Bhedhamaanu	ഭേദമാണ്	Better
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_24	Valare nallathu	വളരെ നല്ലത്	Very good indeed
+24	intermediate	Intermediate Level 7	Opinions, Doubts & Comparisons	i4_25	Njan orkkam	ഞാൻ ഓർക്കാം	I will keep it in mind
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_01	Vilakooduthal	വിലക്കൂടുതൽ	Too expensive
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_02	Kurakkumo?	കുറയ്ക്കുമോ?	Will you reduce the price?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_03	Baakki	ബാക്കി	Change
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_04	Chodyam	ചോദ്യം	Question
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_05	Ready aayo?	റെഡിയായോ?	Is it ready?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_06	Ethra aayi?	എത്രയായി?	How much did it come to?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_07	Bill thaamo?	ബിൽ തരുമോ?	Could you please give the bill?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_08	Cover undo?	കവർ ഉണ്ടോ?	Do you have a carry bag?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_09	Meter idumo?	മീറ്റർ ഇടുമോ?	Will you run the meter?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_10	Sthalam ethiyo?	സ്ഥലം എത്തിയോ?	Have we reached the place?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_11	Oru plate koode	ഒരു പ്ലേറ്റ് കൂടെ	One more plate please
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_12	Pack cheyyaamo?	പാക്ക് ചെയ്യാമോ?	Could you pack this?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_13	GPay undo?	ജിപേ ഉണ്ടോ?	Do you accept Google Pay?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_14	Kaasu illa	കാശ് ഇല്ല	I have no money
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_15	Ividayano irangendathu?	ഇവിടെയാണോ ഇറങ്ങേണ്ടത്?	Should I get down here?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_16	Bus stand evide?	ബസ് സ്റ്റാൻഡ് എവിടെ?	Where is the bus stand?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_17	Adoor KSRTC	അടൂർ കെ.എസ്.ആർ.ടി.സി	Adoor KSRTC Depot
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_18	Auto vilikkoo	ഓട്ടോ വിളിക്കൂ	Call an auto rickshaw
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_19	Ivide nirthumo?	ഇവിടെ നിർത്തുമോ?	Could you stop right here?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_20	Baakki kaasu thaamo?	ബാക്കി കാശ് തരുമോ?	Could you give me my change?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_21	Fresh aano?	ഫ്രഷ് ആണോ?	Is this fresh?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_22	Vila ethraya?	വില എത്രയാ?	What is the price?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_23	Choodu chaya thaamo?	ചൂടു ചായ തരുമോ?	Could I have hot tea?
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_24	Kurachu kazhinju varaam	കുറച്ചു കഴിഞ്ഞ് വരാം	I will come back in a little while
+25	intermediate	Intermediate Level 8	Errands, Shopping & Outside Interactions	i5_25	Nannayi poyi	നന്നായിപ്പോയി	It went very well
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_01	Suhruthu	സുഹൃത്ത്	Friend
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_02	Sauhrudam	സൗഹൃദം	Friendship
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_03	Ayalkkaaran	അയൽക്കാരൻ	Male neighbour
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_04	Ayalkkaari	അയൽക്കാരി	Female neighbour
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_05	Athithi	അതിഥി	Guest
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_06	Kshanam	ക്ഷണം	Invitation
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_07	Sammaanam	സമ്മാനം	Gift
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_08	Janmadinam	ജന്മദിനം	Birthday
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_09	Aaghosham	ആഘോഷം	Celebration
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_10	Vaakku	വാക്ക്	Word
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_11	Vishvaasam	വിശ്വാസം	Trust
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_12	Bahumaanam	ബഹുമാനം	Respect
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_13	Sammatham	സമ്മതം	Consent
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_14	Svaathanthryam	സ്വാതന്ത്ര്യം	Freedom
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_15	Svakaryatha	സ്വകാര്യത	Privacy
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_16	Naale veettil varaamo?	നാളെ വീട്ടിൽ വരാമോ?	Could you come home tomorrow?
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_17	Varan pattilla	വരാൻ പറ്റില്ല	Cannot come
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_18	Kshanichathinu nanni	ക്ഷണിച്ചതിനു നന്ദി	Thank you for inviting me
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_19	Enikku aalochikkanam	എനിക്ക് ആലോചിക്കണം	I need to think about it
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_20	Ithu parayaan enikku ishtamalla	ഇത് പറയാൻ എനിക്ക് ഇഷ്ടമല്ല	I do not want to talk about this
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_21	Enne ottaykku vidu	എന്നെ ഒറ്റയ്ക്കു വിടൂ	Please leave me alone
+26	intermediate	Intermediate Level 9	Relationships, Invitations & Boundaries	ir_22	Ninte sahaayathinu nanni	നിന്റെ സഹായത്തിനു നന്ദി	Thank you for your help
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_01	Thallu	തള്ള്	Bragging
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_02	Scene aanu	സീൻ ആണ്	It's a problem
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_03	Sceneilla	സീനില്ല	No issue
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_04	Pinnallathe!	പിന്നല്ലാതെ!	Of course!
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_05	Jaada	ജാഡ	Pretension
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_06	Comedy aanu	കോമഡി ആണ്	That's hilarious
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_07	Scene maker	സീൻ മേക്കർ	Troublemaker
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_08	Pottatharam	പൊട്ടത്തരം	Silly nonsense
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_09	Aano ketto!	ആണോ കേട്ടോ!	Oh, really!
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_10	Enthonnedey?	എന്തോന്നടേയ്?	What on earth, man?!
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_11	Alambakkaruthu	അലമ്പാക്കരുത്	Don't make trouble
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_12	Dialogue adikkalle	ഡയലോഗ് അടിക്കല്ലേ	Stop making speeches
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_13	Oola	ഓള	Lame
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_14	Kidu	കിടു	Awesome
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_15	Chank	ചങ്ക്	Close friend
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_16	Mass	മാസ്സ്	Impressive
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_17	Chali	ചളി	Corny joke
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_18	Pani paali	പണി പാളി	The plan backfired badly!
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_19	Show kaanikkalle	ഷോ കാണിക്കല്ലേ	Stop showing off!
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_20	Thallu kooduthal	തള്ള് കൂടുതൽ	Too much bragging happening here!
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_21	Nee puliyaanu	നീ പുലിയാണ്	You're brilliant!
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_22	Veruthe alla	വെറുതെയല്ല	No wonder!
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_23	Enthuvaadey ithu?	എന്തുവാടേയ് ഇത്?	What's this, man?
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_24	Vayaru niranju	വയറു നിറഞ്ഞു	I'm full
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_25	Njan sammathichu	ഞാൻ സമ്മതിച്ചു	I agree
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_26	Atheda	അതെടാ	Yes, man
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_27	Vibe aanu	വൈബ് ആണ്	Great vibes
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_28	Scene kando?	സീൻ കണ്ടോ?	Did you see that drama?
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_29	Patti poyi	പറ്റിപ്പോയി	Made a mistake
+27	intermediate	Intermediate Level 10	Teasing, Sarcasm & Informal Banter	i3_30	Kollallo	കൊള്ളാമല്ലോ	Hey, that's surprisingly neat!
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_01	-allo	-അല്ലോ	As you know
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_02	-tto	-ട്ടോ	Okay?
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_03	-ketto	-കേട്ടോ	Did you hear?
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_04	-enne	എന്നേ	Emphatic particle
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_05	-thanne	-തന്നെ	Exactly
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_06	-aayirikkum	-ആയിരിക്കും	Must be
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_07	-alle?	-അല്ലേ?	Isn't it so?
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_08	-pole	-പോലെ	Like
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_09	-maathram	-മാത്രം	Only
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_10	-thaane	-താനേ	All by itself
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_11	-aayallo	-ആയല്ലോ	Has become
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_12	-engaanum	-എങ്ങാനും	By any chance
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_13	-theerne	-തീർന്നേ	Finished!
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_14	Athu thanne!	അതു തന്നെ!	Exactly that!
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_15	Aano ketto	ആണോ കേട്ടോ	Oh, really!
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_16	Nallathaano ketto	നല്ലതാണോ കേട്ടോ	Is it good?
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_17	Avan thanne aanu	അവൻ തന്നെയാണ്	It is him
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_18	Enthukondaanennu vachal	എന്തുകൊണ്ടാണെന്ന് വെച്ചാൽ	Because…
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_19	Athu thanne kaaryam	അതു തന്നെ കാര്യം	That's the point
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_20	Varum ennu thonnunnu	വരും എന്ന് തോന്നുന്നു	I think they will come
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_21	Nammal kettallo	നമ്മൾ കേട്ടല്ലോ	We heard it, didn't we?
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_22	Poraathe	പോരാതെ	Besides
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_23	Athra thanne	അത്ര തന്നെ	Just that much
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_24	Poyikkoloo-tto	പോയിക്കോളൂട്ടോ	Go ahead, okay?
+28	advanced	Advanced Level 1	Nuance Tags & Suffix Flow	a1_25	Poyittu varaam-tto	പോയിട്ട് വരാംട്ടോ	I'll be going, okay?
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_01	Deshyam	ദേഷ്യം	Anger
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_02	Sankadam	സങ്കടം	Sorrow
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_03	Kothiyaavunnu	കൊതിയാവുന്നു	I'm craving it
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_04	Ashwasam	ആശ്വാസം	Relief
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_05	Pedi	പേടി	Fear
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_06	Bharam	ഭാരം	Burden
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_07	Asooya	അസൂയ	Envy
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_08	Lajja	ലജ്ജ	Shyness
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_09	Nombaram	നൊമ്പരം	Sorrow
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_10	Aakulam	ആകുലം	Anxious
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_11	Dhukham	ദുഃഖം	Grief
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_12	Pratheeksha	പ്രതീക്ഷ	Hope
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_13	Thalparyam	താൽപര്യം	Interest
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_14	Sneham	സ്നേഹം	Love
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_15	Krupa	കൃപ	Grace
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_16	Manassinu vishamam	മനസ്സിന് വിഷമം	Feeling upset
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_17	Deshyam pidikkalle	ദേഷ്യം പിടിക്കല്ലേ	Don't lose your temper
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_18	Valya ashwasam	വലിയ ആശ്വാസം	Great relief
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_19	Pedi thonni	പേടി തോന്നി	Felt afraid
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_20	Enikku sankadam aayi	എനിക്ക് സങ്കടമായി	I felt sad
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_21	Snehamulla	സ്നേഹമുള്ള	Loving
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_22	Manassamaadhaanam	മനസ്സമാധാനം	Peace of mind
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_23	Snehavum bahaumaanavum	സ്നേഹവും ബഹുമാനവും	Love and respect
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_24	Kothipichu	കൊതിപ്പിച്ചു	Made my mouth water
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_25	Chinthichu	ചിന്തിച്ചു	Thought
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_26	Aakulappedalle	ആകുലപ്പെടല്ലേ	Don't be anxious
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_27	Pratheekshayode	പ്രതീക്ഷയോടെ	With hope
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_28	Dhairyam	ധൈര്യം	Courage
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_29	Dhairyam vekku	ധൈര്യം വെയ്ക്ക്	Take heart
+29	advanced	Advanced Level 2	Complex Emotional States & Dispositions	a2_30	Kshama	ക്ഷമ	Patience
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_01	Kondubovaam	കൊണ്ടുപോകാം	Let's take it along
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_02	Ittekku	ഇട്ടേക്ക്	Put it down
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_03	Paranjukodukku	പറഞ്ഞുകൊടുക്ക്	Explain it to them
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_04	Nokkikkollu	നോക്കിക്കൊള്ളൂ	Take care of it
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_05	Aayi-theernnu	ആയിത്തീർന്നു	Became
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_06	Konduvaa	കൊണ്ടുവാ	Bring it
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_07	Eduthuvekku	എടുത്തുവെക്ക്	Put it away
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_08	Paranjuvidu	പറഞ്ഞുവിട്	Send word
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_09	Cheythu-theerkku	ചെയ്തുതീർക്ക്	Finish it
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_10	Nokkikkolaam	നോക്കിക്കോളാം	I'll take care of it
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_11	Kettivekku	കെട്ടിവെക്ക്	Tie it up
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_12	Poyikkollu	പോയിക്കോളൂ	Go ahead
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_13	Koduthuvidu	കൊടുത്തുവിട്	Send it along
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_14	Vilichupara	വിളിച്ചുപറ	Call out and tell them
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_15	Kandupidikku	കണ്ടുപിടിക്ക്	Figure it out
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_16	Ezhuthivekku	എഴുതിവെക്ക്	Write it down
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_17	Ariyichukodukku	അറിയിച്ചുകൊടുക്ക്	Let them know
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_18	Theerthu-thaa	തീർത്തുതാ	Finish it up for me
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_19	Njan kondubovaam	ഞാൻ കൊണ്ടുപോകാം	I will take it with me
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_20	Veezhathe nokku	വീഴാതെ നോക്ക്	Watch that it doesn't fall!
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_21	Njan paranjolaam	ഞാൻ പറഞ്ഞോളാം	I'll tell them
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_22	Kandollu	കണ്ടോളൂ	Have a look
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_23	Pidi kittiyo?	പിടി കിട്ടിയോ?	Did you get the hang of it?
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_24	Valanju poyi	വളഞ്ഞുപോയി	Got bent
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_25	Nannayi varatte	നന്നായി വരട്ടെ	May it turn out well
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_26	Mindathiri	മിണ്ടാതിരി	Be quiet
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_27	Kelkkathilla	കേൾക്കത്തില്ല	Won't listen
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_28	Varathilla	വരത്തില്ല	Won't come
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_29	Pattathilla	പറ്റത്തില്ല	Not possible
+30	advanced	Advanced Level 3	Compound Verbs & Natural Contractions	a3_30	Koodi-chernnu	കൂടിച്ചേർന്നു	Came together
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_01	Prashnam	പ്രശ്നം	Problem
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_02	Parihaaram	പരിഹാരം	Solution
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_03	Saadhyatha	സാധ്യത	Possibility
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_04	Nettam	നേട്ടം	Benefit
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_05	Nashtam	നഷ്ടം	Loss
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_06	Apakadam	അപകടം	Danger
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_07	Thadassam	തടസ്സം	Obstacle
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_08	Munganana	മുൻഗണന	Priority
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_09	Lakshyam	ലക്ഷ്യം	Goal
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_10	Padhathi	പദ്ധതി	Plan
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_11	Chilavu	ചെലവ്	Expense
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_12	Laabham	ലാഭം	Profit
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_13	Nibandhana	നിബന്ധന	Condition
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_14	Maattam	മാറ്റം	Change
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_15	Purogathi	പുരോഗതി	Progress
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_16	Karaar	കരാർ	Contract
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_17	Namukku vere vazhi nokkaam	നമുക്ക് വേറെ വഴി നോക്കാം	Let us look for another approach
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_18	Ithinte gunam enthaanu?	ഇതിന്റെ ഗുണം എന്താണ്?	What is the benefit of this?
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_19	Chilavu kuraykkaan pattumo?	ചെലവ് കുറയ്ക്കാൻ പറ്റുമോ?	Can we reduce the cost?
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_20	Aadyam ithu cheyyaam	ആദ്യം ഇത് ചെയ്യാം	Let us do this first
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_21	Ningalude abhipraayam kelkkaam	നിങ്ങളുടെ അഭിപ്രായം കേൾക്കാം	Let us hear your opinion
+31	advanced	Advanced Level 4	Problems, Explanations & Negotiation	ap_22	Namukku oru theerumaanathil ethaam	നമുക്ക് ഒരു തീരുമാനത്തിൽ എത്താം	Let us reach a decision
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_01	Samuham	സമൂഹം	Society
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_02	Sarkkaar	സർക്കാർ	Government
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_03	Theranjeduppu	തിരഞ്ഞെടുപ്പ്	Election
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_04	Niyamam	നിയമം	Law
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_05	Avakaasham	അവകാശം	Right
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_06	Saambathikam	സാമ്പത്തികം	Economic affairs
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_07	Vila vardhana	വിലവർധന	Price increase
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_08	Paristhithi	പരിസ്ഥിതി	Environment
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_09	Malineekaranam	മലിനീകരണം	Pollution
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_10	Vikasanam	വികസനം	Development
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_11	Vidyaabhyaasam	വിദ്യാഭ്യാസം	Education
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_12	Aarogyam	ആരോഗ്യം	Health
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_13	Suraksha	സുരക്ഷ	Safety
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_14	Thelivu	തെളിവ്	Evidence
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_15	Vivaram	വിവരം	Information
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_16	Uravidam	ഉറവിടം	Source
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_17	Abhipraayam	അഭിപ്രായം	Opinion
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_18	Yaathaarthyam	യാഥാർത്ഥ്യം	Reality
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_19	Ithu urappaano?	ഇത് ഉറപ്പാണോ?	Is this certain?
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_20	Thelivu undo?	തെളിവ് ഉണ്ടോ?	Is there evidence?
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_21	Vaarthayil kettathaanu	വാർത്തയിൽ കേട്ടതാണ്	I heard it on the news
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_22	Enikku urappilla	എനിക്ക് ഉറപ്പില്ല	I am not sure
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_23	Randu vashavum nokkanam	രണ്ടു വശവും നോക്കണം	We should consider both sides
+32	advanced	Advanced Level 5	News, Society & Evaluating Claims	an_24	Kooduthal vivaram venam	കൂടുതൽ വിവരം വേണം	More information is needed
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_01	Sadya	സദ്യ	Feast
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_02	Kalyanam	കല്യാണം	Wedding
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_03	Perunnal	പെരുന്നാൾ	Parish Feast
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_04	Acharam	ആചാരം	Custom
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_05	Anugraham	അനുഗ്രഹം	Blessing
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_06	Bandhangal	ബന്ധങ്ങൾ	Relationships
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_07	Tharavadu	തറവാട്	Ancestral home
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_08	Koodasha	കൂദാശ	Sacrament
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_09	Maamoodeesa	മാമോദീസ	Baptism
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_10	Vayana	വായന	Reading
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_11	Snehavirunnu	സ്നേഹവിരുന്ന്	Love feast
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_12	Aashirvaadam	ആശീർവാദം	Benediction
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_13	Paithrukam	പൈതൃകം	Heritage
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_14	Perunnal pradakshinam	പെരുന്നാൾ പ്രദക്ഷിണം	Parish festival procession
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_15	Qurbana	കുർബാന	Holy Mass
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_16	Vibhava samrudham	വിഭവസമൃദ്ധം	An abundance of dishes
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_17	Ammachiyude kaippunyam	അമ്മച്ചിയുടെ കൈപ്പുണ്യം	Grandmother's cooking skill
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_18	Valyammachi	വല്യമ്മച്ചി	Great-grandmother
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_19	Valyappachan	വല്യപ്പച്ചൻ	Great-grandfather
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_20	Thala murakal	തലമുറകൾ	Generations
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_21	Sneha bandham	സ്നേഹബന്ധം	Bond of affection
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_22	Kudumba koottaayma	കുടുംബക്കൂട്ടായ്മ	Family gathering
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_23	Dhaivathinu sthuthi	ദൈവത്തിന് സ്തുതി	Praise be to God
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_24	Adoor perunnal	അടൂർ പെരുന്നാൾ	Adoor church festival
+33	advanced	Advanced Level 6	Family Lore, Tradition & Festive Vocabulary	a4_25	Nanma niranju	നന്മ നിറഞ്ഞു	Filled with goodness
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_01	Athalla njan paranjathu	അതല്ല ഞാൻ പറഞ്ഞത്	That's not what I said
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_02	Anganeyonnum alla	അങ്ങനെയൊന്നുമല്ല	It's nothing like that at all
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_03	Athil karyamilla	അതിൽ കാര്യമില്ല	There's no point in that
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_04	Sammathikkilla	സമ്മതിക്കില്ല	I will not agree
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_05	Njaan yojikkunnilla	ഞാൻ യോജിക്കുന്നില്ല	I disagree
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_06	Thirichu chinthikku	തിരിച്ചു ചിന്തിക്കൂ	Think about the other side
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_07	Angane parayan pattilla	അങ്ങനെ പറയാൻ പറ്റില്ല	You can't say that
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_08	Athil thettundu	അതിൽ തെറ്റുണ്ട്	There is an error
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_09	Ningal paranjathu shari, pakshe...	നിങ്ങൾ പറഞ്ഞത് ശരി, പക്ഷേ...	What you said is true, but...
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_10	Athra eluppamalla	അത്ര എളുപ്പമല്ല	It is not that simple
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_11	Avasyamillaatha charcha	ആവശ്യമില്ലാത്ത ചർച്ച	An unnecessary debate
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_12	Tharkkam venda	തർക്കം വേണ്ട	Let's not argue
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_13	Enikku vere abhiprayam undu	എനിക്ക് വേറെ അഭിപ്രായമുണ്ട്	I have a different opinion
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_14	Athu paranjathu thetti poyi	അത് പറഞ്ഞത് തെറ്റിപ്പോയി	That was wrong to say
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_15	Kshamikkanam	ക്ഷമിക്കണം	Forgive me
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_16	Njan udheshichathu	ഞാൻ ഉദ്ദേശിച്ചത്	What I meant was…
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_17	Avastha manassilaakku	അവസ്ഥ മനസ്സിലാക്കൂ	Understand the situation
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_18	Dhruthiyil theerumaanam venda	ധൃതിയിൽ തീരുമാനം വേണ്ട	No hasty decision
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_19	Kaaryam parayoo	കാര്യം പറയൂ	Get to the point
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_20	Thettidharikkalle	തെറ്റിദ്ധരിക്കല്ലേ	Please do not misunderstand me
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_21	Samadhanapara-maayi theerkkaam	സമാധാനപരമായി തീർക്കാം	Let's resolve this peacefully
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_22	Athukondu enikku yojikkan aavilla	അതുകൊണ്ട് എനിക്ക് യോജിക്കാൻ ആവില്ല	So I can't agree
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_23	Shari allaathathu njan parayilla	ശരിയല്ലാത്തത് ഞാൻ പറയില്ല	I won't say what's wrong
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_24	Namukku nokkam	നമുക്ക് നോക്കാം	Let's see
+34	advanced	Advanced Level 7	Expressing Disagreement & Tactful Pushback	a5_25	Ellam nannayi varum	എല്ലാം നന്നായി വരും	Everything will turn out well
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_01	Adipoli!	അടിപൊളി!	Awesome!
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_02	Kidu!	കിടു!	Super cool!
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_03	Kidilam	കിടിലം	Sensational
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_04	Scene aanu!	സീൻ ആണ്!	It's chaotic
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_05	Scene illa	സീൻ ഇല്ല	No drama
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_06	Uyir	ഉയിർ	Life
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_07	Chank	ചങ്ക്	Best friend
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_08	Mass!	മാസ്!	Impressive!
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_09	Polichu!	പൊളിച്ചു!	Killed it!
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_10	Tharikida	തരികിട	Trickery
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_11	Gethu	ഗെത്ത്	Swag
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_12	Look aanu	ലുക്ക് ആണ്	Looks stylish
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_13	Vibe aanu	വൈബ് ആണ്	Great atmosphere
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_14	Feel aayi	ഫീൽ ആയി	Felt hurt
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_15	Katta support	കട്ട സപ്പോർട്ട്	Strong support
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_16	Sambhavam aanu	സംഭവം ആണ്	A big deal
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_17	Veruppikkalle	വെറുപ്പിക്കല്ലേ	Don't annoy me
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_18	Oola	ഊള	Fool
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_19	Mandatharam	മണ്ടത്തരം	Silly blunder
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_20	Thallu	തള്ള്	Wild boasting
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_21	Thallalle!	തള്ളല്ലേ!	Stop bluffing!
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_22	Kidu!	കിടു!	Awesome!
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_23	Shock aayi	ഷോക്ക് ആയി	Utterly stunned
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_24	Poli sanam	പൊളി സാധനം	Top tier stuff
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_25	Set aayi	സെറ്റ് ആയി	All sorted
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_26	Aura undu	ഔറ ഉണ്ട്	Has presence
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_27	Alambakkaruthu	അലമ്പാക്കരുത്	Don't ruin the plan
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_28	Chumma thetti	ചുമ്മാ തെറ്റി	Just made a mistake
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_29	Niranju nilkkunnu	നിറഞ്ഞു നിൽക്കുന്നു	Fills the space
+35	mastery	Mastery Level 1	Rapid Colloquial Slang & Generational Idioms	m1_30	Gethodu koodi	ഗെത്തോടു കൂടി	With swagger
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_01	Minnunnathellaam ponnalla	മിന്നുന്നതെല്ലാം പൊന്നല്ല	All that glitters is not gold
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_02	Kaaryam kaanaan kaalupidikkuka	കാര്യം കാണാൻ കാലുപിടിക്കുക	Begging for a favor
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_03	Muttathe mullaykku manamilla	മുറ്റത്തെ മുല്ലയ്ക്ക് മണമില്ല	Familiarity breeds contempt
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_04	Chakkikku oththa chankaran	ചക്കിക്കു ഒത്ത ചങ്കരൻ	Made for each other
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_05	Veli chaadiya pashu	വേലി ചാടിയ പശു	A cow that jumped the fence
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_06	Kai nanayaathe meen pidikkuka	കൈ നനയാതെ മീൻ പിടിക്കുക	Wanting reward without effort
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_07	Kaakkaykkum than kunju ponkunju	കാക്കയ്ക്കും തൻ കുഞ്ഞ് പൊൻകുഞ്ഞ്	Every parent cherishes their child
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_08	Paambu kadichaalum vishamillaatha aal	പാമ്പ് കടിച്ചാലും വിഷമില്ലാത്ത ആൾ	A harmless person
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_09	Aana vaayil ambazhanga	ആന വായിൽ അമ്പഴങ്ങ	Too little to make a difference
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_10	Uppu thinnunnavan vellam kudikkum	ഉപ്പു തിന്നുന്നവൻ വെള്ളം കുടിക്കും	Actions have consequences
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_11	Koodik kazhinjal koottukaaran	കൂടിക്കഴിഞ്ഞാൽ കൂട്ടുകാരൻ	Once together, a friend
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_12	Chorunnumbol koodum aliyan	ചോറുണ്ണുമ്പോൾ കൂടും അളിയൻ	A brother-in-law who joins at mealtime
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_13	Vellathil varacha vara	വെള്ളത്തിൽ വരച്ച വര	A futile effort
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_14	Kaalathinte koottukaaran	കാലത്തിന്റെ കൂട്ടുകാരൻ	A companion of the times
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_15	Vithachathe koyyoo	വിതച്ചതേ കൊയ്യൂ	You reap what you sow
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_16	Azhakulla chakka puzhukkiyale ariyoo	അഴകുള്ള ചക്ക പുഴുങ്ങിയാലേ അറിയൂ	You must try it to judge it
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_17	Aazham ariyaathe kaalidalle	ആഴം അറിയാതെ കാലിടല്ലേ	Don't act without checking first
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_18	Thee illathe puka varilla	തീയില്ലാതെ പുക വരില്ല	There is no smoke without fire
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_19	Pala thulli peru vellam	പല തുള്ളി പെരുവെള്ളം	Many small contributions add up
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_20	Ariyaatha pilla choriyumbol ariyum	അറിയാത്ത പിള്ള ചൊറിയുമ്പോൾ അറിയും	Some learn only through experience
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_21	Moolakku irikkunnavane vellam koodi	മൂലക്കിരിക്കുന്നവനെ വെള്ളം കൂടി	Trouble reached even the quiet one
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_22	Kandal ariyatha aal kondaal ariyum	കണ്ടാൽ അറിയാത്ത ആൾ കൊണ്ടാൽ അറിയും	Some learn only the hard way
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_23	Pashuvum chathu morile puliyum poyi	പശുവും ചത്തു മോരിലെ പുളിയും പോയി	Everything is lost
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_24	Kallan kandal ariyatha chithram	കള്ളൻ കണ്ടാൽ അറിയാത്ത ചിത്രം	A picture the thief doesn't recognize
+36	mastery	Mastery Level 2	Classic Proverbs & Everyday Metaphors	m2_25	Nenchil kaanunnathu kanneeril parayuka	നെഞ്ചിൽ കാണുന്നത് കണ്ണീരിൽ പറയുക	Expressing feelings through tears
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_01	Athrem paranjal mathiyallo	അത്രേം പറഞ്ഞാൽ മതിയല്ലോ	Saying that much is enough
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_02	Nallathaayi!	നല്ലതായി!	Turned out well!
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_03	Aarkkum vendaathathu	ആർക്കും വേണ്ടാത്തത്	What nobody wants
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_04	Parayanulla aalalla	പറയാനുള്ള ആളല്ല	Not the person to say it
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_05	Kandittariyaam	കണ്ടിട്ടറിയാം	We shall see in time
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_06	Njan onnum parayunnilla	ഞാൻ ഒന്നും പറയുന്നില്ല	I'm not saying anything
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_07	Pinne parayaam	പിന്നെ പറയാം	I'll tell you later
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_08	Avarude reethi anganeya	അവരുടെ രീതി അങ്ങനെയാ	That's their way
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_09	Ariyaatha pole nadikkunnu	അറിയാത്ത പോലെ നടിക്കുന്നു	Pretending not to know
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_10	Athilum valiyathaanu	അതിലും വലിയതാണ്	It's bigger than that
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_11	Kaanunna poleyalla	കാണുന്ന പോലെയല്ല	It's not as it looks
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_12	Athre parayaanullu	അത്രേ പറയാനുള്ളൂ	That's all there is to say
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_13	Ente bhagathu thettilla	എന്റെ ഭാഗത്ത് തെറ്റില്ല	I'm not at fault
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_14	Kaaryam vyakthamaayi	കാര്യം വ്യക്തമായി	The matter became clear
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_15	Oru nalla manassu	ഒരു നല്ല മനസ്സ്	A kind heart
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_16	Veruthe vittaal mathi	വെറുതെ വിട്ടാൽ മതി	Just let it be
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_17	Aaraanu kuttakkaran ennu ariyaam	ആരാണ് കുറ്റക്കാരൻ എന്ന് അറിയാം	I know who's at fault
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_18	Vaakkukal sookshikkanam	വാക്കുകൾ സൂക്ഷിക്കണം	Mind your words carefully
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_19	Anganeyum oru vazhi undu	അങ്ങനെയും ഒരു വഴിയുണ്ട്	That's another option
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_20	Chilathu marakkunnathaanu nallathu	ചിലത് മറക്കുന്നതാണ് നല്ലത്	Some things are better forgotten
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_21	Manassilakkiyavar manassilakkatte	മനസ്സിലാക്കിയവർ മനസ്സിലാക്കട്ടെ	Let those who understand, understand
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_22	Kaathirunnu kaanam	കാത്തിരുന്നു കാണാം	Let's wait and see
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_23	Nannayi varatte ennu prarthikkam	നന്നായി വരട്ടെ എന്ന് പ്രാർത്ഥിക്കാം	Let us pray that it turns out well
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_24	Athu oru paadam aayirunnu	അത് ഒരു പാഠമായിരുന്നു	That was a lesson
+37	mastery	Mastery Level 3	Subtext, Irony & Passive Phrasing	m3_25	Nammude nallathinaanu	നമ്മുടെ നല്ലതിനാണ്	It's for our good
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_01	Dharshanam	ദർശനം	Philosophy
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_02	Nithyatha	നിത്യത	Eternity
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_03	Chinthagathi	ചിന്താഗതി	Mindset
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_04	Swantham thalparyam	സ്വന്തം താല്പര്യം	Personal interest
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_05	Samuhika bodham	സാമൂഹിക ബോധം	Social consciousness
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_06	Nethruthwam	നേതൃത്വം	Leadership
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_07	Anubhoothi	അനുഭൂതി	Experience
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_08	Mulyangal	മൂല്യങ്ങൾ	Values
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_09	Uthravadhithwam	ഉത്തരവാദിത്വം	Responsibility
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_10	Swathandryam	സ്വാതന്ത്ര്യം	Freedom
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_11	Sahishnutha	സഹിഷ്ണുത	Tolerance
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_12	Athma-shakthi	ആത്മശക്തി	Inner strength
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_13	Sathyasandhatha	സത്യസന്ധത	Honesty
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_14	Paraspara bandham	പരസ്പര ബന്ധം	Mutual relationship
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_15	Vichaaradhaara	വിചാരധാര	School of thought
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_16	Manasaantharam	മാനസാന്തരം	Repentance
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_17	Aathmarthatha	ആത്മാർത്ഥത	Sincerity
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_18	Pareekshanam	പരീക്ഷണം	Experiment
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_19	Nirmaanaparam	നിർമ്മാണപരം	Constructive
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_20	Paristhithi bodham	പരിസ്ഥിതി ബോധം	Environmental consciousness
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_21	Swayam-bodham	സ്വയംബോധം	Self-awareness
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_22	Kaala-ghattam	കാലഘട്ടം	Era
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_23	Pauranikatha	പൗരാണികത	Antiquity
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_24	Nyayatheerppu	ന്യായതീർപ്പ്	Judgment
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_25	Karunya manassu	കാരുണ്യ മനസ്സ്	A compassionate heart
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_26	Acharangal	ആചാരങ്ങൾ	Customs
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_27	Prathirodham	പ്രതിരോധം	Resistance
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_28	Dharma-chinthana	ധർമ്മചിന്ത	Moral reflection
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_29	Pramukhan	പ്രമുഖൻ	Prominent person
+38	mastery	Mastery Level 4	Deep Vocabulary & Abstract Conversation	m4_30	Samskarika paramparyam	സാംസ്കാരിക പാരമ്പര്യം	Cultural heritage
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_01	Enthonnu?	എന്തൊന്ന്?	What?
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_02	Ingottu vaa	ഇങ്ങോട്ട് വാ	Come here
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_03	Potte?	പോട്ടെ?	May I leave?
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_04	Ketto?	കേട്ടോ?	Did you hear?
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_05	Nokku	നോക്ക്	Look
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_06	Pinneyum	പിന്നെയും	Again
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_07	Appo	അപ്പോ	Then
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_08	Kozhappamilla	കൊഴപ്പമില്ല	No problem
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_09	Mone	മോനേ	Son
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_10	Enthonnedaa?	എന്തൊന്നെടാ?	What's this, man?
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_11	Enthinadaa?	എന്തിനെടാ?	Why, man?
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_12	Ethaa thalparyam?	ഏതാ താല്പര്യം?	What do you prefer?
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_13	Angottu maari nilkku	അങ്ങോട്ട് മാറി നിൽക്കൂ	Move aside that way
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_14	Kaaryamaayi parayukayaanu	കാര്യമായി പറയുകയാണ്	I'm speaking seriously
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_15	Oru nishabdhatha	ഒരു നിശബ്ദത	A silence
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_16	Nalla sahacharyam	നല്ല സാഹചര്യം	Favorable conditions
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_17	Aathmabandham	ആത്മബന്ധം	Close bond
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_18	Snehamulla aal	സ്നേഹമുള്ള ആൾ	A loving person
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_19	Enthokke paranjalum	എന്തൊക്കെ പറഞ്ഞാലും	Whatever anyone may say
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_20	Avasana theerumanam	അവസാന തീരുമാനം	Final decision
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_21	Manassil oru niravu	മനസ്സിൽ ഒരു നിറവ്	A feeling of contentment
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_22	Kudumbathinte nattellu	കുടുംബത്തിന്റെ നട്ടെല്ല്	The backbone of the family
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_23	Nannayi poyi	നന്നായിപ്പോയി	It turned out splendidly
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_24	Dhaivame thunakkane	ദൈവമേ തുണയ്ക്കണേ	God, please help us
+39	mastery	Mastery Level 5	Dialect & Accent Switching	m5_25	Njan koodeyundu	ഞാൻ കൂടെയുണ്ട്	I am right here with you

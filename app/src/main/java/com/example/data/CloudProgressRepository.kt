@@ -107,7 +107,6 @@ class CloudProgressRepository(private val db: FirebaseFirestore) {
                 val createPayload = mapOf(
                     "userId" to uid,
                     "displayName" to safeName,
-                    "xp" to stats.xp.coerceIn(0, 10000000),
                     "streakDays" to stats.streakDays.coerceIn(0, 10000),
                     "completedQuizCount" to stats.completedQuizCount.coerceIn(0, 100000),
                     "spokenPhrasesCount" to stats.spokenPhrasesCount.coerceIn(0, 100000),
@@ -124,7 +123,6 @@ class CloudProgressRepository(private val db: FirebaseFirestore) {
             } else {
                 val updatePayload = mapOf(
                     "displayName" to safeName,
-                    "xp" to stats.xp.coerceIn(0, 10000000),
                     "streakDays" to stats.streakDays.coerceIn(0, 10000),
                     "completedQuizCount" to stats.completedQuizCount.coerceIn(0, 100000),
                     "spokenPhrasesCount" to stats.spokenPhrasesCount.coerceIn(0, 100000),
@@ -145,7 +143,6 @@ class CloudProgressRepository(private val db: FirebaseFirestore) {
                 val fullProgressPayload = mapOf(
                     "userId" to uid,
                     "displayName" to safeName,
-                    "xp" to stats.xp.coerceIn(0, 10000000),
                     "streakDays" to stats.streakDays.coerceIn(0, 10000),
                     "completedQuizCount" to stats.completedQuizCount.coerceIn(0, 100000),
                     "spokenPhrasesCount" to stats.spokenPhrasesCount.coerceIn(0, 100000),

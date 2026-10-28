@@ -1,0 +1,7 @@
+# Workspace indexing ignore rules for Gemini
+node_modules/
+build/
+**/build/
+.gradle/
+.idea/
+*.log

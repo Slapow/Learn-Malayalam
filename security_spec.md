@@ -11,7 +11,7 @@
 2. **Cross-User Profile Read**: `bobDb.collection("users").doc("alice").get()` -> Reject (`request.auth.uid == userId`).
 3. **Spoofed Owner ID on Create**: `aliceDb.collection("users").doc("alice").set({ userId: "bob", ... })` -> Reject (`data.userId == request.auth.uid`).
 4. **Shadow / Ghost Field Injection**: `aliceDb.collection("users").doc("alice").update({ isAdmin: true })` -> Reject (`affectedKeys().hasOnly(...)`).
-5. **Negative XP Poisoning**: `aliceDb.collection("users").doc("alice").update({ xp: -500 })` -> Reject (`data.xp >= 0`).
+5. **Negative Streak Poisoning**: `aliceDb.collection("users").doc("alice").update({ streakDays: -500 })` -> Reject (`data.streakDays >= 0`).
 6. **Oversized String Exhaustion**: `displayName` > 100 chars -> Reject (`data.displayName.size() <= 100`).
 7. **Future Timestamp Spoofing**: `createdAt` set in the future -> Reject (`data.createdAt <= request.time`).
 8. **Mutating Immutable `createdAt`**: Updating `createdAt` on an existing profile -> Reject (`incoming().createdAt == existing().createdAt`).

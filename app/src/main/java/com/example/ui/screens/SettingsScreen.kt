@@ -2,6 +2,7 @@ package com.example.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -33,6 +35,7 @@ import com.google.firebase.auth.FirebaseUser
 fun SettingsScreen(
     user: FirebaseUser,
     userStats: UserStats,
+    onBack: () -> Unit = {},
     onSignOut: () -> Unit,
     cloudSyncStatus: String = "Connected",
     lastSyncedDevice: String = "Android",
@@ -40,17 +43,19 @@ fun SettingsScreen(
     localLanUrl: String = "",
     onResetAllProgress: () -> Unit = {},
     onSetDevLevel: (Int) -> Unit = {},
-    onSetDevXp: (Int) -> Unit = {},
     onSetDevStreak: (Int) -> Unit = {},
-    onQueueDevLevelUp: (Boolean) -> Unit = {}
+    onQueueDevLevelUp: (Boolean) -> Unit = {},
+    isDevModeEnabled: Boolean = false,
+    onToggleDevMode: (Boolean) -> Unit = {}
 ) {
     val context = LocalContext.current
     var showSignOutConfirm by remember { mutableStateOf(false) }
     var showResetDialogStep1 by remember { mutableStateOf(false) }
     var showResetDialogStep2 by remember { mutableStateOf(false) }
     var resetConfirmationText by remember { mutableStateOf("") }
-    var isDevModeEnabled by remember { mutableStateOf(false) }
     var devFeedbackMessage by remember { mutableStateOf<String?>(null) }
+
+    BackHandler { onBack() }
 
     Scaffold(
         topBar = {
@@ -60,6 +65,14 @@ fun SettingsScreen(
                         text = "Settings",
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back to Home"
+                        )
+                    }
                 }
             )
         }
@@ -94,7 +107,7 @@ fun SettingsScreen(
                                     .background(MaterialTheme.colorScheme.primaryContainer),
                                 contentAlignment = Alignment.Center
                             ) {
-                                val initial = (user.displayName?.firstOrNull() ?: user.email?.firstOrNull() ?: 'U').uppercase()
+                                val initial = if (user.isAnonymous) "G" else (user.displayName?.firstOrNull() ?: user.email?.firstOrNull() ?: 'U').uppercase()
                                 Text(
                                     text = initial,
                                     style = MaterialTheme.typography.titleLarge.copy(
@@ -108,23 +121,23 @@ fun SettingsScreen(
 
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = user.displayName ?: "Malayalam Learner",
+                                    text = if (user.isAnonymous) "Guest Learner (Local Mode)" else (user.displayName ?: "Malayalam Learner"),
                                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                                 )
                                 Text(
-                                    text = user.email ?: "Google Account",
+                                    text = if (user.isAnonymous) "Local Session" else (user.email ?: "Google Account"),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Surface(
-                                    color = PalmContainerLight,
+                                    color = if (user.isAnonymous) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.primaryContainer,
                                     shape = RoundedCornerShape(6.dp)
                                 ) {
                                     Text(
-                                        text = "Google Authenticated",
+                                        text = if (user.isAnonymous) "Guest Account (Local)" else "Google Authenticated",
                                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Bold),
-                                        color = EmeraldDark,
+                                        color = if (user.isAnonymous) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onPrimaryContainer,
                                         modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
                                     )
                                 }
@@ -157,7 +170,7 @@ fun SettingsScreen(
                                 )
                             }
                             Surface(
-                                color = PalmContainerLight,
+                                color = MaterialTheme.colorScheme.primaryContainer,
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Row(
@@ -174,7 +187,7 @@ fun SettingsScreen(
                                     Text(
                                         text = "Active",
                                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                        color = EmeraldDark
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
                                     )
                                 }
                             }
@@ -183,7 +196,7 @@ fun SettingsScreen(
                         Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
-                            text = "All lesson progress, XP, streak days, and known words are securely auto-saved in Cloud Firestore. Changes sync in real-time across your Android app and Web companion.",
+                            text = "All lesson progress, streak days, and known words are securely auto-saved in Cloud Firestore. Changes sync in real-time across your Android app and Web companion.",
                             style = MaterialTheme.typography.bodySmall.copy(lineHeight = 18.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -351,11 +364,11 @@ fun SettingsScreen(
                 Card(
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (isDevModeEnabled) GoldenContainerLight.copy(alpha = 0.35f) else MaterialTheme.colorScheme.surface
+                        containerColor = if (isDevModeEnabled) MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.35f) else MaterialTheme.colorScheme.surface
                     ),
                     border = BorderStroke(
                         1.dp,
-                        if (isDevModeEnabled) GoldenSpice else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
+                        if (isDevModeEnabled) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     modifier = Modifier
@@ -380,27 +393,27 @@ fun SettingsScreen(
                                     Text(
                                         text = if (isDevModeEnabled) "Active: Custom level & celebration tools" else "Enable to test levels & celebrations",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = if (isDevModeEnabled) GoldenOnContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = if (isDevModeEnabled) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
 
                             Switch(
                                 checked = isDevModeEnabled,
-                                onCheckedChange = { isDevModeEnabled = it },
+                                onCheckedChange = onToggleDevMode,
                                 modifier = Modifier.testTag("dev_mode_toggle")
                             )
                         }
 
                         if (isDevModeEnabled) {
                             Spacer(modifier = Modifier.height(16.dp))
-                            HorizontalDivider(color = GoldenSpice.copy(alpha = 0.35f))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.35f))
                             Spacer(modifier = Modifier.height(14.dp))
 
                             if (devFeedbackMessage != null) {
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
-                                    color = GoldenSpice,
+                                    color = MaterialTheme.colorScheme.secondaryContainer,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(bottom = 12.dp)
@@ -408,7 +421,7 @@ fun SettingsScreen(
                                     Text(
                                         text = devFeedbackMessage ?: "",
                                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                        color = GoldenOnContainer,
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                                     )
                                 }
@@ -445,12 +458,12 @@ fun SettingsScreen(
                                         devFeedbackMessage = "Queued Drill Level Up Screen!"
                                     },
                                     shape = RoundedCornerShape(10.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = GoldenSpice),
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
                                     modifier = Modifier
                                         .weight(1f)
                                         .testTag("dev_queue_drill_levelup")
                                 ) {
-                                    Text("🎯 Drill Level Up", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GoldenOnContainer)
+                                    Text("🎯 Drill Level Up", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSecondaryContainer)
                                 }
                             }
 
@@ -488,7 +501,7 @@ fun SettingsScreen(
                                                 },
                                                 colors = FilterChipDefaults.filterChipColors(
                                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                                    selectedLabelColor = Color.White
+                                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                                                 ),
                                                 modifier = Modifier
                                                     .weight(1f)
@@ -503,41 +516,6 @@ fun SettingsScreen(
                             }
 
                             Spacer(modifier = Modifier.height(16.dp))
-
-                            // 3. Quick XP Overrides
-                            Text(
-                                text = "Quick XP Overrides (Current: ${userStats.xp} XP):",
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                listOf(
-                                    "1,000" to 1000,
-                                    "3,500" to 3500,
-                                    "8,000" to 8000,
-                                    "16,000" to 16000
-                                ).forEach { (label, targetXp) ->
-                                    OutlinedButton(
-                                        onClick = {
-                                            onSetDevXp(targetXp)
-                                            devFeedbackMessage = "XP set to $targetXp"
-                                        },
-                                        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 4.dp),
-                                        shape = RoundedCornerShape(8.dp),
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .testTag("dev_xp_$targetXp")
-                                    ) {
-                                        Text(label, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                    }
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(14.dp))
 
                             // 4. Quick Streak Overrides
                             Text(
@@ -597,7 +575,7 @@ fun SettingsScreen(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "• Proficiency Scale: 5-Tier Speaking Proficiency Framework (Novice 1,000 XP, Elementary 3,500 XP, Intermediate 8,000 XP, Advanced 16,000 XP, Mastery 30,000+ XP)\n• Spoken Dialect: Central Travancore / Adoor household register\n• Scaffolding: Manglish phonetic breakdowns & audio playback",
+                            text = "• Proficiency Scale: 5 course tiers: Novice, Elementary, Intermediate, Advanced, and Mastery\n• Spoken Dialect: Central Travancore / Adoor household register\n• Scaffolding: Manglish phonetic breakdowns & audio playback",
                             style = MaterialTheme.typography.bodySmall.copy(lineHeight = 20.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -659,7 +637,7 @@ fun SettingsScreen(
             icon = { Icon(Icons.Filled.Warning, contentDescription = null, tint = TerracottaAccent) },
             title = { Text("Reset All Progress?", fontWeight = FontWeight.Bold) },
             text = {
-                Text("This will wipe all XP to 0, streak to 0, and clear all flashcard and drill progress across the app. Do you want to proceed to the final confirmation?")
+                Text("This will reset your streak and clear all flashcard and drill progress across the app. Do you want to proceed to the final confirmation?")
             },
             confirmButton = {
                 Button(

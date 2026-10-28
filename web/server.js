@@ -6,7 +6,6 @@ const PORT = 3000;
 const INDEX_PATH = path.join(__dirname, "index.html");
 
 let latestSession = {
-  xp: 0,
   streakDays: 0,
   learnedPhraseIds: [],
   activeScreen: "QUIZ",
@@ -36,7 +35,16 @@ const server = http.createServer((req, res) => {
     req.on("end", () => {
       try {
         const parsed = JSON.parse(body);
-        latestSession = { ...latestSession, ...parsed };
+        const allowedFields = [
+          "streakDays", "learnedPhraseIds", "activeScreen", "activeDeckId",
+          "activeCardIndex", "activeQuizIndex", "activeScenarioId",
+          "completedQuizCount", "spokenPhrasesCount", "lastDevice"
+        ];
+        for (const key of allowedFields) {
+          if (Object.prototype.hasOwnProperty.call(parsed, key)) {
+            latestSession[key] = parsed[key];
+          }
+        }
       } catch (_) {}
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ status: "ok" }));

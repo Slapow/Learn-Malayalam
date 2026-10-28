@@ -1,0 +1,356 @@
+    fun buildOverallDeck(knownCount: Int): FlashcardDeck {
+        val reachedStages = studyPlanStages.filter { stage ->
+            knownCount >= stage.requiredWordsToUnlock
+        }.ifEmpty { listOf(studyPlanStages.first()) }
+        val reachedPhrases = reachedStages.flatMap { stage ->
+            decks.find { it.id == stage.deckId }?.phrases.orEmpty()
+        }.distinctBy { it.id }
+
+        return FlashcardDeck(
+            id = "overall_study_deck",
+            title = "All Unlocked Material",
+            description = "Consolidated deck spanning all unlocked levels",
+            iconEmoji = "📚",
+            levelIndex = reachedStages.maxOf { it.levelIndex },
+            levelLabel = reachedStages.last().rankTitle,
+            phrases = reachedPhrases
+        )
+    }
+
+    fun buildOverallDeckForLevel(maxUnlockedLevel: Int): FlashcardDeck {
+        val reachedStages = studyPlanStages.filter { it.levelIndex <= maxUnlockedLevel }
+        val reachedPhrases = reachedStages.flatMap { stage ->
+            decks.find { it.id == stage.deckId }?.phrases.orEmpty()
+        }.distinctBy { it.id }
+
+        val currentStage = studyPlanStages.find { it.levelIndex == maxUnlockedLevel } ?: studyPlanStages.first()
+        return FlashcardDeck(
+            id = "overall_study_deck",
+            title = "All Unlocked Material",
+            description = "Consolidated deck spanning ${currentStage.rankTitle}",
+            iconEmoji = "📚",
+            levelIndex = currentStage.levelIndex,
+            levelLabel = currentStage.rankTitle,
+            phrases = reachedPhrases
+        )
+    }
+
+    fun getCurrentStage(stats: com.example.model.UserStats): StudyLevelStage {
+        val level = stats.unlockedLevelIndex.coerceIn(0, studyPlanStages.size - 1)
+        return studyPlanStages.find { it.levelIndex == level } ?: studyPlanStages.first()
+    }
+
+    fun getNextStage(stats: com.example.model.UserStats): StudyLevelStage? {
+        val nextLevel = stats.unlockedLevelIndex + 1
+        return studyPlanStages.find { it.levelIndex == nextLevel }
+    }
+
+    fun getCurrentStageForKnownCount(knownCount: Int): StudyLevelStage {
+        return studyPlanStages.lastOrNull { knownCount >= it.requiredWordsToUnlock }
+            ?: studyPlanStages.first()
+    }
+
+    fun getNextStageForKnownCount(knownCount: Int): StudyLevelStage? {
+        val currentStage = getCurrentStageForKnownCount(knownCount)
+        val currentIndex = studyPlanStages.indexOf(currentStage)
+        return studyPlanStages.getOrNull(currentIndex + 1)
+    }
+
+    // Course reviews sample taught material; they do not certify proficiency.
+    fun getGraduationPromptsForTier(tier: ActflProficiencyTier): List<GraduationPrompt> {
+        val phraseIds = when (tier) {
+            ActflProficiencyTier.NOVICE -> listOf("n0_11", "ng_08", "nn_24", "n1_16", "n2_01", "n3_01")
+            ActflProficiencyTier.ELEMENTARY -> listOf("e1_01", "ec_20", "et_18", "es_23", "eh_23", "e2_01")
+            ActflProficiencyTier.INTERMEDIATE -> listOf("i1_01", "in_20", "iw_18", "il_22", "im_19", "ir_18")
+            ActflProficiencyTier.ADVANCED -> listOf("a1_14", "a2_01", "a3_01", "an_20", "ap_19", "a5_01")
+            ActflProficiencyTier.MASTERY -> listOf("m1_01", "m2_01", "m3_01", "m4_01", "m5_01")
+        }
+        return phraseIds.mapIndexed { index, id ->
+            val phrase = allPhrases.single { it.id == id }
+            GraduationPrompt(
+                id = "grad_${tier.tierId}_$index",
+                phrase = phrase,
+                scenarioPrompt = "Say in Malayalam: ${phrase.english}",
+                targetExpectedManglish = phrase.manglish,
+                hint = phrase.phoneticGuide.ifBlank { "Recall the expression from this tier's lessons." }
+            )
+        }
+    }
+
+    fun buildAdaptiveStruggleDeck(masteryRecords: Map<String, PhraseMasteryRecord>): FlashcardDeck {
+        val strugglingIds = masteryRecords.values
+            .filter { it.isStruggling }
+            .sortedByDescending { it.mistakeCount }
+            .map { it.phraseId }
+
+        val targetPhrases = mutableListOf<PhraseItem>()
+        for (id in strugglingIds) {
+            val phrase = allPhrases.find { it.id == id } ?: continue
+            if (phrase !in targetPhrases) targetPhrases.add(phrase)
+            for (prereqId in phrase.prerequisiteIds) {
+                val prereq = allPhrases.find { it.id == prereqId }
+                val prereqRecord = masteryRecords[prereqId]
+                if (prereq != null && prereq !in targetPhrases && (prereqRecord == null || !prereqRecord.isKnown)) {
+                    targetPhrases.add(prereq)
+                }
+            }
+            if (targetPhrases.size >= 12) break
+        }
+
+        if (targetPhrases.isEmpty()) {
+            val unlearnedLevel0 = allPhrases.filter { phrase ->
+                val rec = masteryRecords[phrase.id]
+                rec == null || !rec.isKnown
+            }.take(8)
+            targetPhrases.addAll(unlearnedLevel0)
+        }
+
+        return FlashcardDeck(
+            id = "adaptive_struggle_deck",
+            title = "Targeted Focus & Recovery",
+            description = "Phrases that need reinforcement before moving forward",
+            iconEmoji = "🎯",
+            levelIndex = 0,
+            levelLabel = "Targeted Focus",
+            phrases = targetPhrases.ifEmpty { allPhrases.take(6) }
+        )
+    }
+
+    data class LevelMasteryStatus(
+        val levelIndex: Int,
+        val rankTitle: String,
+        val totalCards: Int,
+        val masteredCards: Int,
+        val isDeckMastered: Boolean,
+        val isDrillMastered: Boolean,
+        val isLevelMastered: Boolean
+    )
+
+    data class DrillRoundProgress(
+        val completedRounds: Int,
+        val totalRounds: Int
+    ) {
+        val ratio: Float
+            get() = if (totalRounds <= 0) 0f else (completedRounds.toFloat() / totalRounds.toFloat()).coerceIn(0f, 1f)
+    }
+
+    fun getDrillRoundProgress(levelIndices: Collection<Int>, stats: com.example.model.UserStats): DrillRoundProgress {
+        val rounds = levelIndices.distinct().flatMap { levelIndex ->
+            listOf(1, 2, 3).map { round -> "${levelIndex}:${round}" }
+        }
+        val completedRounds = rounds.count { roundKey ->
+            roundKey in stats.completedDrillRounds || roundKey.replace(":", "_") in stats.completedDrillRounds
+        }
+        return DrillRoundProgress(
+            completedRounds = completedRounds,
+            totalRounds = rounds.size
+        )
+    }
+
+    fun getNextDrillRound(levelIndex: Int, stats: com.example.model.UserStats): Int =
+        listOf(1, 2, 3).firstOrNull { round ->
+            "${levelIndex}:${round}" !in stats.completedDrillRounds &&
+            "${levelIndex}_${round}" !in stats.completedDrillRounds
+        } ?: 1
+
+    fun getTierLearnedWordProgress(tierId: String, stats: com.example.model.UserStats): Pair<Int, Int> {
+        val tierStages = studyPlanStages.filter { it.tierId == tierId }
+        val totalPhrases = tierStages.flatMap { stage ->
+            decks.find { it.id == stage.deckId }?.phrases.orEmpty()
+        }.distinctBy { it.id }
+        val learnedPhraseIds = tierStages
+            .flatMap { stage -> decks.find { it.id == stage.deckId }?.phrases.orEmpty() }
+            .map { it.id }
+            .toSet()
+            .intersect(stats.learnedPhraseIds)
+        return Pair(learnedPhraseIds.size, totalPhrases.size)
+    }
+
+    fun getLevelMasteryStatus(levelIndex: Int, stats: com.example.model.UserStats): LevelMasteryStatus {
+        val stage = studyPlanStages.getOrNull(levelIndex) ?: studyPlanStages.first()
+        val deck = decks.find { it.id == stage.deckId } ?: decks.first()
+        val totalCards = deck.phrases.size
+        val masteredCards = deck.phrases.count { p ->
+            stats.learnedPhraseIds.contains(p.id) || (stats.masteryRecords[p.id]?.isKnown == true)
+        }
+        val isDeckMastered = totalCards > 0 && masteredCards >= totalCards
+        val isDrillMastered = stats.masteredDrillLevelIndices.contains(levelIndex)
+        val isLevelMastered = isDeckMastered || isDrillMastered
+
+        return LevelMasteryStatus(
+            levelIndex = stage.levelIndex,
+            rankTitle = stage.rankTitle,
+            totalCards = totalCards,
+            masteredCards = masteredCards,
+            isDeckMastered = isDeckMastered,
+            isDrillMastered = isDrillMastered,
+            isLevelMastered = isLevelMastered
+        )
+    }
+
+    // Every activity resolves its content through the same selected deck.
+    fun getPracticeDeck(levelIndex: Int, maxUnlockedLevel: Int = 0): FlashcardDeck =
+        if (levelIndex == -1) buildOverallDeckForLevel(maxUnlockedLevel)
+        else decks[levelIndex.coerceIn(0, decks.lastIndex)]
+
+    fun generateQuestionForPhraseAndTouch(
+        phrase: PhraseItem,
+        touch: Int = 1,
+        levelIndex: Int = 0,
+        indexInRound: Int = 0,
+        touchLevel: Int = touch,
+        questionType: QuizType? = null,
+        sourceDeck: FlashcardDeck = getPracticeDeck(levelIndex)
+    ): QuizQuestion {
+        val distractors = sourceDeck.phrases.asSequence()
+            .map { it.manglish }
+            .filter { it.isNotBlank() && it != phrase.manglish }
+            .distinct().toList().shuffled().take(3)
+        val mcOptions = (listOf(phrase.manglish) + distractors).shuffled()
+        val correctIdx = mcOptions.indexOf(phrase.manglish).coerceAtLeast(0)
+
+        val tileOrder = if (phrase.manglish.contains(" ")) {
+            phrase.manglish.split(" ").filter { it.isNotBlank() }
+        } else {
+            listOf(phrase.manglish)
+        }
+
+        val uid = System.currentTimeMillis()
+
+        val question = when (touchLevel) {
+            1 -> {
+                val t1Type = if (indexInRound % 2 == 0) QuizType.DIALECT_CHOICE else QuizType.WORD_TILES
+                QuizQuestion(
+                    id = "q_t1_${phrase.id}_${indexInRound}_${uid}",
+                    type = t1Type,
+                    phrase = phrase,
+                    prompt = phrase.english,
+                    hint = phrase.phoneticGuide.ifBlank { phrase.regionalNuance },
+                    options = mcOptions,
+                    correctOptionIndex = correctIdx,
+                    correctTileOrder = tileOrder,
+                    acceptedManglishVariants = phrase.acceptedVariants + listOf(phrase.manglish),
+                    roundNumber = 1,
+                    roundLabel = "Touch 1: Recognition",
+                    touchLevel = 1
+                )
+            }
+            2 -> {
+                QuizQuestion(
+                    id = "q_t2_${phrase.id}_${indexInRound}_${uid}",
+                    type = QuizType.WORD_TILES,
+                    phrase = phrase,
+                    prompt = phrase.english,
+                    hint = "Breakdown: ${phrase.wordBreakdown.ifBlank { phrase.manglish }}",
+                    options = mcOptions,
+                    correctOptionIndex = correctIdx,
+                    correctTileOrder = tileOrder,
+                    acceptedManglishVariants = phrase.acceptedVariants + listOf(phrase.manglish),
+                    roundNumber = 2,
+                    roundLabel = "Touch 2: Cued Recall",
+                    touchLevel = 2
+                )
+            }
+            else -> {
+                val t3Type = if (indexInRound % 2 == 0) QuizType.MANGLISH_TYPING else QuizType.SPEAKING_PRACTICE
+                QuizQuestion(
+                    id = "q_t3_${phrase.id}_${indexInRound}_${uid}",
+                    type = t3Type,
+                    phrase = phrase,
+                    prompt = phrase.english,
+                    hint = "Pronunciation: ${phrase.phoneticGuide.ifBlank { phrase.manglish }}",
+                    options = emptyList(),
+                    correctOptionIndex = 0,
+                    correctTileOrder = tileOrder,
+                    acceptedManglishVariants = phrase.acceptedVariants + listOf(phrase.manglish),
+                    roundNumber = 3,
+                    roundLabel = "Touch 3: Free Recall",
+                    touchLevel = 3
+                )
+            }
+        }
+        return questionType?.let { question.copy(type = it) } ?: question
+    }
+
+    fun generateDrillQuestionsForLevel(levelIndex: Int): List<QuizQuestion> =
+        (1..3).flatMap { round -> generateDrillQuestionsForLevelAndRound(levelIndex, round) }
+
+    fun generateDrillQuestionsForLevelAndRound(
+        levelIndex: Int,
+        round: Int,
+        maxUnlockedLevel: Int = 0,
+        questionType: QuizType? = null
+    ): List<QuizQuestion> {
+        val deck = getPracticeDeck(levelIndex, maxUnlockedLevel)
+        return deck.phrases.mapIndexed { index, phrase ->
+            generateQuestionForPhraseAndTouch(
+                phrase = phrase,
+                touch = round,
+                levelIndex = phrase.levelNumber,
+                indexInRound = index,
+                questionType = questionType,
+                sourceDeck = deck
+            )
+        }
+    }
+
+    val quizQuestions: List<QuizQuestion> by lazy {
+        generateDrillQuestionsForLevel(0)
+    }
+
+    val roleplayScenarios: List<RoleplayScenario> = listOf(
+        RoleplayScenario(
+            id = "scenario_qa_tutor",
+            title = "Malayalam Word & Phrase Q&A",
+            partnerName = "Malayalam Tutor",
+            partnerRole = "Simple English-to-Malayalam Helper",
+            avatarEmoji = "🎓",
+            location = "Central Travancore (Adoor / Pathanamthitta)",
+            initialMessage = ChatMessage(
+                id = "init_1",
+                isUser = false,
+                manglishText = "Hello / Sugamaano? (soo-guh-MAH-noh) / Namaskaram (nuh-mus-KAA-rum)",
+                malayalamText = "ഹലോ / സുഖമാണോ? / നമസ്കാരം",
+                englishText = "Ask me how to say any word or phrase! For example: The word for hello is \"Namaskaram\" (formal), or in casual speech people just say \"Hello\" or ask \"Sugamaano?\" (How are you?).",
+                correctionFeedback = "In everyday Kerala conversation, English words like \"Hello\", \"Thanks\", and \"Sorry\" are used naturally at home, while Malayalam equivalents like \"Namaskaram\" or \"Nanni\" are mostly formal."
+            ),
+            systemPromptContext = "Simple English-first Malayalam Q&A tutor. Always answer: 'The word for X is \"Y\"' and add a note on whether speakers use the English word or if it is formal vs informal."
+        )
+    )
+
+    data class DialectComparison(
+        val category: String,
+        val textbookFormal: String,
+        val adoorSpoken: String,
+        val manglishSpoken: String,
+        val meaning: String,
+        val explanation: String
+    )
+
+    val dialectComparisons: List<DialectComparison> = listOf(
+        DialectComparison(
+            category = "Kinship Terms",
+            textbookFormal = "Muthassi / Pithamaahi (മുത്തശ്ശി)",
+            adoorSpoken = "Ammachi (അമ്മാച്ചി)",
+            manglishSpoken = "Ammachi",
+            meaning = "Grandmother / Elder woman",
+            explanation = "'Ammachi' is universally used across Central Travancore families, reflecting warm domestic kinship."
+        ),
+        DialectComparison(
+            category = "Kinship Terms",
+            textbookFormal = "Pithavu / Achan (പിതാവ് / അച്ഛൻ)",
+            adoorSpoken = "Appa / Appachan (അപ്പ / അപ്പച്ചൻ)",
+            manglishSpoken = "Appa",
+            meaning = "Father / Grandfather",
+            explanation = "'Appa' for father and 'Appachan' for grandfather are the traditional Central Travancore family terms."
+        ),
+        DialectComparison(
+            category = "Conversational Tag",
+            textbookFormal = "Ariyamo? (അറിയാമോ?)",
+            adoorSpoken = "Ketto? / Alle? (കേട്ടോ? / അല്ലേ?)",
+            manglishSpoken = "Ketto?",
+            meaning = "Right? / You hear me?",
+            explanation = "Frequent warm tags attached to sentences to check engagement and establish friendliness."
+        )
+    )
+}

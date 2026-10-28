@@ -5,53 +5,98 @@ import android.content.SharedPreferences
 import com.example.model.CloudLearnedPhrase
 import com.example.model.PhraseMasteryRecord
 import com.example.model.UserStats
+import com.example.model.SpokenCurriculum
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.json.JSONObject
+import java.time.LocalDate
+import java.time.Instant
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 
 class UserStatsRepository(context: Context) {
 
     private val prefs: SharedPreferences = context.getSharedPreferences("parayu_stats", Context.MODE_PRIVATE)
 
     init {
-        // Clean up any legacy template defaults (140 XP / 4-day streak) so new learners start at 0 XP, 0-day streak
-        val zeroMigrated = prefs.getBoolean("zero_baseline_migrated_v2", false)
-        if (!zeroMigrated) {
-            val oldXp = prefs.getInt("user_xp", 0)
-            val oldStreak = prefs.getInt("user_streak", 0)
-            val learnedSet = prefs.getStringSet("learned_phrases", emptySet()) ?: emptySet()
-            if (oldXp == 140 && oldStreak == 4 && learnedSet.isEmpty()) {
-                prefs.edit()
-                    .putInt("user_xp", 0)
-                    .putInt("user_streak", 0)
-                    .putInt("quiz_count", 0)
-                    .putInt("spoken_count", 0)
-                    .putBoolean("zero_baseline_migrated_v2", true)
-                    .apply()
-            } else {
-                prefs.edit().putBoolean("zero_baseline_migrated_v2", true).apply()
-            }
-        }
+        migrateCurriculumProgress()
+    }
+
+    private fun migrateCurriculumProgress() {
+        if (prefs.getInt("curriculum_version", 1) >= SpokenCurriculum.VERSION) return
+        val drills = prefs.getStringSet("mastered_drills", emptySet()).orEmpty()
+            .mapNotNull { it.toIntOrNull() }
+            .map { SpokenCurriculum.migrateLegacyIndex(it).toString() }.toSet()
+        val rounds = prefs.getStringSet("completed_drill_rounds", emptySet()).orEmpty()
+            .mapNotNull { value ->
+                val parts = value.split(':')
+                val index = parts.getOrNull(0)?.toIntOrNull() ?: return@mapNotNull null
+                val round = parts.getOrNull(1)?.toIntOrNull() ?: return@mapNotNull null
+                if (index !in 0..23 || round !in 1..3) return@mapNotNull null
+                "${SpokenCurriculum.migrateLegacyIndex(index)}:$round"
+            }.toSet()
+        prefs.edit()
+            .putStringSet("mastered_drills", drills)
+            .putStringSet("completed_drill_rounds", rounds)
+            .putInt("unlocked_level", SpokenCurriculum.migrateLegacyIndex(prefs.getInt("unlocked_level", 0)))
+            .putInt("curriculum_version", SpokenCurriculum.VERSION)
+            .apply()
+        // Phrase/deck IDs, mastery records, and earned graduations stay stable.
+        // New units remain available for study without being marked complete.
     }
 
     private val _stats = MutableStateFlow(loadStats())
     val stats: StateFlow<UserStats> = _stats.asStateFlow()
 
     private fun loadStats(): UserStats {
-        val xp = prefs.getInt("user_xp", 0)
-        val streak = prefs.getInt("user_streak", 0)
         val learnedIds = prefs.getStringSet("learned_phrases", emptySet()) ?: emptySet()
         val masteredDecks = prefs.getStringSet("mastered_decks", emptySet()) ?: emptySet()
         val quizCount = prefs.getInt("quiz_count", 0)
         val spokenCount = prefs.getInt("spoken_count", 0)
         val graduatedTiers = prefs.getStringSet("graduated_tiers", emptySet()) ?: emptySet()
         val masteredDrills = prefs.getStringSet("mastered_drills", emptySet())?.mapNotNull { it.toIntOrNull() }?.toSet() ?: emptySet()
-        val unlockedLevel = prefs.getInt("unlocked_level", 0)
+        val completedDrillRounds = prefs.getStringSet("completed_drill_rounds", emptySet())
+            ?.toMutableSet()
+            ?: mutableSetOf()
+        masteredDrills.forEach { levelIndex ->
+            (1..3).forEach { round -> completedDrillRounds.add("$levelIndex:$round") }
+        }
+        val highestDrillLevel = if (masteredDrills.isNotEmpty()) (masteredDrills.maxOrNull() ?: 0) + 1 else 0
+        val highestDeckLevel = DialectRepository.studyPlanStages
+            .filter { it.deckId in masteredDecks }
+            .maxOfOrNull { it.levelIndex + 1 } ?: 0
+        val savedUnlockedLevel = prefs.getInt("unlocked_level", 0)
+        val unlockedLevel = maxOf(savedUnlockedLevel, highestDrillLevel, highestDeckLevel)
+            .coerceIn(0, DialectRepository.studyPlanStages.size - 1)
         val masteryRecords = loadMasteryRecords()
 
+        val lastDateStr = prefs.getString("last_practice_date", null)
+        var streak = prefs.getInt("user_streak", 0)
+        if (lastDateStr != null && streak > 0) {
+            val today = LocalDate.now()
+            val lastDate = try { LocalDate.parse(lastDateStr) } catch (_: Exception) { null }
+            if (lastDate != null) {
+                val daysBetween = ChronoUnit.DAYS.between(lastDate, today)
+                if (daysBetween > 1L) {
+                    streak = 0
+                    prefs.edit().putInt("user_streak", 0).apply()
+                }
+            }
+        } else if (lastDateStr == null && streak <= 0) {
+            val maxPracticedMs = masteryRecords.values.maxOfOrNull { it.lastPracticedMs } ?: 0L
+            if (maxPracticedMs > 0L) {
+                val lastDate = Instant.ofEpochMilli(maxPracticedMs).atZone(ZoneId.systemDefault()).toLocalDate()
+                val today = LocalDate.now()
+                val daysBetween = ChronoUnit.DAYS.between(lastDate, today)
+                if (daysBetween <= 1L) {
+                    streak = 1
+                    prefs.edit().putInt("user_streak", 1).putString("last_practice_date", lastDate.toString()).apply()
+                }
+            }
+        }
+
         return UserStats(
-            xp = xp,
             streakDays = streak,
             learnedPhraseIds = learnedIds,
             masteredDeckIds = masteredDecks,
@@ -60,6 +105,7 @@ class UserStatsRepository(context: Context) {
             masteryRecords = masteryRecords,
             graduatedTiers = graduatedTiers,
             masteredDrillLevelIndices = masteredDrills,
+            completedDrillRounds = completedDrillRounds,
             unlockedLevelIndex = unlockedLevel
         )
     }
@@ -75,6 +121,7 @@ class UserStatsRepository(context: Context) {
                 val obj = root.optJSONObject(id) ?: continue
                 result[id] = PhraseMasteryRecord(
                     phraseId = id,
+                    touchLevel = obj.optInt("touchLevel", 0),
                     consecutiveCorrect = obj.optInt("consecutiveCorrect", 0),
                     totalCorrect = obj.optInt("totalCorrect", 0),
                     mistakeCount = obj.optInt("mistakeCount", 0),
@@ -89,6 +136,7 @@ class UserStatsRepository(context: Context) {
         val root = JSONObject()
         for ((id, rec) in records) {
             val obj = JSONObject().apply {
+                put("touchLevel", rec.touchLevel)
                 put("consecutiveCorrect", rec.consecutiveCorrect)
                 put("totalCorrect", rec.totalCorrect)
                 put("mistakeCount", rec.mistakeCount)
@@ -99,18 +147,33 @@ class UserStatsRepository(context: Context) {
         prefs.edit().putString("mastery_records_json", root.toString()).apply()
     }
 
-    private fun ensureActiveStreakOnFirstActivity(currentStreak: Int): Int {
-        return if (currentStreak <= 0) 1 else currentStreak
-    }
+    fun recordActivityForStreak(): Int {
+        val today = LocalDate.now()
+        val lastDateStr = prefs.getString("last_practice_date", null)
+        val currentStreak = prefs.getInt("user_streak", 0)
 
-    fun addXp(points: Int) {
-        val newXp = _stats.value.xp + points
-        val newStreak = ensureActiveStreakOnFirstActivity(_stats.value.streakDays)
+        val newStreak = if (lastDateStr == null) {
+            1
+        } else {
+            val lastDate = try { LocalDate.parse(lastDateStr) } catch (_: Exception) { null }
+            if (lastDate == null) {
+                1
+            } else {
+                val daysBetween = ChronoUnit.DAYS.between(lastDate, today)
+                when {
+                    daysBetween == 0L -> if (currentStreak <= 0) 1 else currentStreak
+                    daysBetween == 1L -> currentStreak + 1
+                    daysBetween > 1L -> 1
+                    else -> currentStreak
+                }
+            }
+        }
         prefs.edit()
-            .putInt("user_xp", newXp)
+            .putString("last_practice_date", today.toString())
             .putInt("user_streak", newStreak)
             .apply()
-        _stats.value = _stats.value.copy(xp = newXp, streakDays = newStreak)
+        _stats.value = _stats.value.copy(streakDays = newStreak)
+        return newStreak
     }
 
     /**
@@ -118,39 +181,53 @@ class UserStatsRepository(context: Context) {
      * - Correct: increments consecutiveCorrect; if >= 2, marks as Known/Mastered!
      * - Wrong: resets consecutiveCorrect to 0 and increments mistakeCount for Dynamic Adaptive Review!
      */
-    fun recordPhraseAttempt(phraseId: String, isCorrect: Boolean): PhraseMasteryRecord {
+    /**
+     * Records a phrase attempt with specific Touch level (1, 2, or 3).
+     * - Touch 1 (Recognition): MCQ / Audio matching
+     * - Touch 2 (Cued Production): Word Tiles / Sentence Arranging
+     * - Touch 3 (Free Recall): Direct Typing / Speaking
+     *
+     * Only correctly completed touches count toward drill progress. A failed touch
+     * can lower the progress to the preceding completed touch, but never advances it.
+     */
+    fun recordPhraseTouch(phraseId: String, touch: Int, isCorrect: Boolean): PhraseMasteryRecord {
         val currentMap = _stats.value.masteryRecords.toMutableMap()
         val existing = currentMap[phraseId] ?: PhraseMasteryRecord(phraseId = phraseId)
-        val updated = if (isCorrect) {
-            existing.copy(
-                consecutiveCorrect = existing.consecutiveCorrect + 1,
-                totalCorrect = existing.totalCorrect + 1,
-                lastPracticedMs = System.currentTimeMillis()
-            )
+
+        val newTouchLevel = if (isCorrect) {
+            existing.touchLevel.coerceAtLeast(touch)
         } else {
-            existing.copy(
-                consecutiveCorrect = 0,
-                mistakeCount = existing.mistakeCount + 1,
-                lastPracticedMs = System.currentTimeMillis()
-            )
+            // Only completed rounds count as progress; a failed round cannot add a touch.
+            existing.touchLevel.coerceAtMost(touch - 1)
         }
+
+        val updated = existing.copy(
+            touchLevel = newTouchLevel,
+            consecutiveCorrect = if (isCorrect) existing.consecutiveCorrect + 1 else 0,
+            totalCorrect = if (isCorrect) existing.totalCorrect + 1 else existing.totalCorrect,
+            mistakeCount = if (!isCorrect) existing.mistakeCount + 1 else existing.mistakeCount,
+            lastPracticedMs = System.currentTimeMillis()
+        )
+
         currentMap[phraseId] = updated
         saveMasteryRecords(currentMap)
+        recordActivityForStreak()
 
         val updatedLearnedSet = if (updated.isKnown) {
             _stats.value.learnedPhraseIds + phraseId
         } else {
-            _stats.value.learnedPhraseIds
+            _stats.value.learnedPhraseIds - phraseId
         }
         prefs.edit().putStringSet("learned_phrases", updatedLearnedSet).apply()
         _stats.value = _stats.value.copy(
             learnedPhraseIds = updatedLearnedSet,
             masteryRecords = currentMap
         )
-        if (isCorrect) {
-            addXp(if (updated.consecutiveCorrect == 2) 10 else 5)
-        }
         return updated
+    }
+
+    fun recordPhraseAttempt(phraseId: String, isCorrect: Boolean): PhraseMasteryRecord {
+        return recordPhraseTouch(phraseId, touch = 1, isCorrect = isCorrect)
     }
 
     fun markPhraseLearned(phraseId: String) {
@@ -166,7 +243,6 @@ class UserStatsRepository(context: Context) {
                 totalCorrect = existing.totalCorrect.coerceAtLeast(2),
                 lastPracticedMs = System.currentTimeMillis()
             )
-            addXp(5)
             _stats.value.learnedPhraseIds + phraseId
         }
         saveMasteryRecords(currentMap)
@@ -181,26 +257,58 @@ class UserStatsRepository(context: Context) {
         val newCount = _stats.value.completedQuizCount + 1
         prefs.edit().putInt("quiz_count", newCount).apply()
         _stats.value = _stats.value.copy(completedQuizCount = newCount)
-        addXp(20)
     }
 
     fun recordDrillCompletedForLevel(levelIndex: Int) {
         val updated = _stats.value.masteredDrillLevelIndices + levelIndex
+        val completedRounds = _stats.value.completedDrillRounds.toMutableSet().apply {
+            (1..3).forEach { round -> add("$levelIndex:$round") }
+        }
+        val currentUnlocked = _stats.value.unlockedLevelIndex
+        val newUnlocked = if (levelIndex >= currentUnlocked) {
+            (levelIndex + 1).coerceAtMost(DialectRepository.studyPlanStages.size - 1)
+        } else {
+            currentUnlocked
+        }
         prefs.edit()
             .putStringSet("mastered_drills", updated.map { it.toString() }.toSet())
+            .putStringSet("completed_drill_rounds", completedRounds)
             .putInt("quiz_count", _stats.value.completedQuizCount + 1)
+            .putInt("unlocked_level", newUnlocked)
             .apply()
         _stats.value = _stats.value.copy(
             masteredDrillLevelIndices = updated,
-            completedQuizCount = _stats.value.completedQuizCount + 1
+            completedDrillRounds = completedRounds,
+            completedQuizCount = _stats.value.completedQuizCount + 1,
+            unlockedLevelIndex = newUnlocked
         )
-        addXp(20)
+    }
+
+    fun recordDrillRoundCompleted(levelIndex: Int, round: Int) {
+        if (round !in 1..3) return
+        val updated = _stats.value.completedDrillRounds + "$levelIndex:$round"
+        prefs.edit().putStringSet("completed_drill_rounds", updated).apply()
+        _stats.value = _stats.value.copy(completedDrillRounds = updated)
+        recordActivityForStreak()
     }
 
     fun recordDeckMastered(deckId: String) {
         val updated = _stats.value.masteredDeckIds + deckId
-        prefs.edit().putStringSet("mastered_decks", updated).apply()
-        _stats.value = _stats.value.copy(masteredDeckIds = updated)
+        val deckStage = DialectRepository.studyPlanStages.find { it.deckId == deckId }
+        val currentUnlocked = _stats.value.unlockedLevelIndex
+        val newUnlocked = if (deckStage != null && deckStage.levelIndex >= currentUnlocked) {
+            (deckStage.levelIndex + 1).coerceAtMost(DialectRepository.studyPlanStages.size - 1)
+        } else {
+            currentUnlocked
+        }
+        prefs.edit()
+            .putStringSet("mastered_decks", updated)
+            .putInt("unlocked_level", newUnlocked)
+            .apply()
+        _stats.value = _stats.value.copy(
+            masteredDeckIds = updated,
+            unlockedLevelIndex = newUnlocked
+        )
     }
 
     fun setUnlockedLevelIndex(newLevel: Int) {
@@ -212,13 +320,6 @@ class UserStatsRepository(context: Context) {
         val newCount = _stats.value.spokenPhrasesCount + 1
         prefs.edit().putInt("spoken_count", newCount).apply()
         _stats.value = _stats.value.copy(spokenPhrasesCount = newCount)
-        addXp(10)
-    }
-
-    fun setCustomXp(xp: Int) {
-        val safeXp = xp.coerceAtLeast(0)
-        prefs.edit().putInt("user_xp", safeXp).apply()
-        _stats.value = _stats.value.copy(xp = safeXp)
     }
 
     fun setCustomStreak(days: Int) {
@@ -229,30 +330,28 @@ class UserStatsRepository(context: Context) {
 
     /**
      * Records successful passage of an ACTFL Tier Oral Spoken Graduation Exam.
-     * Awards +50 XP and unlocks progression into the next tier.
+     * Unlocks progression into the next tier.
      */
     fun recordTierGraduation(tierId: String) {
         val updatedTiers = _stats.value.graduatedTiers + tierId
         prefs.edit().putStringSet("graduated_tiers", updatedTiers).apply()
         _stats.value = _stats.value.copy(graduatedTiers = updatedTiers)
-        addXp(50)
     }
 
     fun resetProgressToZero() {
         prefs.edit()
-            .putInt("user_xp", 0)
             .putInt("user_streak", 0)
             .putInt("quiz_count", 0)
             .putInt("spoken_count", 0)
             .putStringSet("learned_phrases", emptySet())
             .putStringSet("mastered_decks", emptySet())
             .putStringSet("mastered_drills", emptySet())
+            .putStringSet("completed_drill_rounds", emptySet())
             .putInt("unlocked_level", 0)
             .putStringSet("graduated_tiers", emptySet())
             .remove("mastery_records_json")
             .apply()
         _stats.value = UserStats(
-            xp = 0,
             streakDays = 0,
             learnedPhraseIds = emptySet(),
             masteredDeckIds = emptySet(),
@@ -261,29 +360,21 @@ class UserStatsRepository(context: Context) {
             masteryRecords = emptyMap(),
             graduatedTiers = emptySet(),
             masteredDrillLevelIndices = emptySet(),
+            completedDrillRounds = emptySet(),
             unlockedLevelIndex = 0
         )
     }
 
-    fun syncFromCloud(xp: Int, streakDays: Int, quizCount: Int, spokenCount: Int) {
-        // Ignore the old template placeholder (140 XP / 4-day streak with 0 learned phrases)
-        val isLegacyPlaceholder = xp == 140 && streakDays == 4 && _stats.value.learnedPhraseIds.isEmpty()
-        val effectiveXp = if (isLegacyPlaceholder) 0 else xp
-        val effectiveStreak = if (isLegacyPlaceholder) 0 else streakDays
-        val effectiveQuiz = if (isLegacyPlaceholder) 0 else quizCount
-        val effectiveSpoken = if (isLegacyPlaceholder) 0 else spokenCount
-
+    fun syncFromCloud(streakDays: Int, quizCount: Int, spokenCount: Int) {
         prefs.edit()
-            .putInt("user_xp", effectiveXp)
-            .putInt("user_streak", effectiveStreak)
-            .putInt("quiz_count", effectiveQuiz)
-            .putInt("spoken_count", effectiveSpoken)
+            .putInt("user_streak", streakDays)
+            .putInt("quiz_count", quizCount)
+            .putInt("spoken_count", spokenCount)
             .apply()
         _stats.value = _stats.value.copy(
-            xp = effectiveXp,
-            streakDays = effectiveStreak,
-            completedQuizCount = effectiveQuiz,
-            spokenPhrasesCount = effectiveSpoken
+            streakDays = streakDays,
+            completedQuizCount = quizCount,
+            spokenPhrasesCount = spokenCount
         )
     }
 

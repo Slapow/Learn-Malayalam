@@ -1,30 +1,24 @@
 package com.example.ui.screens
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Undo
@@ -32,7 +26,6 @@ import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Pause
@@ -45,10 +38,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
@@ -60,10 +50,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.DialectRepository
+import kotlinx.coroutines.Job
 import com.example.model.FlashcardDeck
 import com.example.model.PhraseItem
 import com.example.model.QuizletStudyMode
 import com.example.model.UserStats
+import com.example.ui.components.DevModeTestingBar
 import com.example.ui.theme.*
 import com.example.viewmodel.FlashcardState
 import kotlinx.coroutines.delay
@@ -76,6 +68,7 @@ fun FlashcardsScreen(
     state: FlashcardState,
     userStats: UserStats = UserStats(),
     isListening: Boolean = false,
+    speechLevel: Float = 0f,
     speechStatus: String = "Ready to listen",
     onBack: () -> Unit,
     onSelectDeck: (FlashcardDeck) -> Unit,
@@ -102,113 +95,83 @@ fun FlashcardsScreen(
     onTapMatchTile: (String) -> Unit = {},
     onTickMatchTimer: () -> Unit = {},
     onStartSpeech: ((String) -> Unit) -> Unit = {},
-    onStopSpeech: () -> Unit = {}
+    onStopSpeech: () -> Unit = {},
+    onContinueToDrills: (Int) -> Unit = {},
+    isDevModeEnabled: Boolean = false,
+    onEndDevMode: () -> Unit = {},
+    onDevGetCorrect: () -> Unit = {},
+    onDevSkipToLast: () -> Unit = {},
+    onSessionInteraction: () -> Unit = {}
 ) {
-    BackHandler { onBack() }
-
-    val currentPhrase: PhraseItem? = state.currentDeck.phrases.getOrNull(state.currentCardIndex)
     val totalCards = state.currentDeck.phrases.size
-    val nextPhrase: PhraseItem? = if (totalCards > 1) {
-        state.currentDeck.phrases.getOrNull((state.currentCardIndex + 1) % totalCards)
-    } else null
-    val knownCount = userStats.learnedPhraseIds.size
+    val currentPhrase: PhraseItem? = state.currentDeck.phrases.getOrNull(state.currentCardIndex)
 
-    val rotation by animateFloatAsState(
-        targetValue = if (state.isFlipped) 180f else 0f,
-        animationSpec = tween(durationMillis = 360, easing = FastOutSlowInEasing),
-        label = "card_flip"
-    )
+    val nextIdx = if (totalCards > 1) {
+        (1 until totalCards).firstNotNullOfOrNull { i ->
+            val idx = (state.currentCardIndex + i) % totalCards
+            val id = state.currentDeck.phrases.getOrNull(idx)?.id
+            if (id != null && !state.learnedInSession.contains(id)) idx else null
+        }
+    } else null
+
+    val nextPhrase: PhraseItem? = nextIdx?.let { state.currentDeck.phrases.getOrNull(it) }
+    val presentationCount = currentPhrase?.let { state.cardPresentationCount[it.id] } ?: 0
 
     var showLevelDialog by remember { mutableStateOf(false) }
     var settingsMenuExpanded by remember { mutableStateOf(false) }
-
-    // Autoplay mode state
     var isAutoplayOn by remember { mutableStateOf(false) }
     var autoplayBannerText by remember { mutableStateOf<String?>(null) }
+    var showExitDialog by remember(state.currentDeck.id, state.activeMode) { mutableStateOf(false) }
 
-    val coroutineScope = rememberCoroutineScope()
-    val density = LocalDensity.current
-    val swipeThresholdPx = with(density) { 115.dp.toPx() }
-    val flyOffDistancePx = with(density) { 460.dp.toPx() }
-
-    val cardOffset = remember(currentPhrase?.id, state.currentCardIndex) {
-        Animatable(Offset.Zero, Offset.VectorConverter)
+    val handleBackPress = {
+        val flashcardsCompleted = totalCards > 0 && state.learnedInSession.size >= totalCards
+        val needsConfirmation = state.hasStartedSession && when (state.activeMode) {
+            QuizletStudyMode.FLASHCARDS -> !flashcardsCompleted
+            QuizletStudyMode.MATCH -> !state.isMatchFinished
+            else -> false
+        }
+        isAutoplayOn = false
+        if (needsConfirmation) showExitDialog = true else onBack()
     }
-    var isAnimatingOut by remember(currentPhrase?.id, state.currentCardIndex) {
-        mutableStateOf(false)
+    BackHandler { handleBackPress() }
+
+    val presentationKey = listOf(
+        state.currentDeck.id, currentPhrase?.id, state.currentCardIndex,
+        state.activeMode, presentationCount, state.swipeHistory.size,
+        state.learnedInSession.size, state.stillLearningInSession.size
+    )
+
+    // Autoplay automated loop
+    LaunchedEffect(isAutoplayOn, presentationKey) {
+        if (!isAutoplayOn || currentPhrase == null) return@LaunchedEffect
+
+        if (state.isEnglishOnFront) {
+            onSpeakEnglish(currentPhrase.english)
+            delay(2200L)
+            if (!isAutoplayOn) return@LaunchedEffect
+            onFlipCard()
+            onSpeakPhrase(currentPhrase)
+            delay(2400L)
+            if (!isAutoplayOn) return@LaunchedEffect
+        } else {
+            onSpeakPhrase(currentPhrase)
+            delay(2200L)
+            if (!isAutoplayOn) return@LaunchedEffect
+            onFlipCard()
+            onSpeakEnglish(currentPhrase.english)
+            delay(2400L)
+            if (!isAutoplayOn) return@LaunchedEffect
+        }
+
+        onAdvanceWithoutTally()
     }
 
-    LaunchedEffect(currentPhrase?.id, state.currentCardIndex) {
-        cardOffset.snapTo(Offset.Zero)
-        isAnimatingOut = false
-    }
-
-    // Autoplay banner auto-hide effect
     LaunchedEffect(autoplayBannerText) {
         if (autoplayBannerText != null) {
             delay(1800L)
             autoplayBannerText = null
         }
     }
-
-    // Autoplay automated loop: speaks each word, flips card, speaks second word, then swipes it away
-    LaunchedEffect(isAutoplayOn, currentPhrase?.id, state.currentCardIndex) {
-        if (!isAutoplayOn || currentPhrase == null) return@LaunchedEffect
-
-        if (state.isEnglishOnFront) {
-            // Front face shows English
-            onSpeakEnglish(currentPhrase.english)
-            delay(2200L)
-            if (!isAutoplayOn) return@LaunchedEffect
-
-            // Automatically flip card
-            onFlipCard()
-
-            // Back face shows Malayalam
-            onSpeakPhrase(currentPhrase)
-            delay(2400L)
-            if (!isAutoplayOn) return@LaunchedEffect
-        } else {
-            // Front face shows Malayalam
-            onSpeakPhrase(currentPhrase)
-            delay(2200L)
-            if (!isAutoplayOn) return@LaunchedEffect
-
-            // Automatically flip card
-            onFlipCard()
-
-            // Back face shows English
-            onSpeakEnglish(currentPhrase.english)
-            delay(2400L)
-            if (!isAutoplayOn) return@LaunchedEffect
-        }
-
-        // Automatically swipe card away
-        isAnimatingOut = true
-        cardOffset.animateTo(
-            targetValue = Offset(flyOffDistancePx, 20f),
-            animationSpec = tween(durationMillis = 220, easing = FastOutLinearInEasing)
-        )
-
-        // Advance to next card without changing tally
-        onAdvanceWithoutTally()
-    }
-
-    val swipeRatio = (cardOffset.value.x / swipeThresholdPx).coerceIn(-1f, 1f)
-    val absSwipeProgress = abs(swipeRatio).coerceIn(0f, 1f)
-
-    // Only show recycled indicator if card was sent to still learning AND shown for the 2+ time in this session
-    val isRecycled = currentPhrase != null &&
-        state.cardsSentToStillLearning.contains(currentPhrase.id) &&
-        (state.cardPresentationCount[currentPhrase.id] ?: 1) >= 2
-
-    val isNextRecycled = nextPhrase != null &&
-        state.cardsSentToStillLearning.contains(nextPhrase.id) &&
-        (state.cardPresentationCount[nextPhrase.id] ?: 1) >= 2
-
-    // Subtle scale pulse on the tally badges when dragging toward left or right (Quizlet style)
-    val leftBadgeScale = 1f + (if (swipeRatio < 0f) abs(swipeRatio) * 0.12f else 0f)
-    val rightBadgeScale = 1f + (if (swipeRatio > 0f) swipeRatio * 0.12f else 0f)
 
     Scaffold(
         topBar = {
@@ -224,12 +187,8 @@ fun FlashcardsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Left: Back Arrow
                     IconButton(
-                        onClick = {
-                            isAutoplayOn = false
-                            onBack()
-                        },
+                        onClick = { handleBackPress() },
                         modifier = Modifier.testTag("flashcards_back_button")
                     ) {
                         Icon(
@@ -238,28 +197,29 @@ fun FlashcardsScreen(
                         )
                     }
 
-                    // Middle: Question Count centered horizontally
                     Box(
                         modifier = Modifier.weight(1f),
                         contentAlignment = Alignment.Center
                     ) {
-                        if (totalCards > 0) {
-                            Surface(
-                                color = GoldenContainerLight,
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.testTag("flashcards_count_bubble")
-                            ) {
-                                Text(
-                                    text = "${state.currentCardIndex + 1} / $totalCards",
-                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = GoldenOnContainer,
-                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
-                                )
+                        Surface(
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.testTag("flashcards_count_bubble")
+                        ) {
+                            val bubbleText = if (state.activeMode == QuizletStudyMode.FLASHCARDS) {
+                                "${state.learnedInSession.size} / $totalCards"
+                            } else {
+                                "${state.activeMode.iconEmoji} ${state.activeMode.title}"
                             }
+                            Text(
+                                text = bubbleText,
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                            )
                         }
                     }
 
-                    // Right: Settings Menu containing Level Selection & Card Options
                     Box {
                         IconButton(
                             onClick = { settingsMenuExpanded = true },
@@ -380,382 +340,385 @@ fun FlashcardsScreen(
                     }
                 }
             }
+        },
+        bottomBar = {
+            if (state.activeMode == QuizletStudyMode.FLASHCARDS && totalCards > 0 && state.learnedInSession.size < totalCards) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(horizontal = 20.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = {
+                            if (isAutoplayOn) isAutoplayOn = false
+                            onUndo()
+                        },
+                        modifier = Modifier.testTag("flashcards_undo_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Undo,
+                            contentDescription = "Undo previous swipe",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+
+                    val currentFaceIsEnglish = if (state.isEnglishOnFront) !state.isFlipped else state.isFlipped
+                    val targetRevealLanguage = if (currentFaceIsEnglish) "Malayalam" else "English"
+                    val isAutoplayNotice = autoplayBannerText != null
+                    val bottomDisplayText = autoplayBannerText ?: "Tap to reveal $targetRevealLanguage"
+
+                    Surface(
+                        onClick = {
+                            if (isAutoplayOn) {
+                                isAutoplayOn = false
+                                autoplayBannerText = "Autoplay off"
+                            } else {
+                                onFlipCard()
+                            }
+                        },
+                        color = Color.Transparent,
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("flashcards_tap_to_reveal_button")
+                    ) {
+                        Text(
+                            text = bottomDisplayText,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = if (isAutoplayNotice) FontWeight.ExtraBold else FontWeight.SemiBold
+                            ),
+                            color = if (isAutoplayNotice) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            isAutoplayOn = !isAutoplayOn
+                            if (isAutoplayOn) onSessionInteraction()
+                            autoplayBannerText = if (isAutoplayOn) "Autoplay on" else "Autoplay off"
+                        },
+                        modifier = Modifier.testTag("flashcards_autoplay_button")
+                    ) {
+                        Icon(
+                            imageVector = if (isAutoplayOn) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                            contentDescription = if (isAutoplayOn) "Pause autoplay" else "Start autoplay",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+            }
         }
     ) { innerPadding ->
-        val studyProgress = if (totalCards > 0) {
-            ((state.currentCardIndex + 1).toFloat() / totalCards.toFloat()).coerceIn(0f, 1f)
-        } else {
-            0f
-        }
-
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            // Top Progress Bar (directly under top taskbar, matching drills tab)
-            LinearProgressIndicator(
-                progress = { studyProgress },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .testTag("flashcards_progress_bar"),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-            )
-
-            // Still Learning (Left, Red) and Learned (Right, Green) Tally Indicators
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Surface(
-                    color = if (swipeRatio < -0.15f) {
-                        TerracottaContainer
-                    } else {
-                        TerracottaContainer.copy(alpha = 0.7f)
-                    },
-                    shape = RoundedCornerShape(12.dp),
-                    border = BorderStroke(
-                        width = if (swipeRatio < -0.15f) 1.5.dp else 1.dp,
-                        color = TerracottaAccent.copy(alpha = if (swipeRatio < -0.15f) 0.9f else 0.5f)
-                    ),
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = leftBadgeScale
-                            scaleY = leftBadgeScale
-                        }
-                        .testTag("still_learning_tally_badge")
-                ) {
-                    Text(
-                        text = "Still Learning: ${state.stillLearningInSession.size}",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                        color = TerracottaAccent,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+            Column(modifier = Modifier.fillMaxSize()) {
+                if (isDevModeEnabled) {
+                    DevModeTestingBar(
+                        onEndDevMode = onEndDevMode,
+                        onCurrentQuestionCorrect = onDevGetCorrect,
+                        onSkipToLastQuestion = onDevSkipToLast,
+                        modeLabel = state.activeMode.title
                     )
                 }
 
-                Surface(
-                    color = if (swipeRatio > 0.15f) {
-                        PalmContainerLight
-                    } else {
-                        PalmContainerLight.copy(alpha = 0.75f)
-                    },
-                    shape = RoundedCornerShape(12.dp),
-                    border = BorderStroke(
-                        width = if (swipeRatio > 0.15f) 1.5.dp else 1.dp,
-                        color = EmeraldPrimary.copy(alpha = if (swipeRatio > 0.15f) 0.9f else 0.5f)
-                    ),
-                    modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = rightBadgeScale
-                            scaleY = rightBadgeScale
-                        }
-                        .testTag("learned_tally_badge")
-                ) {
-                    Text(
-                        text = "Learned: ${state.learnedInSession.size}",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                        color = EmeraldDark,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                    )
-                }
-            }
+                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                    when (state.activeMode) {
+                        QuizletStudyMode.FLASHCARDS -> {
+                            val isCompleted = totalCards > 0 && state.learnedInSession.size >= totalCards
+                            val animatedProgress by animateFloatAsState(
+                                targetValue = if (isCompleted) 1f else if (totalCards > 0) state.learnedInSession.size.toFloat() / totalCards.toFloat() else 0f,
+                                animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing),
+                                label = "flashcards_progress_bar_anim"
+                            )
 
-            // Quizlet-Style Stacked & Swipeable Flashcard Container
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 4.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                // 1. Underneath Next Card in Stack (scales & rises smoothly as top card is dragged)
-                if (nextPhrase != null) {
-                    val backScale = 0.94f + (0.06f * absSwipeProgress)
-                    val backTranslationY = with(density) { (12.dp * (1f - absSwipeProgress)).toPx() }
-                    val nextFrontWord = if (state.isEnglishOnFront) nextPhrase.english else nextPhrase.manglish
+                            Column(modifier = Modifier.fillMaxSize()) {
+                                LinearProgressIndicator(
+                                    progress = { animatedProgress },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(8.dp)
+                                        .testTag("flashcards_progress_bar"),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    trackColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                                )
 
-                    Card(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .graphicsLayer {
-                                scaleX = backScale
-                                scaleY = backScale
-                                translationY = backTranslationY
-                                alpha = 0.65f + (0.35f * absSwipeProgress)
-                            }
-                            .border(
-                                width = 1.5.dp,
-                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
-                                shape = RoundedCornerShape(28.dp)
-                            ),
-                        shape = RoundedCornerShape(28.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        MinimalFlashcardContent(
-                            centerWord = nextFrontWord,
-                            isRecycled = isNextRecycled,
-                            swipeRatio = 0f,
-                            onSpeak = {}
-                        )
-                    }
-                }
+                                // Tally Badges
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 20.dp, vertical = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Surface(
+                                        color = TerracottaContainer.copy(alpha = 0.85f),
+                                        shape = RoundedCornerShape(12.dp),
+                                        border = BorderStroke(1.dp, TerracottaAccent.copy(alpha = 0.6f)),
+                                        modifier = Modifier.testTag("still_learning_tally_badge")
+                                    ) {
+                                        Text(
+                                            text = "Still Learning: ${state.stillLearningInSession.size}",
+                                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = TerracottaAccent,
+                                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                                        )
+                                    }
 
-                // 2. Active Foreground Card with Quizlet Physics, Slight Lean, and Uninverted Gesture Space
-                if (currentPhrase != null) {
-                    val baseBorder = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                    val borderColor = when {
-                        swipeRatio > 0.05f -> lerp(baseBorder, EmeraldPrimary, swipeRatio)
-                        swipeRatio < -0.05f -> lerp(baseBorder, TerracottaAccent, abs(swipeRatio))
-                        else -> baseBorder
-                    }
+                                    Surface(
+                                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.85f),
+                                        shape = RoundedCornerShape(12.dp),
+                                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)),
+                                        modifier = Modifier.testTag("learned_tally_badge")
+                                    ) {
+                                        Text(
+                                            text = "Learned: ${state.learnedInSession.size}",
+                                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                                        )
+                                    }
+                                }
 
-                    val baseSurface = MaterialTheme.colorScheme.surface
-                    val cardContainerColor = when {
-                        swipeRatio > 0.05f -> lerp(baseSurface, PalmContainerLight, swipeRatio * 0.35f)
-                        swipeRatio < -0.05f -> lerp(baseSurface, TerracottaContainer, abs(swipeRatio) * 0.35f)
-                        else -> baseSurface
-                    }
-
-                    val frontWord = if (state.isEnglishOnFront) currentPhrase.english else currentPhrase.manglish
-                    val backWord = if (state.isEnglishOnFront) currentPhrase.manglish else currentPhrase.english
-
-                    // Critical: pointerInput is attached to this Box in untransformed screen space
-                    // BEFORE applying graphicsLayer 3D flip. This ensures drag coordinates and
-                    // left/right directions are NEVER inverted when the card is flipped 180 degrees.
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .pointerInput(currentPhrase.id, state.currentCardIndex) {
-                                val velocityTracker = VelocityTracker()
-                                detectDragGestures(
-                                    onDragStart = {
-                                        if (isAutoplayOn) isAutoplayOn = false
-                                        velocityTracker.resetTracking()
-                                    },
-                                    onDragEnd = {
-                                        if (isAnimatingOut) return@detectDragGestures
-                                        val velocityX = velocityTracker.calculateVelocity().x
-                                        val currentX = cardOffset.value.x
-                                        val currentY = cardOffset.value.y
-
-                                        val swipedRight = currentX > swipeThresholdPx ||
-                                            (currentX > swipeThresholdPx * 0.4f && velocityX > 900f)
-                                        val swipedLeft = currentX < -swipeThresholdPx ||
-                                            (currentX < -swipeThresholdPx * 0.4f && velocityX < -900f)
-
-                                        when {
-                                            swipedRight -> {
-                                                isAnimatingOut = true
-                                                coroutineScope.launch {
-                                                    cardOffset.animateTo(
-                                                        targetValue = Offset(
-                                                            x = flyOffDistancePx,
-                                                            y = currentY + 30f
-                                                        ),
-                                                        animationSpec = tween(
-                                                            durationMillis = 200,
-                                                            easing = FastOutLinearInEasing
-                                                        )
-                                                    )
-                                                    onMarkKnown()
-                                                }
-                                            }
-                                            swipedLeft -> {
-                                                isAnimatingOut = true
-                                                coroutineScope.launch {
-                                                    cardOffset.animateTo(
-                                                        targetValue = Offset(
-                                                            x = -flyOffDistancePx,
-                                                            y = currentY + 30f
-                                                        ),
-                                                        animationSpec = tween(
-                                                            durationMillis = 200,
-                                                            easing = FastOutLinearInEasing
-                                                        )
-                                                    )
-                                                    onMarkLearning()
-                                                }
-                                            }
-                                            else -> {
-                                                coroutineScope.launch {
-                                                    cardOffset.animateTo(
-                                                        targetValue = Offset.Zero,
-                                                        animationSpec = spring(
-                                                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                                                            stiffness = Spring.StiffnessMedium
-                                                        )
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    },
-                                    onDragCancel = {
-                                        if (!isAnimatingOut) {
-                                            coroutineScope.launch {
-                                                cardOffset.animateTo(
-                                                    targetValue = Offset.Zero,
-                                                    animationSpec = spring(
-                                                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                                                        stiffness = Spring.StiffnessMedium
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    },
-                                    onDrag = { change, dragAmount ->
-                                        change.consume()
-                                        if (!isAnimatingOut) {
-                                            velocityTracker.addPosition(
-                                                change.uptimeMillis,
-                                                change.position
+                                if (totalCards == 0) {
+                                    // Empty Deck State
+                                    Column(
+                                        modifier = Modifier.fillMaxSize(),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = MaterialTheme.colorScheme.secondaryContainer,
+                                            modifier = Modifier.size(80.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Layers,
+                                                contentDescription = "Empty Deck",
+                                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                                modifier = Modifier.padding(16.dp).size(48.dp)
                                             )
-                                            coroutineScope.launch {
-                                                cardOffset.snapTo(cardOffset.value + dragAmount)
-                                            }
+                                        }
+                                        Spacer(modifier = Modifier.height(24.dp))
+                                        Text(
+                                            text = "No Cards Available",
+                                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold),
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            text = "This deck currently has no cards to review.",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        Spacer(modifier = Modifier.height(32.dp))
+                                        Button(
+                                            onClick = onBack,
+                                            shape = RoundedCornerShape(16.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = MaterialTheme.colorScheme.primary,
+                                                contentColor = MaterialTheme.colorScheme.onPrimary
+                                            ),
+                                            modifier = Modifier
+                                                .fillMaxWidth(0.7f)
+                                                .height(50.dp)
+                                                .testTag("flashcards_empty_deck_return_home_button")
+                                        ) {
+                                            Text(
+                                                text = "Return Home",
+                                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                            )
                                         }
                                     }
-                                )
-                            }
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null
-                            ) {
-                                if (!isAnimatingOut) {
-                                    if (isAutoplayOn) isAutoplayOn = false
-                                    onFlipCard()
-                                }
-                            }
-                            .graphicsLayer {
-                                translationX = cardOffset.value.x
-                                translationY = cardOffset.value.y * 0.25f
-                                // Slight Quizlet lean: subtle tilt up to 5 degrees max
-                                rotationZ = (cardOffset.value.x / 95f).coerceIn(-5f, 5f)
-                                rotationY = rotation
-                                cameraDistance = 14f * this.density
-                            }
-                    ) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .border(
-                                    width = if (absSwipeProgress > 0.1f) 2.5.dp else 1.5.dp,
-                                    color = borderColor,
-                                    shape = RoundedCornerShape(28.dp)
-                                )
-                                .testTag("flashcard_flip_card"),
-                            shape = RoundedCornerShape(28.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = cardContainerColor
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-                        ) {
-                            if (rotation <= 90f) {
-                                MinimalFlashcardContent(
-                                    centerWord = frontWord,
-                                    isRecycled = isRecycled,
-                                    swipeRatio = swipeRatio,
-                                    onSpeak = { onSpeakPhrase(currentPhrase) }
-                                )
-                            } else {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .graphicsLayer { rotationY = 180f }
-                                ) {
-                                    MinimalFlashcardContent(
-                                        centerWord = backWord,
+                                } else if (isCompleted) {
+                                    // Completion Celebration
+                                    Column(
+                                        modifier = Modifier.fillMaxSize(),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = MaterialTheme.colorScheme.primaryContainer,
+                                            modifier = Modifier.size(80.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = "Completed",
+                                                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                                modifier = Modifier.padding(16.dp).size(48.dp)
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(24.dp))
+                                        Text(
+                                            text = "Completed!",
+                                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold),
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            text = "You have mastered all $totalCards cards.",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        Spacer(modifier = Modifier.height(32.dp))
+                                        val continueLevel = state.continueToDrillsLevelIndex
+                                        Button(
+                                            onClick = {
+                                                if (continueLevel != null) onContinueToDrills(continueLevel) else onBack()
+                                            },
+                                            shape = RoundedCornerShape(16.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = MaterialTheme.colorScheme.primary,
+                                                contentColor = MaterialTheme.colorScheme.onPrimary
+                                            ),
+                                            modifier = Modifier
+                                                .fillMaxWidth(0.7f)
+                                                .height(50.dp)
+                                                .testTag(
+                                                    if (continueLevel != null) {
+                                                        "flashcards_completion_continue_to_drills_button"
+                                                    } else {
+                                                        "flashcards_completion_return_home_button"
+                                                    }
+                                                )
+                                        ) {
+                                            Text(
+                                                text = if (continueLevel != null) "Continue to Drills" else "Return Home",
+                                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                            )
+                                        }
+                                        if (continueLevel != null) {
+                                            Spacer(modifier = Modifier.height(12.dp))
+                                            Text(
+                                                text = "Return Home",
+                                                modifier = Modifier
+                                                    .clickable(onClick = onBack)
+                                                    .testTag("flashcards_completion_return_home_text"),
+                                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    // Active Flashcard Stack
+                                    val isRecycled = currentPhrase != null &&
+                                        state.cardsSentToStillLearning.contains(currentPhrase.id) &&
+                                        (state.cardPresentationCount[currentPhrase.id] ?: 1) >= 2
+
+                                    val isNextRecycled = nextPhrase != null &&
+                                        state.cardsSentToStillLearning.contains(nextPhrase.id) &&
+                                        (state.cardPresentationCount[nextPhrase.id] ?: 1) >= 2
+
+                                    SwipeableFlashcardStack(
+                                        currentPhrase = currentPhrase,
+                                        nextPhrase = nextPhrase,
+                                        state = state,
+                                        presentationCount = presentationCount,
                                         isRecycled = isRecycled,
-                                        swipeRatio = swipeRatio,
-                                        onSpeak = { onSpeakPhrase(currentPhrase) }
+                                        isNextRecycled = isNextRecycled,
+                                        onFlipCard = {
+                                            if (isAutoplayOn) isAutoplayOn = false
+                                            onFlipCard()
+                                        },
+                                        onMarkKnown = onMarkKnown,
+                                        onMarkLearning = onMarkLearning,
+                                        onSpeakPhrase = onSpeakPhrase,
+                                        onSessionInteraction = onSessionInteraction
                                     )
                                 }
                             }
                         }
+
+                        QuizletStudyMode.MATCH -> {
+                            val tickMatchTimer by rememberUpdatedState(onTickMatchTimer)
+                            LaunchedEffect(state.isMatchFinished) {
+                                if (!state.isMatchFinished) {
+                                    while (true) {
+                                        delay(100L)
+                                        tickMatchTimer()
+                                    }
+                                }
+                            }
+
+                            MatchGameModePanel(
+                                state = state,
+                                onTapTile = onTapMatchTile,
+                                onRestartMatch = onRestartMode
+                            )
+                        }
+
+                        else -> {
+                            DeckAdaptiveQuestionPanel(
+                                state = state,
+                                isListening = isListening,
+                                speechLevel = speechLevel,
+                                speechStatus = speechStatus,
+                                onTypedChange = onTypedResponseChange,
+                                onSelectMcOption = onSelectMcOption,
+                                onSelectTrueFalse = onSelectTrueFalse,
+                                onCopyInputChange = onCopyInputChange,
+                                onEvaluate = onEvaluateQuestion,
+                                onOverrideCorrect = onOverrideCorrect,
+                                onNext = onNextQuestion,
+                                onRestartMode = onRestartMode,
+                                onSpeakPhrase = onSpeakPhrase,
+                                onStartSpeech = onStartSpeech,
+                                onStopSpeech = onStopSpeech
+                            )
+                        }
                     }
                 }
             }
+        }
+    }
 
-            // Under the card: Undo Arrow on left, "Tap to reveal..." or "Autoplay on/off" in middle, Play/Pause on right
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Left: Undo Arrow
-                IconButton(
-                    onClick = {
-                        if (isAutoplayOn) isAutoplayOn = false
-                        onUndo()
+    if (showExitDialog) {
+        val isMatch = state.activeMode == QuizletStudyMode.MATCH
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = {
+                Text(
+                    text = if (isMatch) "Leave Match Game?" else "Leave Flashcards?",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+            },
+            text = {
+                Text(
+                    text = if (isMatch) {
+                        "Are you sure? You will lose progress for the current match."
+                    } else {
+                        "Leave this flashcard session? Your saved learning progress will be kept."
                     },
-                    modifier = Modifier.testTag("flashcards_undo_button")
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showExitDialog = false
+                        onBack()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = TerracottaAccent)
                 ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Undo,
-                        contentDescription = "Undo previous swipe",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(26.dp)
-                    )
+                    Text("Leave", fontWeight = FontWeight.Bold)
                 }
-
-                // Middle: Tap to reveal "Malayalam" or "English", or temporarily "Autoplay on" / "Autoplay off"
-                val currentFaceIsEnglish = if (state.isEnglishOnFront) !state.isFlipped else state.isFlipped
-                val targetRevealLanguage = if (currentFaceIsEnglish) "Malayalam" else "English"
-                val isAutoplayNotice = autoplayBannerText != null
-                val bottomDisplayText = autoplayBannerText ?: "Tap to reveal $targetRevealLanguage"
-
-                Surface(
-                    onClick = {
-                        if (isAutoplayOn) {
-                            isAutoplayOn = false
-                            autoplayBannerText = "Autoplay off"
-                        } else {
-                            onFlipCard()
-                        }
-                    },
-                    color = Color.Transparent,
-                    modifier = Modifier
-                        .weight(1f)
-                        .testTag("flashcards_tap_to_reveal_button")
-                ) {
-                    Text(
-                        text = bottomDisplayText,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = if (isAutoplayNotice) FontWeight.ExtraBold else FontWeight.SemiBold
-                        ),
-                        color = if (isAutoplayNotice) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
-
-                // Right: Autoplay Play / Pause button
-                IconButton(
-                    onClick = {
-                        isAutoplayOn = !isAutoplayOn
-                        autoplayBannerText = if (isAutoplayOn) "Autoplay on" else "Autoplay off"
-                    },
-                    modifier = Modifier.testTag("flashcards_autoplay_button")
-                ) {
-                    Icon(
-                        imageVector = if (isAutoplayOn) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                        contentDescription = if (isAutoplayOn) "Pause autoplay" else "Start autoplay",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(28.dp)
-                    )
+            },
+            dismissButton = {
+                TextButton(onClick = { showExitDialog = false }) {
+                    Text("Stay", fontWeight = FontWeight.Bold)
                 }
             }
-        }
+        )
     }
 
     if (showLevelDialog) {
@@ -769,6 +732,252 @@ fun FlashcardsScreen(
             },
             onDismiss = { showLevelDialog = false }
         )
+    }
+}
+
+@Composable
+private fun SwipeableFlashcardStack(
+    currentPhrase: PhraseItem?,
+    nextPhrase: PhraseItem?,
+    state: FlashcardState,
+    presentationCount: Int,
+    isRecycled: Boolean,
+    isNextRecycled: Boolean,
+    onFlipCard: () -> Unit,
+    onMarkKnown: () -> Unit,
+    onMarkLearning: () -> Unit,
+    onSpeakPhrase: (PhraseItem) -> Unit,
+    onSessionInteraction: () -> Unit
+) {
+    if (currentPhrase == null) return
+
+    var offsetX by remember(currentPhrase.id) { mutableFloatStateOf(0f) }
+    var offsetY by remember(currentPhrase.id) { mutableFloatStateOf(0f) }
+    var isSwipingOut by remember(currentPhrase.id) { mutableStateOf(false) }
+    var settleJob by remember(currentPhrase.id) { mutableStateOf<Job?>(null) }
+    val coroutineScope = rememberCoroutineScope()
+    val density = LocalDensity.current
+
+    val cardRotationY by key(currentPhrase.id, presentationCount) {
+        animateFloatAsState(
+            targetValue = if (state.isFlipped) 180f else 0f,
+            animationSpec = tween(durationMillis = 320, easing = FastOutSlowInEasing),
+            label = "card_flip_y"
+        )
+    }
+
+    val swipeThreshold = with(density) { 110.dp.toPx() }
+    val flyOffDistance = with(density) { 680.dp.toPx() }
+    val absOffset = abs(offsetX)
+    val swipeRatio = (offsetX / swipeThreshold).coerceIn(-1f, 1f)
+    val absProgress = (absOffset / swipeThreshold).coerceIn(0f, 1f)
+
+    fun settleCard(direction: Int) {
+        settleJob?.cancel()
+        settleJob = coroutineScope.launch {
+            if (direction == 0) {
+                val animX = launch {
+                    animate(
+                        initialValue = offsetX,
+                        targetValue = 0f,
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioLowBouncy,
+                            stiffness = Spring.StiffnessMediumLow
+                        )
+                    ) { value, _ -> offsetX = value }
+                }
+                val animY = launch {
+                    animate(
+                        initialValue = offsetY,
+                        targetValue = 0f,
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioLowBouncy,
+                            stiffness = Spring.StiffnessMediumLow
+                        )
+                    ) { value, _ -> offsetY = value }
+                }
+                animX.join()
+                animY.join()
+                offsetX = 0f
+                offsetY = 0f
+            } else {
+                isSwipingOut = true
+                try {
+                    val dist = kotlin.math.hypot(offsetX.toDouble(), offsetY.toDouble()).toFloat().coerceAtLeast(1f)
+                    val dirX = if (abs(offsetX) > 1f) offsetX / dist else direction.toFloat()
+                    val dirY = offsetY / dist
+                    val targetX = dirX * flyOffDistance
+                    val targetY = dirY * flyOffDistance
+
+                    val animX = launch {
+                        animate(
+                            initialValue = offsetX,
+                            targetValue = targetX,
+                            animationSpec = tween(180, easing = FastOutSlowInEasing)
+                        ) { value, _ -> offsetX = value }
+                    }
+                    val animY = launch {
+                        animate(
+                            initialValue = offsetY,
+                            targetValue = targetY,
+                            animationSpec = tween(180, easing = FastOutSlowInEasing)
+                        ) { value, _ -> offsetY = value }
+                    }
+                    animX.join()
+                    animY.join()
+                    if (direction > 0) onMarkKnown() else onMarkLearning()
+                } catch (e: Exception) {
+                    // Prevent crash
+                }
+            }
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag("flashcard_swipe_area")
+            .pointerInput(currentPhrase.id, presentationCount) {
+                var totalDragX = 0f
+                var totalDragY = 0f
+                var isDragging = false
+                val tracker = VelocityTracker()
+
+                detectDragGestures(
+                    onDragStart = { offset ->
+                        settleJob?.cancel()
+                        settleJob = null
+                        isSwipingOut = false
+                        offsetX = 0f
+                        offsetY = 0f
+                        tracker.resetTracking()
+                        totalDragX = 0f
+                        totalDragY = 0f
+                        isDragging = false
+                    },
+                    onDrag = { change, dragAmount ->
+                        change.consume()
+                        totalDragX += dragAmount.x
+                        totalDragY += dragAmount.y
+                        if (abs(totalDragX) > 6.dp.toPx() || abs(totalDragY) > 6.dp.toPx()) {
+                            isDragging = true
+                        }
+                        tracker.addPosition(change.uptimeMillis, change.position)
+                        offsetX += dragAmount.x
+                        offsetY += dragAmount.y
+                    },
+                    onDragEnd = {
+                        if (isDragging) {
+                            val velocityX = tracker.calculateVelocity().x
+                            val threshold = with(density) { 110.dp.toPx() }
+                            val velThreshold = with(density) { 450.dp.toPx() }
+                            val direction = when {
+                                totalDragX > threshold || offsetX > threshold || velocityX > velThreshold -> 1
+                                totalDragX < -threshold || offsetX < -threshold || velocityX < -velThreshold -> -1
+                                else -> 0
+                            }
+                            settleCard(direction)
+                        }
+                    },
+                    onDragCancel = {
+                        settleCard(0)
+                    }
+                )
+            }
+            .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        // 1. Underneath Next Card (if available)
+        if (nextPhrase != null) {
+            val backScale = 0.94f + (0.06f * absProgress)
+            val backTranslationY = with(density) { (12.dp * (1f - absProgress)).toPx() }
+            val nextWord = if (state.isEnglishOnFront) nextPhrase.english else nextPhrase.manglish
+
+            Card(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        scaleX = backScale
+                        scaleY = backScale
+                        translationY = backTranslationY
+                        alpha = 0.65f + (0.35f * absProgress)
+                    }
+                    .border(
+                        width = 1.5.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+                        shape = RoundedCornerShape(28.dp)
+                    ),
+                shape = RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                MinimalFlashcardContent(
+                    centerWord = nextWord,
+                    isRecycled = isNextRecycled,
+                    swipeRatio = 0f,
+                    onSpeak = {}
+                )
+            }
+        }
+
+        // 2. Active Top Card
+        val baseBorder = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+        val borderColor = when {
+            swipeRatio > 0.05f -> lerp(baseBorder, EmeraldPrimary, swipeRatio)
+            swipeRatio < -0.05f -> lerp(baseBorder, TerracottaAccent, abs(swipeRatio))
+            else -> baseBorder
+        }
+
+        val baseSurface = MaterialTheme.colorScheme.surface
+        val cardColor = when {
+            swipeRatio > 0.05f -> lerp(baseSurface, MaterialTheme.colorScheme.primaryContainer, swipeRatio * 0.35f)
+            swipeRatio < -0.05f -> lerp(baseSurface, MaterialTheme.colorScheme.errorContainer, abs(swipeRatio) * 0.35f)
+            else -> baseSurface
+        }
+
+        val frontWord = if (state.isEnglishOnFront) currentPhrase.english else currentPhrase.manglish
+        val backWord = if (state.isEnglishOnFront) currentPhrase.manglish else currentPhrase.english
+        val currentCardRotationY = if (cardRotationY <= 90f) cardRotationY else cardRotationY - 180f
+
+        Card(
+            modifier = Modifier
+                .fillMaxSize()
+                .testTag("flashcard_flip_card")
+                .graphicsLayer {
+                    translationX = offsetX
+                    translationY = offsetY
+                    rotationZ = (offsetX / 22f).coerceIn(-12f, 12f)
+                    rotationY = currentCardRotationY
+                    cameraDistance = 14f * density.density
+                }
+                .border(
+                    width = if (absProgress > 0.1f) 2.5.dp else 1.5.dp,
+                    color = borderColor,
+                    shape = RoundedCornerShape(28.dp)
+                )
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    if (!isSwipingOut) {
+                        onFlipCard()
+                    }
+                },
+            shape = RoundedCornerShape(28.dp),
+            colors = CardDefaults.cardColors(containerColor = cardColor),
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        ) {
+            val displayedWord = if (cardRotationY <= 90f) frontWord else backWord
+            MinimalFlashcardContent(
+                centerWord = displayedWord,
+                isRecycled = isRecycled,
+                swipeRatio = swipeRatio,
+                onSpeak = {
+                    onSessionInteraction()
+                    onSpeakPhrase(currentPhrase)
+                }
+            )
+        }
     }
 }
 
@@ -797,13 +1006,12 @@ private fun MinimalFlashcardContent(
             )
         }
 
-        // Quizlet-style live drag stamp badge centered at top while actively swiping
         if (abs(swipeRatio) > 0.12f) {
             val isKnow = swipeRatio > 0f
             val stampAlpha = ((abs(swipeRatio) - 0.12f) / 0.65f).coerceIn(0f, 1f)
             val stampScale = 0.85f + (0.15f * stampAlpha)
             Surface(
-                color = if (isKnow) EmeraldPrimary else TerracottaAccent,
+                color = if (isKnow) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
                 shape = RoundedCornerShape(50),
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -821,14 +1029,14 @@ private fun MinimalFlashcardContent(
                     Icon(
                         imageVector = if (isKnow) Icons.Filled.Check else Icons.Filled.Close,
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = if (isKnow) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onErrorContainer,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = if (isKnow) "Know" else "Still learning",
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.ExtraBold),
-                        color = Color.White
+                        color = if (isKnow) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onErrorContainer
                     )
                 }
             }
@@ -852,21 +1060,14 @@ private fun MinimalFlashcardContent(
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 28.sp,
-                lineHeight = 36.sp
+                textAlign = TextAlign.Center
             ),
             color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(horizontal = 16.dp)
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }
 
-/**
- * Level Selection Dialog displayed from the Flashcards Settings menu.
- * Defaults selection to and clearly highlights the user's current level.
- */
 @Composable
 fun LevelSelectionDialog(
     currentDeckId: String,
@@ -874,250 +1075,74 @@ fun LevelSelectionDialog(
     onSelectDeck: (FlashcardDeck) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val knownCount = userStats.learnedPhraseIds.size
-    val currentStage = DialectRepository.getCurrentStage(userStats)
-    val currentLevelDeck = DialectRepository.decks.find { it.id == currentStage.deckId } ?: DialectRepository.decks.first()
-
-    Dialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
-    ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth(0.92f)
-                .fillMaxHeight(0.82f)
-                .clip(RoundedCornerShape(24.dp))
-                .border(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f), RoundedCornerShape(24.dp)),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp
-        ) {
+        title = {
+            Text(
+                text = "Select Flashcard Level",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+            )
+        },
+        text = {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp)
+                    .fillMaxWidth()
+                    .heightIn(max = 400.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Header
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text(
-                            text = "Select Study Level",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Current Level: ${currentStage.rankTitle}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    IconButton(onClick = onDismiss) {
-                        Icon(Icons.Filled.Close, contentDescription = "Close")
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // Shortcut to Jump to Current Level if not already selected
-                if (currentDeckId != currentLevelDeck.id) {
+                DialectRepository.decks.forEach { deck ->
+                    val isSelected = deck.id == currentDeckId
+                    val isUnlocked = deck.levelIndex <= userStats.unlockedLevelIndex
                     Surface(
                         onClick = {
-                            onSelectDeck(currentLevelDeck)
+                            if (isUnlocked) onSelectDeck(deck)
                         },
                         shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("select_current_level_shortcut")
+                        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Row(
                             modifier = Modifier.padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("⭐", fontSize = 18.sp)
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(deck.iconEmoji, fontSize = 20.sp)
+                            Spacer(modifier = Modifier.width(10.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "Jump to Current Level",
-                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.primary
+                                    text = deck.levelLabel,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Text(
-                                    text = "${currentStage.rankTitle} (${currentStage.topicTitle})",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    text = "${deck.phrases.size} phrases",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            if (isSelected) {
+                                Icon(
+                                    imageVector = Icons.Filled.Check,
+                                    contentDescription = "Current Level",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            } else if (!isUnlocked) {
+                                Icon(
+                                    imageVector = Icons.Filled.Lock,
+                                    contentDescription = "Locked Level",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                    modifier = Modifier.size(18.dp)
                                 )
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
-
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    // Overall Deck Option
-                    item {
-                        val isOverallSelected = currentDeckId == "deck_overall"
-                        Surface(
-                            onClick = {
-                                onSelectDeck(DialectRepository.buildOverallDeck(knownCount))
-                            },
-                            shape = RoundedCornerShape(14.dp),
-                            color = if (isOverallSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
-                            border = if (isOverallSelected) BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("level_dialog_deck_overall")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                                    Text("📚", fontSize = 22.sp)
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Text(
-                                            text = "Overall (All Unlocked)",
-                                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-                                        Text(
-                                            text = "Cards across all unlocked levels",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                }
-                                if (isOverallSelected) {
-                                    Icon(Icons.Filled.Check, contentDescription = "Selected", tint = MaterialTheme.colorScheme.primary)
-                                }
-                            }
-                        }
-                    }
-
-                    // All 12 Study Plan Stages
-                    items(DialectRepository.studyPlanStages) { stage ->
-                        val stageDeck = DialectRepository.decks.find { it.id == stage.deckId } ?: DialectRepository.decks.first()
-                        val isReached = stage.levelIndex == 0 ||
-                            knownCount >= stage.requiredWordsToUnlock ||
-                            userStats.masteredDeckIds.contains(stage.deckId) ||
-                            stage.levelIndex <= userStats.unlockedLevelIndex
-                        val isSelected = currentDeckId == stageDeck.id
-                        val isCurrentLevel = stage.levelIndex == currentStage.levelIndex
-
-                        Surface(
-                            onClick = {
-                                if (isReached) {
-                                    onSelectDeck(stageDeck)
-                                }
-                            },
-                            shape = RoundedCornerShape(14.dp),
-                            color = when {
-                                isSelected -> MaterialTheme.colorScheme.primaryContainer
-                                isReached -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
-                                else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)
-                            },
-                            border = if (isSelected) BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("level_dialog_${stage.deckId}")
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                                    Text(stage.iconEmoji, fontSize = 22.sp)
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Column {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Text(
-                                                text = stage.rankTitle,
-                                                style = MaterialTheme.typography.labelMedium.copy(
-                                                    fontWeight = if (isSelected || isCurrentLevel) FontWeight.ExtraBold else FontWeight.Bold
-                                                ),
-                                                color = when {
-                                                    !isReached -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                                                    isSelected -> MaterialTheme.colorScheme.primary
-                                                    else -> MaterialTheme.colorScheme.onSurface
-                                                }
-                                            )
-                                            if (isCurrentLevel) {
-                                                Spacer(modifier = Modifier.width(6.dp))
-                                                Surface(
-                                                    shape = RoundedCornerShape(6.dp),
-                                                    color = GoldenSpice.copy(alpha = 0.3f)
-                                                ) {
-                                                    Text(
-                                                        text = "Current",
-                                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold, fontSize = 9.sp),
-                                                        color = GoldenOnContainer,
-                                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-                                                    )
-                                                }
-                                            }
-                                        }
-                                        Text(
-                                            text = stage.topicTitle,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = if (isReached) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                                        )
-                                    }
-                                }
-
-                                if (isSelected) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Check,
-                                        contentDescription = "Selected",
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                } else if (!isReached) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Lock,
-                                            contentDescription = "Locked",
-                                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(
-                                            text = "${stage.requiredWordsToUnlock}w",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Button(
-                    onClick = onDismiss,
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Close", fontWeight = FontWeight.Bold)
                 }
             }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close", fontWeight = FontWeight.Bold)
+            }
         }
-    }
+    )
 }
-

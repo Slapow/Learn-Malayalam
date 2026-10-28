@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.data.DialectRepository
+import com.example.model.ActflProficiencyTier
 import com.example.model.StudyLevelStage
 import com.example.model.UserStats
 import com.example.ui.theme.*
@@ -239,44 +240,24 @@ fun StreakCalendarDialog(
 }
 
 /**
- * Level & XP Progress Dialog showing current level progress bar,
- * current XP, and goal XP to reach the next level.
+ * Progress dialog showing vocabulary progress through the current proficiency tier.
  */
 @Composable
-fun XpLevelProgressDialog(
+fun LevelProgressDialog(
     userStats: UserStats,
     currentStage: StudyLevelStage,
     nextStage: StudyLevelStage?,
     onDismiss: () -> Unit
 ) {
-    val levelIndex = currentStage.levelIndex
-    val tier = com.example.model.ActflProficiencyTier.fromTierId(currentStage.tierId)
-
-    // Stage progression aligned with 5-tier framework targets (1000, 3500, 8000, 16000, 30000)
-    val stageGoals = listOf(
-        100,    // Stage 0: Novice 1
-        500,    // Stage 1: Novice 2
-        1000,   // Stage 2: Novice 3 (Tier 1 Novice Graduation Gate: 1,000 XP)
-        1800,   // Stage 3: Elementary 1
-        2600,   // Stage 4: Elementary 2
-        3500,   // Stage 5: Elementary 3 (Tier 2 Elementary Graduation Gate: 3,500 XP)
-        5500,   // Stage 6: Intermediate 1
-        8000,   // Stage 7: Intermediate 2 (Tier 3 Intermediate Graduation Gate: 8,000 XP)
-        12000,  // Stage 8: Advanced 1
-        16000,  // Stage 9: Advanced 2 (Tier 4 Advanced Graduation Gate: 16,000 XP)
-        23000,  // Stage 10: Mastery 1
-        30000   // Stage 11: Mastery 2 (Tier 5 Native Master Speaker: 30,000+ XP)
+    val tier = ActflProficiencyTier.fromTierId(currentStage.tierId)
+    val nextTier = ActflProficiencyTier.entries.getOrNull(tier.ordinal + 1)
+    val tierStages = DialectRepository.studyPlanStages.filter { it.tierId == currentStage.tierId }
+    val tierRoundProgress = DialectRepository.getDrillRoundProgress(
+        tierStages.map { it.levelIndex },
+        userStats
     )
-    val currentGoalXp = stageGoals.getOrElse(levelIndex) { tier.xpTargetToGraduate }
-    val prevGoalXp = if (levelIndex > 0) stageGoals.getOrElse(levelIndex - 1) { 0 } else 0
-
-    val currentXp = userStats.xp
-    val span = (currentGoalXp - prevGoalXp).coerceAtLeast(1)
-    val currentInSpan = (currentXp - prevGoalXp).coerceAtLeast(0)
-    val xpProgress = (currentInSpan.toFloat() / span.toFloat()).coerceIn(0f, 1f)
-    val xpRemaining = (currentGoalXp - currentXp).coerceAtLeast(0)
-
-    val masteryStatus = DialectRepository.getLevelMasteryStatus(levelIndex, userStats)
+    val (learnedTierWords, totalTierWords) =
+        DialectRepository.getTierLearnedWordProgress(currentStage.tierId, userStats)
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -287,7 +268,7 @@ fun XpLevelProgressDialog(
                 .fillMaxWidth(0.92f)
                 .clip(RoundedCornerShape(24.dp))
                 .border(1.5.dp, GoldenSpice.copy(alpha = 0.5f), RoundedCornerShape(24.dp))
-                .testTag("xp_progress_dialog"),
+                .testTag("level_progress_dialog"),
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 6.dp
         ) {
@@ -305,7 +286,7 @@ fun XpLevelProgressDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
                             shape = CircleShape,
-                            color = GoldenContainerLight,
+                            color = MaterialTheme.colorScheme.secondaryContainer,
                             modifier = Modifier.size(42.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
@@ -315,15 +296,16 @@ fun XpLevelProgressDialog(
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = "${currentStage.rankTitle}",
+                                text = "${tier.shortTitle} progress",
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = tier.title,
+                                text = "${currentStage.rankTitle}: ${currentStage.topicTitle}",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.SemiBold
+                                fontWeight = FontWeight.SemiBold,
+                                maxLines = 1
                             )
                         }
                     }
@@ -339,7 +321,7 @@ fun XpLevelProgressDialog(
 
                 Spacer(modifier = Modifier.height(18.dp))
 
-                // XP Progress Card
+                // Progress Card
                 Surface(
                     shape = RoundedCornerShape(16.dp),
                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
@@ -352,26 +334,30 @@ fun XpLevelProgressDialog(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Current XP",
-                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                                text = if (nextTier != null) {
+                                    "${tier.shortTitle} to ${nextTier.shortTitle}"
+                                } else {
+                                    "${tier.shortTitle} progress"
+                                },
+                                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "$currentXp XP",
-                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
-                                color = GoldenOnContainer
+                                text = "$learnedTierWords / $totalTierWords words learned",
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.ExtraBold),
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
                             )
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
 
                         LinearProgressIndicator(
-                            progress = { xpProgress },
+                            progress = { tierRoundProgress.ratio },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(10.dp)
                                 .clip(RoundedCornerShape(5.dp)),
-                            color = GoldenSpice,
+                            color = MaterialTheme.colorScheme.secondary,
                             trackColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
                         )
 
@@ -382,13 +368,8 @@ fun XpLevelProgressDialog(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Goal: $currentGoalXp XP",
+                                text = "${tierRoundProgress.completedRounds} / ${tierRoundProgress.totalRounds} rounds completed",
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = if (xpRemaining > 0) "$xpRemaining XP to next level" else "Goal achieved! Complete drill & cards",
-                                style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -397,17 +378,17 @@ fun XpLevelProgressDialog(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Speaking Milestone & Vocabulary Footprint
+                // Proficiency goals
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = PalmContainerLight.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(
-                            text = "🎯 ${tier.shortTitle} Milestone (${tier.targetVocabulary})",
+                            text = "${tier.shortTitle} goals",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = EmeraldDark
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -418,63 +399,12 @@ fun XpLevelProgressDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
-
-                // Level Up Checklist
-                Text(
-                    text = "Level Up Checklist:",
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Card requirement
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = if (masteryStatus.isDeckMastered) Icons.Default.Check else Icons.Default.Close,
-                        contentDescription = null,
-                        tint = if (masteryStatus.isDeckMastered) EmeraldDark else TerracottaAccent,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Master all flashcards (${masteryStatus.masteredCards}/${masteryStatus.totalCards} mastered)",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(6.dp))
-
-                // Drill requirement
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = if (masteryStatus.isDrillMastered) Icons.Default.Check else Icons.Default.Close,
-                        contentDescription = null,
-                        tint = if (masteryStatus.isDrillMastered) EmeraldDark else TerracottaAccent,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = if (masteryStatus.isDrillMastered) "Master 3-round drill (Completed ✓)" else "Master 3-round progressive drill",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-
                 if (nextStage != null) {
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        text = "Next: ${nextStage.iconEmoji} ${nextStage.rankTitle} (${nextStage.topicTitle})",
+                        text = "Next section: ${nextStage.iconEmoji} ${nextStage.topicTitle}",
                         style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = EmeraldDark
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 

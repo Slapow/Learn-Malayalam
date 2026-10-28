@@ -5,21 +5,28 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.Devices
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.RecordVoiceOver
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -114,14 +121,24 @@ fun onGoogleSignInClicked(
                 Firebase.auth.signInWithCredential(authCredential).await()
                 onAuthSuccess()
             } else {
-                onAuthError("Unexpected credential type")
+                onAuthError("Unexpected credential type returned by Credential Manager")
             }
         } catch (e: GetCredentialCancellationException) {
             Log.w("Auth", "Google Sign-In cancelled or dismissed: ${e.message}", e)
-            onAuthCancelled()
+            val msg = e.message.orEmpty()
+            if (msg.contains("16") || msg.contains("reauth", ignoreCase = true) || msg.contains("failed", ignoreCase = true) || msg.contains("developer_error", ignoreCase = true)) {
+                onAuthError("Google Sign-In failed: App certificate SHA-1 is not registered in Google Cloud/Firebase Console.")
+            } else {
+                onAuthCancelled()
+            }
         } catch (e: Exception) {
             Log.e("Auth", "Google Sign-In failed", e)
-            onAuthError(e.localizedMessage ?: "Sign in failed")
+            val msg = e.localizedMessage ?: "Sign in failed"
+            if (msg.contains("16") || msg.contains("DEVELOPER_ERROR", ignoreCase = true) || msg.contains("12500")) {
+                onAuthError("Google Sign-In failed: App certificate SHA-1 is not registered in Google Cloud/Firebase Console.")
+            } else {
+                onAuthError(msg)
+            }
         }
     }
 }
@@ -151,8 +168,11 @@ fun AuthScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val credentialManager = remember { CredentialManager.create(context) }
+    val clipboardManager = LocalClipboardManager.current
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var showSha1InstructionsDialog by remember { mutableStateOf(false) }
+    var showAnonymousAuthInstructionsDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         attemptAutoSignIn(
@@ -170,19 +190,19 @@ fun AuthScreen(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        EmeraldDark,
-                        EmeraldPrimary,
+                        MaterialTheme.colorScheme.primaryContainer,
                         MaterialTheme.colorScheme.background
                     )
                 )
             )
-            .padding(24.dp),
+            .padding(20.dp),
         contentAlignment = Alignment.Center
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .widthIn(max = 460.dp),
+                .widthIn(max = 480.dp)
+                .verticalScroll(rememberScrollState()),
             shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
@@ -197,7 +217,7 @@ fun AuthScreen(
                     modifier = Modifier
                         .size(76.dp)
                         .clip(CircleShape)
-                        .background(GoldenContainerLight),
+                        .background(MaterialTheme.colorScheme.secondaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text = "🌴", fontSize = 38.sp)
@@ -206,7 +226,7 @@ fun AuthScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Surface(
-                    color = PalmContainerLight,
+                    color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
@@ -215,7 +235,7 @@ fun AuthScreen(
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp
                         ),
-                        color = EmeraldDark,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                     )
                 }
@@ -234,7 +254,7 @@ fun AuthScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Sign in with Google to automatically sync your XP, daily streak, learned phrases, and active session between your phone and laptop.",
+                    text = "Sign in with Google to automatically sync your daily streak, learned phrases, and active session between your phone and laptop.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -295,24 +315,91 @@ fun AuthScreen(
                 }
 
                 if (errorMessage != null) {
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
                     Surface(
                         color = TerracottaContainer,
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            text = errorMessage ?: "",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TerracottaAccent,
-                            modifier = Modifier.padding(10.dp),
-                            textAlign = TextAlign.Center
-                        )
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.Warning,
+                                    contentDescription = null,
+                                    tint = TerracottaAccent,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Configuration Note",
+                                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = TerracottaAccent
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            Text(
+                                text = errorMessage ?: "",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TerracottaAccent
+                            )
+
+                            if (errorMessage?.contains("SHA-1", ignoreCase = true) == true) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                TextButton(
+                                    onClick = { showSha1InstructionsDialog = true },
+                                    modifier = Modifier
+                                        .align(Alignment.End)
+                                        .testTag("sha1_help_button")
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = TerracottaAccent
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "How to register SHA-1 in Firebase",
+                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = TerracottaAccent
+                                    )
+                                }
+                            }
+
+                            if (errorMessage?.contains("Anonymous", ignoreCase = true) == true ||
+                                errorMessage?.contains("administrator", ignoreCase = true) == true ||
+                                errorMessage?.contains("Guest", ignoreCase = true) == true
+                            ) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                TextButton(
+                                    onClick = { showAnonymousAuthInstructionsDialog = true },
+                                    modifier = Modifier
+                                        .align(Alignment.End)
+                                        .testTag("anonymous_auth_help_button")
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = TerracottaAccent
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "How to enable Guest Mode in Firebase",
+                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = TerracottaAccent
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
+                // Primary Google Sign-In Button
                 Button(
                     onClick = {
                         isLoading = true
@@ -338,17 +425,17 @@ fun AuthScreen(
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = Color.White
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(54.dp)
+                        .height(52.dp)
                         .testTag("google_sign_in_button")
                 ) {
                     if (isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             strokeWidth = 2.dp
                         )
                     } else {
@@ -358,7 +445,232 @@ fun AuthScreen(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Secondary Guest / Local Mode Button (bypasses missing SHA-1)
+                OutlinedButton(
+                    onClick = {
+                        isLoading = true
+                        errorMessage = null
+                        Firebase.auth.signInAnonymously()
+                            .addOnSuccessListener {
+                                isLoading = false
+                                onAuthSuccess()
+                            }
+                            .addOnFailureListener { e ->
+                                isLoading = false
+                                val msg = e.localizedMessage.orEmpty()
+                                if (msg.contains("administrator", ignoreCase = true) ||
+                                    msg.contains("restricted", ignoreCase = true) ||
+                                    msg.contains("ADMIN_RESTRICTED_OPERATION", ignoreCase = true)
+                                ) {
+                                    errorMessage = "Guest mode sign-in failed: Anonymous Authentication is disabled in your Firebase Console project."
+                                } else {
+                                    errorMessage = "Guest mode sign-in failed: $msg"
+                                }
+                            }
+                    },
+                    enabled = !isLoading,
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .testTag("guest_sign_in_button")
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Continue as Guest (Local Mode)",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Guest mode grants full access to lessons, drills, & AI practice immediately.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
             }
         }
+    }
+
+    // SHA-1 Fingerprint Registration Step-by-Step Instructions Dialog
+    if (showSha1InstructionsDialog) {
+        val keytoolCmd = "keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android"
+        AlertDialog(
+            onDismissRequest = { showSha1InstructionsDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = {
+                Text(
+                    text = "Register SHA-1 in Firebase",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text(
+                        text = "Google Sign-In requires your app's signing certificate SHA-1 fingerprint to be registered in your Firebase Console project.",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+
+                    Text(
+                        text = "Step 1: Get your local debug SHA-1 key",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(10.dp)) {
+                            Text(
+                                text = keytoolCmd,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 11.sp
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            TextButton(
+                                onClick = {
+                                    clipboardManager.setText(AnnotatedString(keytoolCmd))
+                                },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text("Copy Command", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+
+                    Text(
+                        text = "Step 2: Add SHA-1 to Firebase Console",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Text(
+                        text = "1. Go to console.firebase.google.com\n2. Open Project Settings -> Your Android app (com.aistudio.parayu.malayalam)\n3. Click 'Add fingerprint' and paste your SHA-1\n4. Download updated google-services.json and place it in app/",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+
+                    Surface(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "💡 Tip: You can tap 'Continue as Guest' below to start learning Malayalam right away without Google Sign-In setup!",
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showSha1InstructionsDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text("Got It")
+                }
+            }
+        )
+    }
+
+    // Anonymous Auth Enablement Step-by-Step Instructions Dialog
+    if (showAnonymousAuthInstructionsDialog) {
+        AlertDialog(
+            onDismissRequest = { showAnonymousAuthInstructionsDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = {
+                Text(
+                    text = "Enable Guest Mode in Firebase",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text(
+                        text = "Guest mode relies on Firebase Anonymous Authentication, which is currently disabled in your Firebase Console project.",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+
+                    Text(
+                        text = "How to enable Anonymous Authentication:",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = "1. Go to console.firebase.google.com\n2. Open your project (e.g. gen-lang-client-0134666056)\n3. Navigate to Build -> Authentication -> Sign-in method\n4. Under Native providers, click 'Anonymous'\n5. Toggle 'Enable' and click 'Save'",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    lineHeight = 18.sp
+                                )
+                            )
+                        }
+                    }
+
+                    Surface(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "💡 Once enabled in Firebase Console, tap 'Continue as Guest (Local Mode)' to start learning Malayalam right away!",
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showAnonymousAuthInstructionsDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text("Got It")
+                }
+            }
+        )
     }
 }

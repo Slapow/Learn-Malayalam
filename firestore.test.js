@@ -19,7 +19,6 @@ function validProgressPayload(uid) {
   return {
     userId: uid,
     displayName: "Adoor Learner",
-    xp: 140,
     streakDays: 4,
     completedQuizCount: 6,
     spokenPhrasesCount: 8,
@@ -105,7 +104,6 @@ test("Authenticated user: can update allowed progress fields and rejects ghost f
   // Valid update
   await assertSucceeds(
     aliceDb.collection("users").doc(ALICE_UID).update({
-      xp: 200,
       activeScreen: "FLASHCARDS",
       lastDevice: "Laptop Web",
       updatedAt: new Date(Date.now() - 500),
@@ -120,10 +118,10 @@ test("Authenticated user: can update allowed progress fields and rejects ghost f
     })
   );
 
-  // Negative XP fails
+  // Negative streak fails
   await assertFails(
     aliceDb.collection("users").doc(ALICE_UID).update({
-      xp: -10,
+      streakDays: -10,
       updatedAt: new Date(Date.now() - 500),
     })
   );

@@ -10,7 +10,6 @@ data class CloudUserProgress(
     @DocumentId val id: String = "",
     val userId: String = "",
     val displayName: String = "Adoor Learner",
-    val xp: Long = 0L,
     val streakDays: Long = 0L,
     val completedQuizCount: Long = 0L,
     val spokenPhrasesCount: Long = 0L,

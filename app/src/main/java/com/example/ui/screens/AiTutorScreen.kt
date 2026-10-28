@@ -36,6 +36,7 @@ import com.example.viewmodel.AiTutorState
 fun AiTutorScreen(
     state: AiTutorState,
     isListening: Boolean,
+    speechLevel: Float = 0f,
     speechStatus: String,
     onBack: () -> Unit,
     onSelectScenario: (RoleplayScenario) -> Unit,
@@ -95,6 +96,7 @@ fun AiTutorScreen(
             AnimatedVisibility(visible = isListening) {
                 SpeechPracticeBar(
                     isListening = isListening,
+                    speechLevel = speechLevel,
                     onMicClick = { onStopSpeech() },
                     statusMessage = speechStatus,
                     modifier = Modifier.padding(12.dp)
@@ -114,7 +116,7 @@ fun AiTutorScreen(
                 if (state.messages.isEmpty()) {
                     item {
                         Surface(
-                            color = PalmContainerLight.copy(alpha = 0.65f),
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.65f),
                             shape = RoundedCornerShape(14.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -125,7 +127,7 @@ fun AiTutorScreen(
                                     lineHeight = 18.sp,
                                     fontWeight = FontWeight.Medium
                                 ),
-                                color = EmeraldDark,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
                                 modifier = Modifier.padding(14.dp)
                             )
                         }
@@ -270,7 +272,7 @@ fun AiTutorScreen(
                         shape = CircleShape,
                         colors = IconButtonDefaults.filledIconButtonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = Color.White
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         modifier = Modifier.testTag("tutor_send_button")
                     ) {
@@ -304,7 +306,7 @@ fun ChatBubbleItem(
                     text = message.manglishText,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Medium,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 15.sp
                     ),
                     modifier = Modifier.padding(14.dp)
@@ -381,7 +383,7 @@ fun ChatBubbleItem(
                         // 2. Manglish + Malayalam Script Pill
                         if (message.manglishText.isNotBlank() || message.malayalamText.isNotBlank()) {
                             Surface(
-                                color = PalmContainerLight.copy(alpha = 0.5f),
+                                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
                                 shape = RoundedCornerShape(10.dp),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
@@ -410,7 +412,7 @@ fun ChatBubbleItem(
                 if (!message.correctionFeedback.isNullOrBlank()) {
                     Spacer(modifier = Modifier.height(6.dp))
                     Surface(
-                        color = GoldenContainerLight.copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -424,7 +426,7 @@ fun ChatBubbleItem(
                                 Text(
                                     text = "When to Use (English vs. Formal vs. Casual):",
                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = GoldenOnContainer
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                                 Text(
                                     text = message.correctionFeedback,
@@ -432,7 +434,7 @@ fun ChatBubbleItem(
                                         fontSize = 12.5.sp,
                                         lineHeight = 17.sp
                                     ),
-                                    color = GoldenOnContainer
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                             }
                         }

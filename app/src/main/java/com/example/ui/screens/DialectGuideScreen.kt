@@ -108,7 +108,7 @@ fun DialectGuideScreen(
                         },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = Color.White
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         modifier = Modifier
                             .weight(1f)
@@ -129,7 +129,7 @@ fun DialectGuideScreen(
                         item {
                             Card(
                                 shape = RoundedCornerShape(22.dp),
-                                colors = CardDefaults.cardColors(containerColor = PalmContainerLight),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Column(modifier = Modifier.padding(18.dp)) {
@@ -143,7 +143,7 @@ fun DialectGuideScreen(
                                                 modifier = Modifier
                                                     .size(48.dp)
                                                     .clip(CircleShape)
-                                                    .background(Color.White),
+                                                    .background(MaterialTheme.colorScheme.surface),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Text(currentStage.iconEmoji, fontSize = 26.sp)
@@ -153,24 +153,24 @@ fun DialectGuideScreen(
                                                 Text(
                                                     text = "YOUR CURRENT LEVEL",
                                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                                    color = EmeraldDark
+                                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                                                 )
                                                 Text(
                                                     text = currentStage.rankTitle,
                                                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
-                                                    color = EmeraldDark
+                                                    color = MaterialTheme.colorScheme.onPrimaryContainer
                                                 )
                                             }
                                         }
 
                                         Surface(
-                                            color = GoldenSpice,
+                                            color = MaterialTheme.colorScheme.secondaryContainer,
                                             shape = RoundedCornerShape(12.dp)
                                         ) {
                                             Text(
                                                 text = "$knownCount / ${DialectRepository.allPhrases.size} Words",
                                                 style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                                color = GoldenOnContainer,
+                                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                                             )
                                         }
@@ -184,7 +184,7 @@ fun DialectGuideScreen(
                                         Text(
                                             text = "🔓 Next Unlock: ${nextStage.rankTitle} (${nextStage.topicTitle}) — Master $needed more word(s) to unlock!",
                                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                                            color = EmeraldDark
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
                                         )
                                         Spacer(modifier = Modifier.height(6.dp))
                                         LinearProgressIndicator(
@@ -193,14 +193,14 @@ fun DialectGuideScreen(
                                                 .fillMaxWidth()
                                                 .height(8.dp)
                                                 .clip(RoundedCornerShape(4.dp)),
-                                            color = EmeraldPrimary,
-                                            trackColor = Color.White.copy(alpha = 0.6f)
+                                            color = MaterialTheme.colorScheme.primary,
+                                            trackColor = MaterialTheme.colorScheme.surfaceVariant
                                         )
                                     } else {
                                         Text(
                                             text = "🏆 All 8 Study Plan Stages Unlocked! Keep practicing to maintain 100% mastery.",
                                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                            color = EmeraldDark
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer
                                         )
                                     }
                                 }
@@ -212,15 +212,15 @@ fun DialectGuideScreen(
                             item {
                                 Surface(
                                     shape = RoundedCornerShape(16.dp),
-                                    color = TerracottaContainer.copy(alpha = 0.6f),
-                                    border = androidx.compose.foundation.BorderStroke(1.dp, TerracottaAccent.copy(alpha = 0.35f)),
+                                    color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f),
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.35f)),
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Column(modifier = Modifier.padding(14.dp)) {
                                         Text(
                                             text = "🎯 ${strugglingPhrases.size} Word(s) Need Focus",
                                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                                            color = TerracottaAccent
+                                            color = MaterialTheme.colorScheme.error
                                         )
                                         Spacer(modifier = Modifier.height(4.dp))
                                         Text(
@@ -232,7 +232,10 @@ fun DialectGuideScreen(
                                         Button(
                                             onClick = onLaunchAdaptiveFocus,
                                             shape = RoundedCornerShape(10.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = TerracottaAccent),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = MaterialTheme.colorScheme.error,
+                                                contentColor = MaterialTheme.colorScheme.onError
+                                            ),
                                             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
                                             modifier = Modifier.fillMaxWidth()
                                         ) {
@@ -330,8 +333,8 @@ fun DialectGuideScreen(
 
                                         Surface(
                                             color = when {
-                                                stageKnownCount == stageTotal && stageTotal > 0 -> PalmContainerLight
-                                                isUnlocked -> GoldenContainerLight
+                                                stageKnownCount == stageTotal && stageTotal > 0 -> MaterialTheme.colorScheme.primaryContainer
+                                                isUnlocked -> MaterialTheme.colorScheme.secondaryContainer
                                                 else -> MaterialTheme.colorScheme.surfaceVariant
                                             },
                                             shape = RoundedCornerShape(10.dp)
@@ -344,8 +347,8 @@ fun DialectGuideScreen(
                                                 },
                                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                                 color = when {
-                                                    stageKnownCount == stageTotal && stageTotal > 0 -> EmeraldDark
-                                                    isUnlocked -> GoldenOnContainer
+                                                    stageKnownCount == stageTotal && stageTotal > 0 -> MaterialTheme.colorScheme.onPrimaryContainer
+                                                    isUnlocked -> MaterialTheme.colorScheme.onSecondaryContainer
                                                     else -> MaterialTheme.colorScheme.onSurfaceVariant
                                                 },
                                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -391,6 +394,10 @@ fun DialectGuideScreen(
                                                 onClick = { onOpenDeckInMode(stageDeck, QuizletStudyMode.MIXED_MASTERY) },
                                                 shape = RoundedCornerShape(10.dp),
                                                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 5.dp),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = MaterialTheme.colorScheme.primary,
+                                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                                ),
                                                 modifier = Modifier.weight(1.2f)
                                             ) {
                                                 Text("Practice", style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold))
@@ -403,12 +410,12 @@ fun DialectGuideScreen(
                                         Spacer(modifier = Modifier.height(12.dp))
                                         Surface(
                                             shape = RoundedCornerShape(14.dp),
-                                            color = if (isTierGraduated) PalmContainerLight else GoldenContainerLight,
+                                            color = if (isTierGraduated) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer,
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .border(
                                                     1.dp,
-                                                    if (isTierGraduated) EmeraldPrimary else GoldenSpice,
+                                                    if (isTierGraduated) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
                                                     RoundedCornerShape(14.dp)
                                                 )
                                         ) {
@@ -423,11 +430,11 @@ fun DialectGuideScreen(
                                                     Text(
                                                         text = if (isTierGraduated) "✅ Graduated ${tier.title}" else "🎓 Oral Graduation Checkpoint",
                                                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.ExtraBold),
-                                                        color = if (isTierGraduated) EmeraldDark else GoldenOnContainer
+                                                        color = if (isTierGraduated) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSecondaryContainer
                                                     )
                                                     Text(
                                                         text = if (isTierGraduated) {
-                                                            "Oral defense passed (+50 XP). All next tier stages unlocked!"
+                                                            "Oral defense passed. All next tier stages unlocked!"
                                                         } else {
                                                             "Speak Malayalam out loud to graduate from ${tier.title} to the next ACTFL tier!"
                                                         },
@@ -440,7 +447,8 @@ fun DialectGuideScreen(
                                                     onClick = { onStartGraduationExam(tier) },
                                                     shape = RoundedCornerShape(10.dp),
                                                     colors = ButtonDefaults.buttonColors(
-                                                        containerColor = if (isTierGraduated) EmeraldPrimary else MaterialTheme.colorScheme.primary
+                                                        containerColor = if (isTierGraduated) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                                                        contentColor = if (isTierGraduated) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
                                                     ),
                                                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
                                                 ) {
@@ -565,9 +573,9 @@ fun DialectGuideScreen(
                                                 },
                                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
                                                 color = when {
-                                                    isKnown -> EmeraldDark
-                                                    rec?.isStruggling == true -> TerracottaAccent
-                                                    rec?.isStillLearning == true -> GoldenOnContainer
+                                                    isKnown -> MaterialTheme.colorScheme.primary
+                                                    rec?.isStruggling == true -> MaterialTheme.colorScheme.error
+                                                    rec?.isStillLearning == true -> MaterialTheme.colorScheme.secondary
                                                     else -> MaterialTheme.colorScheme.onSurfaceVariant
                                                 }
                                             )
@@ -628,12 +636,12 @@ fun DialectGuideScreen(
                                     Text(
                                         text = "✅ Adoor Spoken: ${item.adoorSpoken}",
                                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
-                                        color = EmeraldDark
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                     Text(
                                         text = "❌ Formal Textbook: ${item.textbookFormal}",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = TerracottaAccent
+                                        color = MaterialTheme.colorScheme.error
                                     )
                                     Spacer(modifier = Modifier.height(6.dp))
                                     Text(

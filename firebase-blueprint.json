@@ -2,7 +2,7 @@
   "entities": {
     "UserProgress": {
       "title": "UserProgress",
-      "description": "Stores a learner's cloud-synced Malayalam progress, XP, streak, and active session state for seamless handoff between Android and Laptop Web.",
+      "description": "Stores a learner's cloud-synced Malayalam progress, streak, and active session state for seamless handoff between Android and Laptop Web.",
       "type": "object",
       "properties": {
         "userId": {
@@ -12,10 +12,6 @@
         "displayName": {
           "type": "string",
           "description": "Learner display name (1 to 100 chars)."
-        },
-        "xp": {
-          "type": "integer",
-          "description": "Total earned experience points."
         },
         "streakDays": {
           "type": "integer",
@@ -67,7 +63,6 @@
       "required": [
         "userId",
         "displayName",
-        "xp",
         "streakDays",
         "completedQuizCount",
         "spokenPhrasesCount",

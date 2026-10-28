@@ -26,6 +26,78 @@ import androidx.compose.ui.unit.sp
 import com.example.model.PhraseItem
 import com.example.ui.theme.*
 
+@Composable
+fun AnswerPrefixHint(
+    answer: String,
+    isEvaluated: Boolean,
+    isExpanded: Boolean,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (isEvaluated || answerPrefix(answer).isEmpty()) return
+
+    Surface(
+        onClick = onToggle,
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        modifier = modifier
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = "Hint",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Icon(
+                imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                contentDescription = if (isExpanded) "Collapse hint" else "Expand hint",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun AnswerPrefixHintPanel(
+    answer: String,
+    isExpanded: Boolean,
+    isEvaluated: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val prefix = answerPrefix(answer)
+    if (isEvaluated || prefix.isEmpty()) return
+    AnimatedVisibility(visible = isExpanded, modifier = modifier.fillMaxWidth()) {
+        Column {
+            Spacer(modifier = Modifier.height(10.dp))
+            Surface(
+                modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp),
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ) {
+                Box(modifier = Modifier.padding(16.dp), contentAlignment = Alignment.CenterStart) {
+                    Text(
+                        text = prefix,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun answerPrefix(answer: String): String {
+    val letters = answer.filter(Char::isLetter)
+    return if (letters.length < 2) "" else letters.take(minOf(2, letters.length - 1)) + "…"
+}
+
 /**
  * Mandatory 3-Part Layout Component + Ground Level 0 Phonetic & Word-by-Word Breakdown:
  * 1. Manglish (Roman Script): Phonetically accurate transliteration + English syllable pronunciation guide.
@@ -76,13 +148,13 @@ fun ThreePartPhraseCard(
                 ) {
                     Surface(
                         shape = RoundedCornerShape(6.dp),
-                        color = GoldenContainerLight.copy(alpha = 0.8f)
+                        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
                     ) {
                         Text(
                             text = phrase.levelBadge.uppercase(),
                             modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp),
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                            color = GoldenOnContainer,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -198,7 +270,7 @@ fun ThreePartPhraseCard(
             if (phrase.wordBreakdown.isNotBlank()) {
                 Spacer(modifier = Modifier.height(6.dp))
                 Surface(
-                    color = PalmContainerLight.copy(alpha = 0.65f),
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.65f),
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -208,7 +280,7 @@ fun ThreePartPhraseCard(
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 12.5.sp
                         ),
-                        color = EmeraldDark,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                     )
                 }
@@ -317,17 +389,13 @@ fun SpeechPracticeBar(
     onMicClick: () -> Unit,
     statusMessage: String,
     modifier: Modifier = Modifier,
-    accuracyFeedback: String? = null
+    accuracyFeedback: String? = null,
+    speechLevel: Float = 0f
 ) {
-    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-    val pulseScale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.25f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(600, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "mic_pulse"
+    val level by animateFloatAsState(
+        targetValue = if (isListening) speechLevel.coerceIn(0f, 1f) else 0f,
+        animationSpec = tween(if (speechLevel > 0f) 80 else 180),
+        label = "microphone_level"
     )
 
     Surface(
@@ -349,11 +417,32 @@ fun SpeechPracticeBar(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = if (isListening) "🎙️ Listening... Speak Out Loud Now" else "Tap Mic to speak out loud",
+                text = if (isListening) "🎙️ Voice input" else "Tap Mic to speak out loud",
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = if (isListening) TerracottaAccent else MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            if (isListening) {
+                Spacer(modifier = Modifier.height(6.dp))
+                // Sound-level bars rise with actual input and settle in silence.
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.height(32.dp).padding(vertical = 4.dp)
+                ) {
+                    val barWeights = listOf(0.5f, 0.8f, 1f, 0.8f, 0.5f)
+                    for (i in 0..4) {
+                        Box(
+                            modifier = Modifier
+                                .width(5.dp)
+                                .height(4.dp + 20.dp * level * barWeights[i])
+                                .clip(CircleShape)
+                                .background(TerracottaAccent)
+                        )
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -365,7 +454,7 @@ fun SpeechPracticeBar(
                     Box(
                         modifier = Modifier
                             .size(64.dp)
-                            .scale(pulseScale)
+                            .scale(1f + 0.2f * level)
                             .clip(CircleShape)
                             .background(TerracottaAccent.copy(alpha = 0.25f))
                     )
@@ -378,7 +467,7 @@ fun SpeechPracticeBar(
                         .testTag("speech_mic_button"),
                     colors = IconButtonDefaults.filledIconButtonColors(
                         containerColor = if (isListening) TerracottaAccent else MaterialTheme.colorScheme.primary,
-                        contentColor = Color.White
+                        contentColor = if (isListening) Color.White else MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
                     Icon(
@@ -419,35 +508,36 @@ fun SpeechPracticeBar(
 
 /**
  * Top App Header with App Name centered in the top middle,
- * streak on the top left, and XP on the top right, each clickable.
+ * streak on the top left, and current level on the top right, each clickable.
  */
 @Composable
 fun TopHeaderBar(
-    xp: Int,
     streakDays: Int,
+    stageIcon: String = "🌱",
+    stageText: String = "L1",
     modifier: Modifier = Modifier,
-    levelLabel: String = "Novice Level 1",
     isCloudSynced: Boolean = true,
     onOpenCloudSync: () -> Unit = {},
     onStreakClick: (() -> Unit)? = null,
-    onXpClick: (() -> Unit)? = null
+    onStageClick: (() -> Unit)? = null
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 2.dp
     ) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             // Top Left: Streak badge (Clickable)
             Surface(
-                color = TerracottaContainer.copy(alpha = 0.85f),
+                color = TerracottaContainer,
                 shape = RoundedCornerShape(14.dp),
                 modifier = Modifier
-                    .align(Alignment.CenterStart)
                     .clickable(enabled = onStreakClick != null) { onStreakClick?.invoke() }
                     .testTag("top_header_streak_badge")
             ) {
@@ -468,40 +558,40 @@ fun TopHeaderBar(
                 }
             }
 
-            // Top Middle: Centered App Name "Learn Malayalam"
+            // Top Middle: App Title "Learn Malayalam"
             Text(
                 text = "Learn Malayalam",
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.primary,
-                    fontSize = 18.sp,
+                    fontSize = 17.sp,
                     letterSpacing = (-0.2).sp
                 ),
-                modifier = Modifier.align(Alignment.Center)
+                maxLines = 1
             )
 
-            // Top Right: XP badge (Clickable)
+            // Top Right: Stage Badge (Clickable)
             Surface(
-                color = GoldenContainerLight.copy(alpha = 0.9f),
+                color = MaterialTheme.colorScheme.secondaryContainer,
                 shape = RoundedCornerShape(14.dp),
                 modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .clickable(enabled = onXpClick != null) { onXpClick?.invoke() }
-                    .testTag("top_header_xp_badge")
+                    .clickable(enabled = onStageClick != null) { onStageClick?.invoke() }
+                    .testTag("top_header_stage_badge")
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("⚡", fontSize = 14.sp)
+                    Text(stageIcon, fontSize = 14.sp)
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "$xp XP",
+                        text = stageText,
                         style = MaterialTheme.typography.labelMedium.copy(
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 13.sp
                         ),
-                        color = GoldenOnContainer
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        maxLines = 1
                     )
                 }
             }

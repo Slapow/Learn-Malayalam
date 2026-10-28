@@ -3,12 +3,16 @@ package com.example.audio
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import java.util.Locale
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class AudioHelper(private val context: Context) : TextToSpeech.OnInitListener {
 
@@ -16,6 +20,10 @@ class AudioHelper(private val context: Context) : TextToSpeech.OnInitListener {
     private var isTtsReady = false
 
     private var speechRecognizer: SpeechRecognizer? = null
+    private val _speechLevel = MutableStateFlow(0f)
+    val speechLevel = _speechLevel.asStateFlow()
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val clearSpeechLevel = Runnable { _speechLevel.value = 0f }
     var isListening: Boolean = false
         private set
 
@@ -80,6 +88,9 @@ class AudioHelper(private val context: Context) : TextToSpeech.OnInitListener {
         onError: (errorMessage: String) -> Unit,
         onReadyForSpeech: () -> Unit = {}
     ) {
+        if (isListening) return
+        stopSpeaking()
+        resetSpeechLevel()
         if (speechRecognizer == null) {
             initSpeechRecognizer()
         }
@@ -97,8 +108,14 @@ class AudioHelper(private val context: Context) : TextToSpeech.OnInitListener {
             putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, context.packageName)
             putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+            // Give short answers and pauses a little more time. Services may
+            // ignore these hints; SpeechRecognizer exposes no microphone gain.
+            putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 2000)
+            putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 1500)
+            putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 1000)
         }
 
+        var partialTranscript = ""
         speechRecognizer?.setRecognitionListener(object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle?) {
                 isListening = true
@@ -106,22 +123,35 @@ class AudioHelper(private val context: Context) : TextToSpeech.OnInitListener {
             }
 
             override fun onBeginningOfSpeech() {}
-            override fun onRmsChanged(rmsdB: Float) {}
+            override fun onRmsChanged(rmsdB: Float) {
+                if (!isListening || !rmsdB.isFinite()) return
+                _speechLevel.value = (rmsdB / 6f).coerceIn(0f, 1f)
+                mainHandler.removeCallbacks(clearSpeechLevel)
+                // Some services stop reporting levels during silence.
+                mainHandler.postDelayed(clearSpeechLevel, 300)
+            }
             override fun onBufferReceived(buffer: ByteArray?) {}
 
             override fun onEndOfSpeech() {
                 isListening = false
+                resetSpeechLevel()
             }
 
             override fun onError(error: Int) {
                 isListening = false
+                resetSpeechLevel()
+                if (partialTranscript.isNotBlank() &&
+                    (error == SpeechRecognizer.ERROR_NO_MATCH || error == SpeechRecognizer.ERROR_SPEECH_TIMEOUT)) {
+                    onResult(partialTranscript)
+                    return
+                }
                 val message = when (error) {
                     SpeechRecognizer.ERROR_AUDIO -> "Audio recording error"
                     SpeechRecognizer.ERROR_CLIENT -> "Client speech error"
                     SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Microphone permission required"
                     SpeechRecognizer.ERROR_NETWORK -> "Network issue for speech recognition"
                     SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Speech timeout"
-                    SpeechRecognizer.ERROR_NO_MATCH -> "No speech detected. Please speak clearly."
+                    SpeechRecognizer.ERROR_NO_MATCH -> "Could not recognize that. Tap the mic and try again."
                     SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Recognizer busy, please retry"
                     SpeechRecognizer.ERROR_SERVER -> "Speech server error"
                     SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Speech timed out"
@@ -132,34 +162,49 @@ class AudioHelper(private val context: Context) : TextToSpeech.OnInitListener {
 
             override fun onResults(results: Bundle?) {
                 isListening = false
+                resetSpeechLevel()
                 val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                if (!matches.isNullOrEmpty()) {
-                    onResult(matches[0])
+                val transcript = matches?.firstOrNull { it.isNotBlank() } ?: partialTranscript
+                if (transcript.isNotBlank()) {
+                    onResult(transcript)
                 } else {
                     onError("No speech matched")
                 }
             }
 
-            override fun onPartialResults(partialResults: Bundle?) {}
+            override fun onPartialResults(partialResults: Bundle?) {
+                partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                    ?.firstOrNull { it.isNotBlank() }?.let { partialTranscript = it }
+            }
             override fun onEvent(eventType: Int, params: Bundle?) {}
         })
 
         try {
+            isListening = true
             speechRecognizer?.startListening(intent)
         } catch (e: Exception) {
             isListening = false
+            resetSpeechLevel()
             onError("Could not start speech recognition: ${e.message}")
         }
     }
 
     fun stopListening() {
         isListening = false
+        resetSpeechLevel()
         try {
             speechRecognizer?.stopListening()
         } catch (_: Exception) {}
     }
 
+    private fun resetSpeechLevel() {
+        mainHandler.removeCallbacks(clearSpeechLevel)
+        _speechLevel.value = 0f
+    }
+
     fun shutdown() {
+        isListening = false
+        resetSpeechLevel()
         try {
             tts?.stop()
             tts?.shutdown()

@@ -4,1472 +4,373 @@ import com.example.model.*
 
 object DialectRepository {
 
-    val allPhrases: List<PhraseItem> = listOf(
-        // =========================================================================
-        // STAGE 0: GROUND LEVEL 0 — First 12 Core Words & Pronouns (1 Word Each!)
-        // =========================================================================
-        PhraseItem(
-            id = "l0_01",
-            manglish = "Njaan",
-            malayalam = "ഞാൻ",
-            english = "I / Me",
-            regionalNuance = "The #1 most used word in Malayalam. Pronounced with a soft 'ny' sound at the start.",
-            textbookAlternative = "Njan",
-            category = "Novice Level 1: Core Words",
-            levelNumber = 0,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "NYAAN (rhymes with 'naan')",
-            wordBreakdown = "Njaan = I / me",
-            acceptedVariants = listOf("njaan", "njan", "nyan", "gnan"),
-            tags = listOf("level0", "pronoun", "core")
-        ),
-        PhraseItem(
-            id = "l0_02",
-            manglish = "Nee",
-            malayalam = "നീ",
-            english = "You (casual / friend)",
-            regionalNuance = "Used with friends, siblings, or younger people at home.",
-            textbookAlternative = "Thaankal (formal)",
-            category = "Novice Level 1: Core Words",
-            levelNumber = 0,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "NEE (just like English 'knee')",
-            wordBreakdown = "Nee = You (informal)",
-            acceptedVariants = listOf("nee", "ni"),
-            tags = listOf("level0", "pronoun", "core")
-        ),
-        PhraseItem(
-            id = "l0_03",
-            manglish = "Athe",
-            malayalam = "അതെ",
-            english = "Yes / That's right",
-            regionalNuance = "Your everyday word for 'Yes' when agreeing with someone.",
-            textbookAlternative = "Athe",
-            category = "Novice Level 1: Core Words",
-            levelNumber = 0,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "UH-they (soft 'th' as in 'they')",
-            wordBreakdown = "Athe = Yes",
-            acceptedVariants = listOf("athe", "athey", "ade"),
-            tags = listOf("level0", "basics", "core")
-        ),
-        PhraseItem(
-            id = "l0_04",
-            manglish = "Illa",
-            malayalam = "ഇല്ല",
-            english = "No / Don't have / Not there",
-            regionalNuance = "Used for 'No' when saying something isn't there or didn't happen.",
-            textbookAlternative = "Illa",
-            category = "Novice Level 1: Core Words",
-            levelNumber = 0,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "IL-lah",
-            wordBreakdown = "Illa = No / Not present",
-            acceptedVariants = listOf("illa", "ila"),
-            tags = listOf("level0", "basics", "core")
-        ),
-        PhraseItem(
-            id = "l0_05",
-            manglish = "Alla",
-            malayalam = "അല്ല",
-            english = "No (Not that one)",
-            regionalNuance = "While 'Illa' means 'don't have', 'Alla' means 'it is not that' (e.g., 'Not tea, coffee').",
-            textbookAlternative = "Alla",
-            category = "Novice Level 1: Core Words",
-            levelNumber = 0,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "UL-lah",
-            wordBreakdown = "Alla = No / Not that",
-            acceptedVariants = listOf("alla", "ala"),
-            tags = listOf("level0", "basics", "core")
-        ),
-        PhraseItem(
-            id = "l0_06",
-            manglish = "Undo?",
-            malayalam = "ഉണ്ടോ?",
-            english = "Is there? / Do you have?",
-            regionalNuance = "Add 'undo?' after any noun (like 'Chaya undo?') to ask 'Do you have tea?'.",
-            textbookAlternative = "Undodo?",
-            category = "Novice Level 1: Core Words",
-            levelNumber = 0,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "OON-doh?",
-            wordBreakdown = "Undo? = Is there? / Have?",
-            acceptedVariants = listOf("undo", "undoo", "ondo"),
-            tags = listOf("level0", "question", "core")
-        ),
-        PhraseItem(
-            id = "l0_07",
-            manglish = "Veno?",
-            malayalam = "വേണോ?",
-            english = "Do you want?",
-            regionalNuance = "Heard 20 times a day in an Adoor kitchen: 'Chaya veno?' (Do you want tea?).",
-            textbookAlternative = "Venamo?",
-            category = "Novice Level 1: Core Words",
-            levelNumber = 0,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "VAY-noh?",
-            wordBreakdown = "Veno? = Want?",
-            acceptedVariants = listOf("veno", "venoo", "venamo"),
-            tags = listOf("level0", "question", "core")
-        ),
-        PhraseItem(
-            id = "l0_08",
-            manglish = "Venda",
-            malayalam = "വേണ്ട",
-            english = "Don't want / No thanks",
-            regionalNuance = "Polite & direct reply to 'Veno?' when you're full: 'Venda!' (No thanks / don't want).",
-            textbookAlternative = " Aavashyamilla",
-            category = "Novice Level 1: Core Words",
-            levelNumber = 0,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "VEN-dah",
-            wordBreakdown = "Venda = Don't want",
-            acceptedVariants = listOf("venda", "vendaa"),
-            tags = listOf("level0", "basics", "core")
-        ),
-        PhraseItem(
-            id = "l0_09",
-            manglish = "Entha?",
-            malayalam = "എന്താ?",
-            english = "What? / What is it?",
-            regionalNuance = "Casual spoken form of textbook 'Enthaanu?'. Short, warm, and natural.",
-            textbookAlternative = "Enthaanu?",
-            category = "Novice Level 1: Core Words",
-            levelNumber = 0,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "EN-thah?",
-            wordBreakdown = "Entha? = What?",
-            acceptedVariants = listOf("entha", "enthaa", "enthu"),
-            tags = listOf("level0", "question", "core")
-        ),
-        PhraseItem(
-            id = "l0_10",
-            manglish = "Evide?",
-            malayalam = "എവിടെ?",
-            english = "Where?",
-            regionalNuance = "Attach after any person or thing ('Appa evide?') to ask 'Where is Dad?'.",
-            textbookAlternative = "Evideyaanu?",
-            category = "Novice Level 1: Core Words",
-            levelNumber = 0,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "EH-vi-day?",
-            wordBreakdown = "Evide? = Where?",
-            acceptedVariants = listOf("evide", "evida", "evidey"),
-            tags = listOf("level0", "question", "core")
-        ),
-        PhraseItem(
-            id = "l0_11",
-            manglish = "Ippo",
-            malayalam = "ഇപ്പൊ",
-            english = "Now / Right now",
-            regionalNuance = "Spoken Central Travancore drops the final 'l' of textbook 'ippol' -> 'ippo'.",
-            textbookAlternative = "Ippol",
-            category = "Novice Level 1: Core Words",
-            levelNumber = 0,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "IP-poh",
-            wordBreakdown = "Ippo = Now",
-            acceptedVariants = listOf("ippo", "ippol", "ipo"),
-            tags = listOf("level0", "time", "core")
-        ),
-        PhraseItem(
-            id = "l0_12",
-            manglish = "Ketto",
-            malayalam = "കേട്ടോ",
-            english = "Okay? / Got it? (Friendly tag)",
-            regionalNuance = "Added to the end of sentences in Adoor to sound warm and caring (literally 'Did you hear?').",
-            textbookAlternative = "Kettuvo?",
-            category = "Novice Level 1: Core Words",
-            levelNumber = 0,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "KET-toh",
-            wordBreakdown = "Ketto = Okay? / Heard?",
-            acceptedVariants = listOf("ketto", "keto", "kettoo"),
-            tags = listOf("level0", "tag", "core")
-        ),
-
-        // =========================================================================
-        // STAGE 1: BEGINNER LEVEL 1 — Family & First 2-Word Combos
-        // =========================================================================
-        PhraseItem(
-            id = "l1_01",
-            manglish = "Appa",
-            malayalam = "അപ്പ",
-            english = "Dad / Father",
-            regionalNuance = "Natural Central Travancore / Adoor family word for father.",
-            textbookAlternative = "Pithavu",
-            category = "Novice Level 2: Family & 2-Word Combos",
-            levelNumber = 1,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "UP-pah",
-            wordBreakdown = "Appa = Dad / Father",
-            acceptedVariants = listOf("appa", "appan"),
-            tags = listOf("level1", "family")
-        ),
-        PhraseItem(
-            id = "l1_02",
-            manglish = "Amma",
-            malayalam = "അമ്മ",
-            english = "Mom / Mother",
-            regionalNuance = "Universal warm word for mother across Kerala.",
-            textbookAlternative = "Maathavu",
-            category = "Novice Level 2: Family & 2-Word Combos",
-            levelNumber = 1,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "UM-mah",
-            wordBreakdown = "Amma = Mom / Mother",
-            acceptedVariants = listOf("amma", "ama"),
-            tags = listOf("level1", "family")
-        ),
-        PhraseItem(
-            id = "l1_03",
-            manglish = "Ammachi",
-            malayalam = "അമ്മാച്ചി",
-            english = "Grandma (Central Travancore)",
-            regionalNuance = "'Ammachi' is the signature Pathanamthitta/Adoor term for grandmother.",
-            textbookAlternative = "Muthassi",
-            category = "Novice Level 2: Family & 2-Word Combos",
-            levelNumber = 1,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "UM-mah-chee",
-            wordBreakdown = "Ammachi = Grandma",
-            acceptedVariants = listOf("ammachi", "amachi", "ammachiye"),
-            tags = listOf("level1", "family")
-        ),
-        PhraseItem(
-            id = "l1_04",
-            manglish = "Appachan",
-            malayalam = "അപ്പച്ചൻ",
-            english = "Grandpa (Central Travancore)",
-            regionalNuance = "'Appachan' is grandfather or respected elder man in Central Travancore.",
-            textbookAlternative = "Muthassan",
-            category = "Novice Level 2: Family & 2-Word Combos",
-            levelNumber = 1,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "UP-puh-chun",
-            wordBreakdown = "Appachan = Grandpa",
-            acceptedVariants = listOf("appachan", "apachan"),
-            tags = listOf("level1", "family")
-        ),
-        PhraseItem(
-            id = "l1_05",
-            manglish = "Chaya veno?",
-            malayalam = "ചായ വേണോ?",
-            english = "Do you want tea?",
-            regionalNuance = "Your first 2-word sentence! Combines 'Chaya' (tea) + 'veno?' (do you want?).",
-            textbookAlternative = "Chaya aavashyamundo?",
-            category = "Novice Level 2: Family & 2-Word Combos",
-            levelNumber = 1,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "CHAH-yah VAY-noh?",
-            wordBreakdown = "Chaya (tea) + veno? (do you want?)",
-            prerequisiteIds = listOf("l0_07"),
-            acceptedVariants = listOf("chaya veno", "chaaya veno", "chaya venoo"),
-            tags = listOf("level1", "food", "combo")
-        ),
-        PhraseItem(
-            id = "l1_06",
-            manglish = "Vellam veno?",
-            malayalam = "വെള്ളം വേണോ?",
-            english = "Do you want water?",
-            regionalNuance = "'Vellam' is water. 'Vellam veno?' is asked to every guest who steps into the house.",
-            textbookAlternative = "Jalam venamo?",
-            category = "Novice Level 2: Family & 2-Word Combos",
-            levelNumber = 1,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "VEL-lum VAY-noh?",
-            wordBreakdown = "Vellam (water) + veno? (do you want?)",
-            prerequisiteIds = listOf("l0_07"),
-            acceptedVariants = listOf("vellam veno", "velam veno"),
-            tags = listOf("level1", "food", "combo")
-        ),
-        PhraseItem(
-            id = "l1_07",
-            manglish = "Chaya venda",
-            malayalam = "ചായ വേണ്ട",
-            english = "No tea, thanks / Don't want tea",
-            regionalNuance = "Combines 'Chaya' (tea) + 'venda' (don't want).",
-            textbookAlternative = "Chaya venda",
-            category = "Novice Level 2: Family & 2-Word Combos",
-            levelNumber = 1,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "CHAH-yah VEN-dah",
-            wordBreakdown = "Chaya (tea) + venda (don't want)",
-            prerequisiteIds = listOf("l0_08"),
-            acceptedVariants = listOf("chaya venda", "chaaya venda"),
-            tags = listOf("level1", "food", "combo")
-        ),
-        PhraseItem(
-            id = "l1_08",
-            manglish = "Amma evide?",
-            malayalam = "അമ്മ എവിടെ?",
-            english = "Where is Mom?",
-            regionalNuance = "In Malayalam you don't need a separate word for 'is' here—just 'Amma' + 'evide?'!",
-            textbookAlternative = "Amma evideyaanu?",
-            category = "Novice Level 2: Family & 2-Word Combos",
-            levelNumber = 1,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "UM-mah EH-vi-day?",
-            wordBreakdown = "Amma (Mom) + evide? (where?)",
-            prerequisiteIds = listOf("l1_02", "l0_10"),
-            acceptedVariants = listOf("amma evide", "amma evida"),
-            tags = listOf("level1", "family", "combo")
-        ),
-        PhraseItem(
-            id = "l1_09",
-            manglish = "Sugamaano?",
-            malayalam = "സുഖമാണോ?",
-            english = "How are you? / Are you doing well?",
-            regionalNuance = "The standard friendly greeting when you meet someone.",
-            textbookAlternative = "Kshemamaano?",
-            category = "Novice Level 2: Family & 2-Word Combos",
-            levelNumber = 1,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "SOO-guh-mah-noh?",
-            wordBreakdown = "Sugam (good/well) + aano? (is it?)",
-            acceptedVariants = listOf("sugamaano", "sukhamano", "sugamano", "sughamaano"),
-            tags = listOf("level1", "greeting")
-        ),
-        PhraseItem(
-            id = "l1_10",
-            manglish = "Njaan varaam",
-            malayalam = "ഞാൻ വരാം",
-            english = "I will come / See you soon",
-            regionalNuance = "Used both for 'I'll come' and as a polite 'See you later!' when leaving.",
-            textbookAlternative = "Njan varാം",
-            category = "Novice Level 2: Family & 2-Word Combos",
-            levelNumber = 1,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "NYAAN vuh-RAAM",
-            wordBreakdown = "Njaan (I) + varaam (will come)",
-            prerequisiteIds = listOf("l0_01"),
-            acceptedVariants = listOf("njaan varaam", "njan varam", "njan varaam", "njaan varam"),
-            tags = listOf("level1", "combo")
-        ),
-
-        // =========================================================================
-        // STAGE 2: BEGINNER LEVEL 2 — Adoor Action Shortcuts (-oolla)
-        // =========================================================================
-        PhraseItem(
-            id = "l2_01",
-            manglish = "Varoolla",
-            malayalam = "വരൂല്ല",
-            english = "Won't come / Not coming",
-            regionalNuance = "In Adoor/Pathanamthitta, textbook 'varunnilla' shrinks to 'varoolla' (or 'varathilla').",
-            textbookAlternative = "Varunnilla",
-            category = "Novice Level 3: Action Shortcuts",
-            levelNumber = 2,
-            levelBadge = "Novice Level 3",
-            phoneticGuide = "vuh-ROO-lah",
-            wordBreakdown = "Var- (come) + -oolla (won't / not)",
-            acceptedVariants = listOf("varoolla", "varoola", "varathilla"),
-            tags = listOf("level2", "contraction")
-        ),
-        PhraseItem(
-            id = "l2_02",
-            manglish = "Cheyyoolla",
-            malayalam = "ചെയ്യൂല്ല",
-            english = "Won't do / Not doing",
-            regionalNuance = "Spoken Central Travancore shortcut for 'cheyyunnilla'.",
-            textbookAlternative = "Cheyyunnilla",
-            category = "Novice Level 3: Action Shortcuts",
-            levelNumber = 2,
-            levelBadge = "Novice Level 3",
-            phoneticGuide = "chey-YOO-lah",
-            wordBreakdown = "Cheyy- (do) + -oolla (won't / not)",
-            acceptedVariants = listOf("cheyyoolla", "cheyyoola", "cheyoola", "cheyoolla"),
-            tags = listOf("level2", "contraction")
-        ),
-        PhraseItem(
-            id = "l2_03",
-            manglish = "Pokoolla",
-            malayalam = "പോകൂല്ല",
-            english = "Won't go / Not going",
-            regionalNuance = "Spoken contraction for 'pokunnilla' (not going).",
-            textbookAlternative = "Pokunnilla",
-            category = "Novice Level 3: Action Shortcuts",
-            levelNumber = 2,
-            levelBadge = "Novice Level 3",
-            phoneticGuide = "poh-KOO-lah",
-            wordBreakdown = "Pok- (go) + -oolla (won't / not)",
-            acceptedVariants = listOf("pokoolla", "pokoola", "povoolla", "povoola"),
-            tags = listOf("level2", "contraction")
-        ),
-        PhraseItem(
-            id = "l2_04",
-            manglish = "Parayoolla",
-            malayalam = "പറയൂല്ല",
-            english = "Won't say / Not telling",
-            regionalNuance = "Spoken contraction for 'parayunnilla' (not saying).",
-            textbookAlternative = "Parayunnilla",
-            category = "Novice Level 3: Action Shortcuts",
-            levelNumber = 2,
-            levelBadge = "Novice Level 3",
-            phoneticGuide = "puh-ruh-YOO-lah",
-            wordBreakdown = "Paray- (say/tell) + -oolla (won't)",
-            acceptedVariants = listOf("parayoolla", "parayoola"),
-            tags = listOf("level2", "contraction")
-        ),
-        PhraseItem(
-            id = "l2_05",
-            manglish = "Ariyoolla",
-            malayalam = "അറിയൂല്ല",
-            english = "Don't know",
-            regionalNuance = "Casual spoken way to say 'I don't know' ('Enikku ariyoolla').",
-            textbookAlternative = "Ariyilla",
-            category = "Novice Level 3: Action Shortcuts",
-            levelNumber = 2,
-            levelBadge = "Novice Level 3",
-            phoneticGuide = "uh-ree-YOO-lah",
-            wordBreakdown = "Ariy- (know) + -oolla (don't)",
-            acceptedVariants = listOf("ariyoolla", "ariyoola", "ariyathilla", "ariyilla"),
-            tags = listOf("level2", "contraction")
-        ),
-        PhraseItem(
-            id = "l2_06",
-            manglish = "Scene illa",
-            malayalam = "സീൻ ഇല്ല",
-            english = "No problem / All good",
-            regionalNuance = "Everyday Manglish blending English 'scene' + Malayalam 'illa' (no).",
-            textbookAlternative = "Prashnamilla",
-            category = "Novice Level 3: Action Shortcuts",
-            levelNumber = 2,
-            levelBadge = "Novice Level 3",
-            phoneticGuide = "SEEN IL-lah",
-            wordBreakdown = "Scene (issue/drama) + illa (no/none)",
-            prerequisiteIds = listOf("l0_04"),
-            acceptedVariants = listOf("scene illa", "seen illa", "scene ila"),
-            tags = listOf("level2", "manglish")
-        ),
-
-        // =========================================================================
-        // STAGE 3: BEGINNER LEVEL 3 — First Short Home Sentences
-        // =========================================================================
-        PhraseItem(
-            id = "ct_01",
-            manglish = "Njaan ippo varoolla ketto",
-            malayalam = "ഞാൻ ഇപ്പൊ വരൂല്ല കേട്ടോ",
-            english = "I won't be coming right now, okay?",
-            regionalNuance = "Combines 4 words you learned in Levels 0 & 2: Njaan + ippo + varoolla + ketto!",
-            textbookAlternative = "Njan ippol varunnilla",
-            category = "Contractions",
-            levelNumber = 3,
-            levelBadge = "Novice Level 3",
-            phoneticGuide = "NYAAN IP-poh vuh-ROO-lah KET-toh",
-            wordBreakdown = "Njaan (I) + ippo (now) + varoolla (won't come) + ketto (okay?)",
-            prerequisiteIds = listOf("l0_01", "l0_11", "l2_01", "l0_12"),
-            acceptedVariants = listOf(
-                "njaan ippo varoolla ketto",
-                "njan ippo varoolla ketto",
-                "njan ippo varoola ketto",
-                "njaan ippol varoolla ketto"
-            ),
-            tags = listOf("contraction", "daily", "adoor")
-        ),
-        PhraseItem(
-            id = "ct_02",
-            manglish = "Avar athu cheyyoolla",
-            malayalam = "അവർ അത് ചെയ്യൂല്ല",
-            english = "They won't do that.",
-            regionalNuance = "'cheyyoolla' is the natural Adoor contraction for formal 'cheyyunnilla'.",
-            textbookAlternative = "Avar athu cheyyunnilla",
-            category = "Contractions",
-            levelNumber = 3,
-            levelBadge = "Novice Level 3",
-            phoneticGuide = "UH-vur UH-thoo chey-YOO-lah",
-            wordBreakdown = "Avar (They) + athu (that) + cheyyoolla (won't do)",
-            prerequisiteIds = listOf("l2_02"),
-            acceptedVariants = listOf("avar athu cheyyoolla", "avar athu cheyyoola", "avar ath cheyyoola"),
-            tags = listOf("contraction", "spoken")
-        ),
-        PhraseItem(
-            id = "ct_04",
-            manglish = "Njaan athu parayoolla",
-            malayalam = "ഞാൻ അത് പറയൂല്ല",
-            english = "I won't say that.",
-            regionalNuance = "Spoken 'parayoolla' in place of literary 'parayunnilla'.",
-            textbookAlternative = "Njan athu parayunnilla",
-            category = "Contractions",
-            levelNumber = 3,
-            levelBadge = "Novice Level 3",
-            phoneticGuide = "NYAAN UH-thoo puh-ruh-YOO-lah",
-            wordBreakdown = "Njaan (I) + athu (that) + parayoolla (won't say)",
-            prerequisiteIds = listOf("l0_01", "l2_04"),
-            acceptedVariants = listOf("njaan athu parayoolla", "njan athu parayoolla", "njan athu parayoola"),
-            tags = listOf("contraction", "daily")
-        ),
-        PhraseItem(
-            id = "ct_03",
-            manglish = "Appa innale town-il pokoolla ennu paranju",
-            malayalam = "അപ്പ ഇന്നലെ ടൗണിൽ പോകൂല്ല എന്ന് പറഞ്ഞു",
-            english = "Appa said he won't be going to town.",
-            regionalNuance = "'pokoolla' instead of 'pokunnilla'. Notice 'Appa' used for father naturally in Central Travancore households.",
-            textbookAlternative = "Pithavu innale nagarathil pokunnilla ennu paranju",
-            category = "Contractions",
-            levelNumber = 3,
-            levelBadge = "Novice Level 3",
-            phoneticGuide = "UP-pah IN-nuh-ley TOWN-il poh-KOO-lah EN-noo puh-RUN-joo",
-            wordBreakdown = "Appa (Dad) + innale (yesterday) + town-il (to town) + pokoolla (won't go) + ennu paranju (said that)",
-            prerequisiteIds = listOf("l1_01", "l2_03"),
-            acceptedVariants = listOf(
-                "appa innale town-il pokoolla ennu paranju",
-                "appa innale townil pokoolla ennu paranju",
-                "appa innale townil pokoola ennu paranju"
-            ),
-            tags = listOf("contraction", "family", "travel")
-        ),
-        PhraseItem(
-            id = "ct_05",
-            manglish = "Ammachi ippo varathilla, kurachu kazhinje varoo",
-            malayalam = "അമ്മാച്ചി ഇപ്പൊ വരത്തില്ല, കുറച്ചു കഴിഞ്ഞേ വരൂ",
-            english = "Ammachi won't be coming now, she will come after a while.",
-            regionalNuance = "'varathilla' is another common Pathanamthitta variant of the negative future contraction alongside 'varoolla'.",
-            textbookAlternative = "Muthassi ippol varikayilla",
-            category = "Contractions",
-            levelNumber = 3,
-            levelBadge = "Novice Level 3",
-            phoneticGuide = "UM-mah-chee IP-poh vuh-RUH-thil-lah, koo-RUH-choo kuh-ZHIN-jey vuh-ROO",
-            wordBreakdown = "Ammachi (Grandma) + ippo (now) + varathilla (won't come) + kurachu kazhinje (after a little while) + varoo (will come)",
-            prerequisiteIds = listOf("l1_03", "l0_11", "l2_01"),
-            acceptedVariants = listOf(
-                "ammachi ippo varathilla kurachu kazhinje varoo",
-                "ammachi ippo varathilla",
-                "ammachi ippo varoolla"
-            ),
-            tags = listOf("contraction", "ammachi")
-        ),
-
-        // =========================================================================
-        // STAGE 4: NOVICE LEVEL 1 — Family & Home with Ammachi
-        // =========================================================================
-        PhraseItem(
-            id = "ct_08",
-            manglish = "Ammachiye, chaya ready aayo?",
-            malayalam = "അമ്മാച്ചിയേ, ചായ റെഡിയായോ?",
-            english = "Ammachi, is the tea ready?",
-            regionalNuance = "'Ammachi' is the loving term for grandmother in Central Travancore. Manglish loanword 'ready aayo' is 100% natural at home.",
-            textbookAlternative = "Muthassi, theyila jalam thayyaraayo?",
-            category = "Family & Home",
-            levelNumber = 4,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "UM-mah-chee-yey, CHAH-yah RED-ee AH-yoh?",
-            wordBreakdown = "Ammachiye (O Grandma) + chaya (tea) + ready aayo? (did it become ready?)",
-            prerequisiteIds = listOf("l1_03", "l1_05"),
-            acceptedVariants = listOf(
-                "ammachiye chaya ready aayo",
-                "ammachi chaya ready aayo",
-                "ammachiye chaya ready ayo"
-            ),
-            tags = listOf("family", "food", "manglish")
-        ),
-        PhraseItem(
-            id = "ct_09",
-            manglish = "Appachan palli-yil poyi vannu",
-            malayalam = "അപ്പച്ചൻ പള്ളിയിൽ പോയി വന്നു",
-            english = "Appachan went to church and came back.",
-            regionalNuance = "'Appachan' is grandfather or revered elder. Sunday church visits are a cornerstone of Central Travancore family life.",
-            textbookAlternative = "Muthassan aaraadhanalayathil poyi madangi ethi",
-            category = "Family & Home",
-            levelNumber = 4,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "UP-puh-chun PUL-lee-yil POH-yee VUN-noo",
-            wordBreakdown = "Appachan (Grandpa) + palli-yil (to church) + poyi (went) + vannu (came)",
-            prerequisiteIds = listOf("l1_04"),
-            acceptedVariants = listOf(
-                "appachan palliyil poyi vannu",
-                "appachan palli yil poyi vannu"
-            ),
-            tags = listOf("family", "church")
-        ),
-        PhraseItem(
-            id = "ct_10",
-            manglish = "Achayan ippo call cheythu, bus kitti ennu paranju",
-            malayalam = "അച്ചായൻ ഇപ്പൊ കോൾ ചെയ്തു, ബസ് കിട്ടി എന്ന് പറഞ്ഞു",
-            english = "Achayan just called, said he got the bus.",
-            regionalNuance = "'Achayan' is an affectionate address for an elder brother or male relative. Notice 'call cheythu' blended naturally.",
-            textbookAlternative = "Jyeshtan ippol dhooravaani vazhi ariyichu",
-            category = "Family & Home",
-            levelNumber = 4,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "uh-CHAH-yun IP-poh CALL chey-thoo, BUS kit-tee EN-noo puh-RUN-joo",
-            wordBreakdown = "Achayan (Elder brother) + ippo (now) + call cheythu (called) + bus kitti (got the bus) + ennu paranju (said that)",
-            prerequisiteIds = listOf("l0_11"),
-            acceptedVariants = listOf(
-                "achayan ippo call cheythu bus kitti ennu paranju",
-                "achayan ippo call cheythu"
-            ),
-            tags = listOf("family", "travel", "manglish")
-        ),
-        PhraseItem(
-            id = "ct_11",
-            manglish = "Amma ivide undo, atho kadayil poyo?",
-            malayalam = "അമ്മ ഇവിടെ ഉണ്ടോ, അതോ കടയിൽ പോയോ?",
-            english = "Is Amma here, or did she go to the shop?",
-            regionalNuance = "Short casual question ending in 'poyo?' rather than formal 'poyirikkukayaano?'.",
-            textbookAlternative = "Amma ivide undodo, atho kachavadasthalathilekku poyo?",
-            category = "Family & Home",
-            levelNumber = 4,
-            levelBadge = "Novice Level 1",
-            phoneticGuide = "UM-mah IH-vi-dey OON-doh, UH-thoh KUH-duh-yil POH-yoh?",
-            wordBreakdown = "Amma (Mom) + ivide (here) + undo (is there?) + atho (or) + kadayil (to the shop) + poyo? (did she go?)",
-            prerequisiteIds = listOf("l1_02", "l0_06"),
-            acceptedVariants = listOf(
-                "amma ivide undo atho kadayil poyo",
-                "amma ivide undo"
-            ),
-            tags = listOf("family", "home")
-        ),
-
-        // =========================================================================
-        // STAGE 5: NOVICE LEVEL 2 — Food & Thattukada
-        // =========================================================================
-        PhraseItem(
-            id = "ct_12",
-            manglish = "Bhai, oru double strong chaya-yum randu parottayum!",
-            malayalam = "ഭായ്, ഒരു ഡബിൾ സ്ട്രോങ്ങ് ചായയും രണ്ട് പൊറോട്ടയും!",
-            english = "Brother, one double strong tea and two parottas!",
-            regionalNuance = "Standard Thattukada / Chaya kada order across Adoor.",
-            textbookAlternative = "Sahodara, theevratha koodiya chaya labhikkumo?",
-            category = "Food & Chaya",
-            levelNumber = 5,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "BHAI, OH-roo DOUBLE STRONG CHAH-yah-yum RUN-doo puh-ROH-tuh-yum!",
-            wordBreakdown = "Bhai (Brother) + oru (one) + double strong chaya-yum (strong tea and) + randu (two) + parottayum (parottas)",
-            prerequisiteIds = listOf("l1_05"),
-            acceptedVariants = listOf(
-                "bhai oru double strong chayayum randu parottayum",
-                "oru double strong chayayum randu parottayum",
-                "bhai oru double strong chaya randu parotta"
-            ),
-            tags = listOf("food", "thattukada", "chaya")
-        ),
-        PhraseItem(
-            id = "ct_13",
-            manglish = "Pazhampori nallonam choodundo?",
-            malayalam = "പഴംപൊരി നല്ലോണം ചൂടുണ്ടോ?",
-            english = "Is the banana fritter piping hot?",
-            regionalNuance = "'Nallonam' means properly/really well in Central Travancore speech.",
-            textbookAlternative = "Pazhampori nannaayi choodaayittaano ullathu?",
-            category = "Food & Chaya",
-            levelNumber = 5,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "puh-ZHUM-poh-ree NUL-loh-num CHOO-doon-doh?",
-            wordBreakdown = "Pazhampori (banana fritter) + nallonam (really well) + choodundo? (is it hot?)",
-            prerequisiteIds = listOf("l0_06"),
-            acceptedVariants = listOf(
-                "pazhampori nallonam choodundo",
-                "pazhampori choodundo"
-            ),
-            tags = listOf("food", "snack")
-        ),
-        PhraseItem(
-            id = "ct_14",
-            manglish = "Kadi entha ullathu? Appam undo?",
-            malayalam = "കടി എന്താ ഉള്ളത്? അപ്പം ഉണ്ടോ?",
-            english = "What snacks do you have? Is there Appam?",
-            regionalNuance = "'Kadi' refers to tea-time snacks in Malayalam.",
-            textbookAlternative = "Laghubhakshanangal enthellaamaanu labhyam?",
-            category = "Food & Chaya",
-            levelNumber = 5,
-            levelBadge = "Novice Level 2",
-            phoneticGuide = "KUH-dee EN-thah OOL-luh-thoo? UP-pum OON-doh?",
-            wordBreakdown = "Kadi (snacks) + entha (what) + ullathu (is available)? + Appam (rice hopper) + undo? (is there?)",
-            prerequisiteIds = listOf("l0_09", "l0_06"),
-            acceptedVariants = listOf(
-                "kadi entha ullathu appam undo",
-                "appam undo"
-            ),
-            tags = listOf("food", "breakfast")
-        ),
-
-        // =========================================================================
-        // STAGE 6: INTERMEDIATE LEVEL 1 — Travel & Auto in Pathanamthitta
-        // =========================================================================
-        PhraseItem(
-            id = "ct_15",
-            manglish = "Chetta, Adoor KSRTC stand-ilekku varumo?",
-            malayalam = "ചേട്ടാ, അടൂർ കെ.എസ്.ആർ.ടി.സി സ്റ്റാൻഡിലേക്ക് വരുമോ?",
-            english = "Brother, will you come to the Adoor KSRTC bus stand?",
-            regionalNuance = "How to hail an autorickshaw politely in Adoor.",
-            textbookAlternative = "Driver mahashaya, vandi varumo?",
-            category = "Travel & Auto",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 1",
-            phoneticGuide = "CHEYT-tah, uh-DOOR K-S-R-T-C STAND-i-ley-koo vuh-ROO-moh?",
-            wordBreakdown = "Chetta (Elder brother) + Adoor KSRTC stand-ilekku (to Adoor bus stand) + varumo? (will you come?)",
-            acceptedVariants = listOf(
-                "chetta adoor ksrtc standilekku varumo",
-                "adoor ksrtc standilekku varumo"
-            ),
-            tags = listOf("travel", "auto", "adoor")
-        ),
-        PhraseItem(
-            id = "ct_16",
-            manglish = "Meter idumo, atho fixed rate aano?",
-            malayalam = "മീറ്റർ ഇടുമോ, അതോ ഫിക്സഡ് റേറ്റ് ആണോ?",
-            english = "Will you put the meter on, or is it a fixed rate?",
-            regionalNuance = "Essential phrase when hiring an auto in Central Travancore towns.",
-            textbookAlternative = "Doora maapanam upayogikkumo?",
-            category = "Travel & Auto",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 1",
-            phoneticGuide = "MEE-tur IH-doo-moh, UH-thoh FIXED RATE AH-noh?",
-            wordBreakdown = "Meter idumo (Will you turn on the meter) + atho (or) + fixed rate aano? (is it a fixed rate?)",
-            acceptedVariants = listOf(
-                "meter idumo atho fixed rate aano",
-                "meter idumo"
-            ),
-            tags = listOf("travel", "auto")
-        ),
-        PhraseItem(
-            id = "ct_17",
-            manglish = "Pathanamthitta fast passenger vannittundo?",
-            malayalam = "പത്തനംതിട്ട ഫാസ്റ്റ് പാസഞ്ചർ വന്നിട്ടുണ്ടോ?",
-            english = "Has the Pathanamthitta Fast Passenger bus arrived yet?",
-            regionalNuance = "'Fast passenger' refers to the KSRTC bus route running through Central Travancore.",
-            textbookAlternative = "Vaahanam ethiyittundo?",
-            category = "Travel & Auto",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 1",
-            phoneticGuide = "puh-thuh-num-THIT-tuh FAST PASSENGER vun-nit-TOON-doh?",
-            wordBreakdown = "Pathanamthitta fast passenger (the bus) + vannittundo? (has it arrived?)",
-            prerequisiteIds = listOf("l0_06"),
-            acceptedVariants = listOf(
-                "pathanamthitta fast passenger vannittundo",
-                "fast passenger vannittundo"
-            ),
-            tags = listOf("travel", "bus")
-        ),
-
-        // =========================================================================
-        // STAGE 6 (CONTINUED): INTERMEDIATE LEVEL 3 — Catholic Church, Holy Qurbana & Prayers
-        // =========================================================================
-        PhraseItem(
-            id = "cc_01",
-            manglish = "Njaan palliye pokuvaa",
-            malayalam = "ഞാൻ പള്ളിയിൽ പോകുവാ",
-            english = "I am going to church.",
-            regionalNuance = "Everyday household phrase on Sunday mornings in Central Travancore. 'Palliye' is the colloquial spoken form of 'palliyil'.",
-            textbookAlternative = "Njan palliyilekku pokunnu",
-            category = "Catholic & Church",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 3 • Catholic & Church",
-            phoneticGuide = "NYAAN PUL-li-ye POH-koo-vah",
-            wordBreakdown = "Njaan (I) + palliye (to church) + pokuvaa (going)",
-            prerequisiteIds = listOf("l0_01"),
-            acceptedVariants = listOf("njaan palliye pokuvaa", "njan palliye pokuva", "njaan palliyil pokuvaa"),
-            tags = listOf("church", "catholic", "sunday")
-        ),
-        PhraseItem(
-            id = "cc_02",
-            manglish = "Njaayarazhcha Holy Qurbana koodanam",
-            malayalam = "ഞായറാഴ്ച കുർബാന കൂടണം",
-            english = "We must attend Sunday Holy Mass (Qurbana).",
-            regionalNuance = "'Qurbana kooduka' is the authentic Malayalam idiom meaning to participate in Holy Mass.",
-            textbookAlternative = "Njaayarazhcha vishuddha Qurbana anubhadhikkanam",
-            category = "Catholic & Church",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 3 • Catholic & Church",
-            phoneticGuide = "NYAH-yur-AHZH-chuh HO-lee koor-BAH-nah KOO-duh-num",
-            wordBreakdown = "Njaayarazhcha (Sunday) + Holy Qurbana (Holy Mass) + koodanam (must attend)",
-            acceptedVariants = listOf("njaayarazhcha holy qurbana koodanam", "holy qurbana koodanam", "qurbana koodanam"),
-            tags = listOf("church", "catholic", "mass")
-        ),
-        PhraseItem(
-            id = "cc_03",
-            manglish = "Sandhya prarthana kazhinjo?",
-            malayalam = "സന്ധ്യാ പ്രാർത്ഥന കഴിഞ്ഞോ?",
-            english = "Is the evening family prayer finished?",
-            regionalNuance = "Daily evening rosary and family prayer ('sandhya prarthana') is a cherished staple of Central Travancore Christian homes.",
-            textbookAlternative = "Sandhya prarthana theernno?",
-            category = "Catholic & Church",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 3 • Catholic & Church",
-            phoneticGuide = "SUN-dhyah PRAHR-thuh-nuh kuh-ZHIN-yoh?",
-            wordBreakdown = "Sandhya (Evening) + prarthana (prayer) + kazhinjo? (is it finished?)",
-            prerequisiteIds = listOf("l0_06"),
-            acceptedVariants = listOf("sandhya prarthana kazhinjo", "prarthana kazhinjo", "prarthana"),
-            tags = listOf("church", "catholic", "prayer")
-        ),
-        PhraseItem(
-            id = "cc_04",
-            manglish = "Palli achan veettil vannu",
-            malayalam = "പള്ളി അച്ചൻ വീട്ടിൽ വന്നു",
-            english = "The parish priest visited our home.",
-            regionalNuance = "'Achan' is both the formal title for priest/father (Reverend) and the warm community title used across parish families.",
-            textbookAlternative = "Idavaka vikaari bhavanathil ethi",
-            category = "Catholic & Church",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 3 • Catholic & Church",
-            phoneticGuide = "PUL-li UCH-un VEET-til VUN-noo",
-            wordBreakdown = "Palli achan (Parish priest) + veettil (at home) + vannu (came)",
-            acceptedVariants = listOf("palli achan veettil vannu", "achan veettil vannu", "palli achan"),
-            tags = listOf("church", "catholic", "priest")
-        ),
-        PhraseItem(
-            id = "cc_05",
-            manglish = "Nanma niranja Mariyame, ninakku sthuthi",
-            malayalam = "നന്മ നിറഞ്ഞ മറിയമേ, നിനക്ക് സ്തുതി",
-            english = "Hail Mary, full of grace (Praise be to thee).",
-            regionalNuance = "The opening line of the Hail Mary recited in Malayalam in Catholic rosaries and church services worldwide.",
-            textbookAlternative = "Nanma niranja Mariyame, krupayaal niranja avale",
-            category = "Catholic & Church",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 3 • Catholic & Church",
-            phoneticGuide = "NUN-muh ni-RUN-juh muh-ree-YUM-ey, ni-NUK-koo STHOO-thee",
-            wordBreakdown = "Nanma niranja (Full of goodness/grace) + Mariyame (Mary) + ninakku sthuthi (praise to you)",
-            acceptedVariants = listOf("nanma niranja mariyame ninakku sthuthi", "nanma niranja mariyame", "mariyame ninakku sthuthi"),
-            tags = listOf("prayer", "catholic", "hailmary")
-        ),
-        PhraseItem(
-            id = "cc_06",
-            manglish = "Swargasthanaaya ഞങ്ങളുടെ Pithave",
-            malayalam = "സ്വർഗ്ഗസ്ഥനായ ഞങ്ങളുടെ പിതാവേ",
-            english = "Our Father who art in heaven.",
-            regionalNuance = "The venerated opening of the Lord's Prayer (Our Father) learned by heart by every Malayalam-speaking Catholic child.",
-            textbookAlternative = "Swargasthanaaya njangalude pithave",
-            category = "Catholic & Church",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 3 • Catholic & Church",
-            phoneticGuide = "SWUR-gus-thuh-nah-yuh NYUNG-ngul-oo-dey pi-THAH-vey",
-            wordBreakdown = "Swargasthanaaya (Who art in heaven) + njangalude (our) + Pithave (Father)",
-            prerequisiteIds = listOf("l0_01"),
-            acceptedVariants = listOf("swargasthanaaya njangalude pithave", "swargasthanaya pithave", "swargasthanaaya pithave"),
-            tags = listOf("prayer", "catholic", "ourfather")
-        ),
-        PhraseItem(
-            id = "cc_07",
-            manglish = "Dhaivathinu sthuthi!",
-            malayalam = "ദൈവത്തിന് സ്തുതി!",
-            english = "Praise be to God! / Thanks be to God!",
-            regionalNuance = "Spoken reflexively upon hearing good news, surviving hardship, or finishing a task. One of the most universal expressions.",
-            textbookAlternative = "Eashwaranu nanni",
-            category = "Catholic & Church",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 3 • Catholic & Church",
-            phoneticGuide = "DHY-vuh-THIN-oo STHOO-thee!",
-            wordBreakdown = "Dhaivathinu (To God) + sthuthi (Praise / Glory)",
-            acceptedVariants = listOf("dhaivathinu sthuthi", "daivathinu sthuthi", "deivathinu sthuthi"),
-            tags = listOf("blessing", "catholic", "daily")
-        ),
-        PhraseItem(
-            id = "cc_08",
-            manglish = "Karthavu anugrahikkatte",
-            malayalam = "കർത്താവ് അനുഗ്രഹിക്കട്ടെ",
-            english = "May the Lord bless you.",
-            regionalNuance = "A profound blessing bestowed by Catholic grandparents (Ammachi/Appachan) and parish priests on birthdays, journeys, and farewells.",
-            textbookAlternative = "Daivam ninne anugrahikkatte",
-            category = "Catholic & Church",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 3 • Catholic & Church",
-            phoneticGuide = "KUR-thah-voo uh-NOO-gruh-hik-KUT-tey",
-            wordBreakdown = "Karthavu (The Lord) + anugrahikkatte (May [He] bless)",
-            acceptedVariants = listOf("karthavu anugrahikkatte", "karthavu anugrahikate", "karthav anugrahikkatte"),
-            tags = listOf("blessing", "catholic", "elders")
-        ),
-        PhraseItem(
-            id = "cc_09",
-            manglish = "Prarthikkum munpu kurishu varakkoo",
-            malayalam = "പ്രാർത്ഥിക്കും മുൻപ് കുരിശ് വരയ്ക്കൂ",
-            english = "Make the sign of the cross before praying.",
-            regionalNuance = "'Kurishu varakkuka' (drawing the cross on forehead and chest) is the sacred Catholic gesture before meals and prayer.",
-            textbookAlternative = "Prarthanaykku munpaayi kurishu adayalam varakkuka",
-            category = "Catholic & Church",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 3 • Catholic & Church",
-            phoneticGuide = "PRAHR-thik-koom MOON-poo KOO-ri-shoo vuh-RUK-koo",
-            wordBreakdown = "Prarthikkum munpu (Before praying) + kurishu varakkoo (make sign of the cross)",
-            acceptedVariants = listOf("prarthikkum munpu kurishu varakkoo", "kurishu varakkoo", "kurishu varakkuka"),
-            tags = listOf("catholic", "prayer", "gesture")
-        ),
-        PhraseItem(
-            id = "cc_10",
-            manglish = "Palli perunnal koodan pokuvaa",
-            malayalam = "പള്ളി പെരുന്നാൾ കൂടാൻ പോകുവാ",
-            english = "Going to celebrate the church feast (Perunnal).",
-            regionalNuance = "'Perunnal' is the vibrant annual patron saint festival celebrated across Central Travancore parishes with processions and community feasts.",
-            textbookAlternative = "Devalaya perunnalil pangedukkan pokunnu",
-            category = "Catholic & Church",
-            levelNumber = 6,
-            levelBadge = "Intermediate Level 3 • Catholic & Church",
-            phoneticGuide = "PUL-li pey-ROON-nahl KOO-dahn POH-koo-vah",
-            wordBreakdown = "Palli perunnal (Church feast) + koodan (to participate) + pokuvaa (going)",
-            acceptedVariants = listOf("palli perunnal koodan pokuvaa", "palli perunnal", "perunnal koodan pokuvaa"),
-            tags = listOf("catholic", "festival", "church")
-        ),
-
-        // =========================================================================
-        // STAGE 7: ADVANCED LEVEL 1 — Storytelling, Past Memories & Deep Feelings
-        // =========================================================================
-        PhraseItem(
-            id = "adv_01",
-            manglish = "Njan oru karyam parayatte?",
-            malayalam = "ഞാൻ ഒരു കാര്യം പറയട്ടെ?",
-            english = "Can I tell you something?",
-            regionalNuance = "The classic, gentle conversational opening in Malayalam when confiding an important thought or beginning a personal story.",
-            textbookAlternative = "Njan oru vishayam parayatte?",
-            category = "Advanced: Storytelling",
-            levelNumber = 7,
-            levelBadge = "Advanced Level 1 • Storytelling & Feelings",
-            phoneticGuide = "NYAHN OH-roo KAH-ryum puh-RUY-yut-tey?",
-            wordBreakdown = "Njan (I) + oru karyam (one matter/thing) + parayatte? (may I say?)",
-            prerequisiteIds = listOf("l0_01"),
-            acceptedVariants = listOf("njan oru karyam parayatte", "njaan oru karyam parayatte"),
-            tags = listOf("advanced", "storytelling", "opener")
-        ),
-        PhraseItem(
-            id = "adv_02",
-            manglish = "Athoru nalla kalam aayirunnu",
-            malayalam = "അതൊരു നല്ല കാലം ആയിരുന്നു",
-            english = "That was such a fond, good time.",
-            regionalNuance = "Used when reminiscing with family members about childhood, old parish festivals, or memories in Kerala.",
-            textbookAlternative = "Athu oru nalla kaalaghattamaayirunnu",
-            category = "Advanced: Storytelling",
-            levelNumber = 7,
-            levelBadge = "Advanced Level 1 • Storytelling & Feelings",
-            phoneticGuide = "UH-tho-roo NUL-luh KAH-lum AH-yi-roon-noo",
-            wordBreakdown = "Athu (That) + oru nalla kalam (a good time/era) + aayirunnu (was)",
-            acceptedVariants = listOf("athoru nalla kalam aayirunnu", "athoru nalla kaalam aayirunnu"),
-            tags = listOf("advanced", "nostalgia", "memories")
-        ),
-        PhraseItem(
-            id = "adv_03",
-            manglish = "Enikku vallatha sankadam thonni",
-            malayalam = "എനിക്ക് വല്ലാത്ത സങ്കടം തോന്നി",
-            english = "I felt really heartbroken / deeply emotional.",
-            regionalNuance = "Expresses genuine vulnerability and deep sorrow. 'Vallatha' emphasizes the emotional depth beyond ordinary words.",
-            textbookAlternative = "Enikku valare dukhamaayi",
-            category = "Advanced: Storytelling",
-            levelNumber = 7,
-            levelBadge = "Advanced Level 1 • Storytelling & Feelings",
-            phoneticGuide = "eh-NIK-koo vuhl-LAHTH-thuh SUN-kuh-dum THOHN-nee",
-            wordBreakdown = "Enikku (To me) + vallatha (immense/overwhelming) + sankadam (sorrow) + thonni (felt)",
-            acceptedVariants = listOf("enikku vallatha sankadam thonni", "vallatha sankadam thonni"),
-            tags = listOf("advanced", "feelings", "emotion")
-        ),
-        PhraseItem(
-            id = "adv_04",
-            manglish = "Njan athe patti alochikkuvaayirunnu",
-            malayalam = "ഞാൻ അതെ പറ്റി ആലോചിക്കുകയായിരുന്നു",
-            english = "I was deeply reflecting on that matter.",
-            regionalNuance = "Shows sophisticated inner reflection and deliberate consideration in conversation.",
-            textbookAlternative = "Njan athinekkurichu chinthikkukayaayirunnu",
-            category = "Advanced: Storytelling",
-            levelNumber = 7,
-            levelBadge = "Advanced Level 1 • Storytelling & Feelings",
-            phoneticGuide = "NYAHN UH-they PUT-ti ah-LOH-chik-koo-vah-yi-roon-noo",
-            wordBreakdown = "Njan (I) + athe patti (about that) + alochikkuvaayirunnu (was thinking/reflecting)",
-            acceptedVariants = listOf("njan athe patti alochikkuvaayirunnu", "athe patti alochikkukayaayirunnu"),
-            tags = listOf("advanced", "reflection")
-        ),
-        PhraseItem(
-            id = "adv_05",
-            manglish = "Athinu shesham njan veettilekku poyi",
-            malayalam = "അതിന് ശേഷം ഞാൻ വീട്ടിലേക്ക് പോയി",
-            english = "After that happened, I went straight home.",
-            regionalNuance = "Sequential narrative linker ('athinu shesham' = after that) essential for telling past stories clearly.",
-            textbookAlternative = "Athinu pinneedu njan veettilekku thirichu poyi",
-            category = "Advanced: Storytelling",
-            levelNumber = 7,
-            levelBadge = "Advanced Level 1 • Storytelling & Feelings",
-            phoneticGuide = "UH-thin-oo SHEY-shum NYAHN VEET-ti-ley-koo POH-yee",
-            wordBreakdown = "Athinu shesham (After that) + njan (I) + veettilekku (to home) + poyi (went)",
-            acceptedVariants = listOf("athinu shesham njan veettilekku poyi", "athinu shesham njan poyi"),
-            tags = listOf("advanced", "narrative", "sequencing")
-        ),
-        PhraseItem(
-            id = "adv_06",
-            manglish = "Ningal paranjathu njan eppozhum orkkunnu",
-            malayalam = "നിങ്ങൾ പറഞ്ഞത് ഞാൻ എപ്പോഴും ഓർക്കുന്നു",
-            english = "I always remember what you told me.",
-            regionalNuance = "A heartfelt statement acknowledging advice or wisdom shared by an elder or respected friend.",
-            textbookAlternative = "Ningal upadeshichathu njan ormikkunnu",
-            category = "Advanced: Storytelling",
-            levelNumber = 7,
-            levelBadge = "Advanced Level 1 • Storytelling & Feelings",
-            phoneticGuide = "NING-ngul puh-RUN-juh-thoo NYAHN EP-poh-zhum ORK-koon-noo",
-            wordBreakdown = "Ningal paranjathu (What you said) + njan (I) + eppozhum (always) + orkkunnu (remember)",
-            acceptedVariants = listOf("ningal paranjathu njan eppozhum orkkunnu", "paranjathu njan orkkunnu"),
-            tags = listOf("advanced", "respect", "wisdom")
-        ),
-
-        // =========================================================================
-        // STAGE 8: ADVANCED LEVEL 2 — Opinions, Nuanced Reasoning & Polite Debate
-        // =========================================================================
-        PhraseItem(
-            id = "adv_07",
-            manglish = "Ente abhiprayathil athu shariyalla",
-            malayalam = "എന്റെ അഭിപ്രായത്തിൽ അത് ശരിയല്ല",
-            english = "In my opinion, that is not right.",
-            regionalNuance = "How educated speakers respectfully voice disagreement without being confrontational or rude.",
-            textbookAlternative = "Ente kaazhchapaadil athu thettaanu",
-            category = "Advanced: Opinions",
-            levelNumber = 8,
-            levelBadge = "Advanced Level 2 • Opinions & Polite Debate",
-            phoneticGuide = "EN-tey uh-bhi-PRAH-yuh-thil UH-thoo shuh-ri-YUL-lah",
-            wordBreakdown = "Ente abhiprayathil (In my opinion) + athu (that) + shariyalla (is not right)",
-            acceptedVariants = listOf("ente abhiprayathil athu shariyalla", "abhiprayathil athu shariyalla"),
-            tags = listOf("advanced", "debate", "opinion")
-        ),
-        PhraseItem(
-            id = "adv_08",
-            manglish = "Ningal paranjathu shariyaanu, ennalum...",
-            malayalam = "നിങ്ങൾ പറഞ്ഞത് ശരിയാണ്, എന്നാലും...",
-            english = "What you said is true, nevertheless...",
-            regionalNuance = "The diplomat's tool: concedes the other party's point gracefully before introducing another perspective.",
-            textbookAlternative = "Aparante vaadam sathyamaanu, engilum...",
-            category = "Advanced: Opinions",
-            levelNumber = 8,
-            levelBadge = "Advanced Level 2 • Opinions & Polite Debate",
-            phoneticGuide = "NING-ngul puh-RUN-juh-thoo shuh-ri-YAH-noo, EN-nah-loom...",
-            wordBreakdown = "Ningal paranjathu (What you said) + shariyaanu (is true) + ennalum (nevertheless...)",
-            acceptedVariants = listOf("ningal paranjathu shariyaanu ennalum", "ningal paranjathu shariyanu ennalum"),
-            tags = listOf("advanced", "nuance", "debate")
-        ),
-        PhraseItem(
-            id = "adv_09",
-            manglish = "Namukku vere oru nalla vazhi nokkam",
-            malayalam = "നമുക്ക് വേറെ ഒരു നല്ല വഴി നോക്കാം",
-            english = "Let us look for a better alternative way.",
-            regionalNuance = "Constructive problem-solving phrase that unifies the group towards a shared solution.",
-            textbookAlternative = "Nammalkku matroru margam anveshikkaam",
-            category = "Advanced: Opinions",
-            levelNumber = 8,
-            levelBadge = "Advanced Level 2 • Opinions & Polite Debate",
-            phoneticGuide = "nuh-MOOK-koo VEY-rey OH-roo NUL-luh VUH-zhi NOHK-kahm",
-            wordBreakdown = "Namukku (For us) + vere oru (another) + nalla vazhi (good way/path) + nokkam (let's look)",
-            acceptedVariants = listOf("namukku vere oru nalla vazhi nokkam", "namukku vere vazhi nokkam"),
-            tags = listOf("advanced", "solutions", "cooperation")
-        ),
-        PhraseItem(
-            id = "adv_10",
-            manglish = "Athukondu thanneyaanu njan angane cheythathu",
-            malayalam = "അതുകൊണ്ട് തന്നെയാണ് ഞാൻ അങ്ങനെ ചെയ്തത്",
-            english = "That is the exact reason why I did that.",
-            regionalNuance = "'Athukondu thanneyaanu' pinpoints strict causal logic when defending your actions.",
-            textbookAlternative = "Aakaaranathaal thanneyaanu njan pravarthichathu",
-            category = "Advanced: Opinions",
-            levelNumber = 8,
-            levelBadge = "Advanced Level 2 • Opinions & Polite Debate",
-            phoneticGuide = "UH-thoo-kon-doo THUN-ney-ah-noo NYAHN UNG-ngun-ey CHEY-thuh-thoo",
-            wordBreakdown = "Athukondu thanneyaanu (For that exact reason) + njan (I) + angane (like that) + cheythathu (did)",
-            acceptedVariants = listOf("athukondu thanneyaanu njan angane cheythathu", "athukondu thanne njan cheythathu"),
-            tags = listOf("advanced", "reasoning", "logic")
-        ),
-        PhraseItem(
-            id = "adv_11",
-            manglish = "Avarodu chodikkunnathaanu nallathu",
-            malayalam = "അവരോട് ചോദിക്കുന്നതാണ് നല്ലത്",
-            english = "It is wiser to consult with them first.",
-            regionalNuance = "Recommends deference and consultation with elders or stakeholders in the community.",
-            textbookAlternative = "Avarodu aalochikkunnathaanu uchitham",
-            category = "Advanced: Opinions",
-            levelNumber = 8,
-            levelBadge = "Advanced Level 2 • Opinions & Polite Debate",
-            phoneticGuide = "uh-vuh-ROH-doo choh-DIK-koon-nuh-thah-noo NUL-luh-thoo",
-            wordBreakdown = "Avarodu (With them) + chodikkunnathaanu (asking is) + nallathu (good/wise)",
-            acceptedVariants = listOf("avarodu chodikkunnathaanu nallathu", "avarodu chodikkunnatha nallathu"),
-            tags = listOf("advanced", "wisdom", "counsel")
-        ),
-        PhraseItem(
-            id = "adv_12",
-            manglish = "Ithu nammalude samayathinu upakaarapradhamaanu",
-            malayalam = "ഇത് നമ്മുടെ സമയത്തിന് ഉപകാരപ്രദമാണ്",
-            english = "This is beneficial for our time and effort.",
-            regionalNuance = "High-register reasoning expressing practical utility and collective efficiency.",
-            textbookAlternative = "Ithu kaalathinu anuyojyamaanu",
-            category = "Advanced: Opinions",
-            levelNumber = 8,
-            levelBadge = "Advanced Level 2 • Opinions & Polite Debate",
-            phoneticGuide = "IH-thoo num-mul-oo-dey SUH-muh-yuh-thin-oo oo-puh-KAH-ruh-pruh-dhuh-mah-noo",
-            wordBreakdown = "Ithu (This) + nammalude samayathinu (for our time) + upakaarapradhamaanu (is useful/beneficial)",
-            acceptedVariants = listOf("ithu nammalude samayathinu upakaarapradhamaanu", "upakaarapradhamaanu"),
-            tags = listOf("advanced", "formal", "reasoning")
-        ),
-
-        // =========================================================================
-        // STAGE 9: SUPERIOR LEVEL 1 — Near-Native Banter, Regional Slang & Wit
-        // =========================================================================
-        PhraseItem(
-            id = "ct_06",
-            manglish = "Enthuvaadey ithu? Ithre neram aayo?",
-            malayalam = "എന്തുവാടേ ഇത്? ഇത്രേ നേരമായോ?",
-            english = "What on earth is this, man? Is it already this late?",
-            regionalNuance = "'Enthuvaadey' is the quintessential Central Travancore exclamation of surprise or disbelief.",
-            textbookAlternative = "Enthanu ithu? Ithramathram samayamayo?",
-            category = "Superior: Banter",
-            levelNumber = 9,
-            levelBadge = "Superior Level 1 • Near-Native Banter",
-            phoneticGuide = "en-thoo-VAH-dey IH-thoo? ITH-rey NEY-rum AH-yoh?",
-            wordBreakdown = "Enthuvaadey (What is this, bro) + ithu (this)? + Ithre neram (this much time) + aayo? (has it become?)",
-            prerequisiteIds = listOf("l0_09"),
-            acceptedVariants = listOf("enthuvaadey ithu ithre neram aayo", "enthuvaadey ithu", "enthuvadey ithu"),
-            tags = listOf("slang", "adoor", "banter")
-        ),
-        PhraseItem(
-            id = "ct_07",
-            manglish = "Ennattu entha undaaye?",
-            malayalam = "എന്നിട്ട് എന്താ ഉണ്ടായേ?",
-            english = "So then what happened?",
-            regionalNuance = "'Ennattu' / 'ennittu' acts as a conversational springboard to keep the story rolling smoothly.",
-            textbookAlternative = "Athinu shesham enthu sambhavichu?",
-            category = "Superior: Banter",
-            levelNumber = 9,
-            levelBadge = "Superior Level 1 • Near-Native Banter",
-            phoneticGuide = "EN-nut-too EN-thah oon-DAH-yey?",
-            wordBreakdown = "Ennattu (And then) + entha (what) + undaaye? (happened?)",
-            prerequisiteIds = listOf("l0_09"),
-            acceptedVariants = listOf("ennattu entha undaaye", "ennittu entha undaye", "ennittu entha undaaye"),
-            tags = listOf("filler", "conversation")
-        ),
-        PhraseItem(
-            id = "ct_18",
-            manglish = "Enthuvaadey ithre naalaayi kandittu! Evidaayirunnu?",
-            malayalam = "എന്തുവാടേ ഇത്രേ നാളായി കണ്ടിട്ട്! എവിടെയായിരുന്നു?",
-            english = "What's up, man! Haven't seen you in ages! Where were you?",
-            regionalNuance = "Warm reunion greeting among close friends in Adoor.",
-            textbookAlternative = "Kure naalukalkku shesham kaanunnu. Enge aayirunnu?",
-            category = "Superior: Banter",
-            levelNumber = 9,
-            levelBadge = "Superior Level 1 • Near-Native Banter",
-            phoneticGuide = "en-thoo-VAH-dey ITH-rey NAH-lah-yee KUN-dit-too! eh-vi-DAH-yi-roon-noo?",
-            wordBreakdown = "Enthuvaadey (What's up man) + ithre naalaayi (so many days) + kandittu (since seeing)! + Evidaayirunnu? (Where were you?)",
-            prerequisiteIds = listOf("l0_10"),
-            acceptedVariants = listOf("enthuvaadey ithre naalaayi kandittu evidaayirunnu", "evidaayirunnu"),
-            tags = listOf("greeting", "banter")
-        ),
-        PhraseItem(
-            id = "ct_19",
-            manglish = "Scene illa, njaan manage cheythoalaam",
-            malayalam = "സീൻ ഇല്ല, ഞാൻ മാനേജ് ചെയ്തോളാം",
-            english = "No problem at all, I will manage it.",
-            regionalNuance = "'Scene illa' is the universally popular youth Manglish phrase meaning 'no stress / no problem'.",
-            textbookAlternative = "Prashnamilla, njan kariyangal nokkikkollam",
-            category = "Superior: Banter",
-            levelNumber = 9,
-            levelBadge = "Superior Level 1 • Near-Native Banter",
-            phoneticGuide = "SEEN IL-lah, NYAAN MANAGE chey-THOH-laam",
-            wordBreakdown = "Scene illa (No problem) + njaan (I) + manage cheythoalaam (will manage it myself)",
-            prerequisiteIds = listOf("l2_06", "l0_01"),
-            acceptedVariants = listOf("scene illa njaan manage cheythoalaam", "scene illa njan manage cheytholam", "scene illa"),
-            tags = listOf("manglish", "youth", "slang")
-        ),
-        PhraseItem(
-            id = "ct_20",
-            manglish = "Entha vishesham? Sugamaano?",
-            malayalam = "എന്താ വിശേഷം? സുഖമാണോ?",
-            english = "What's new? Are you doing well?",
-            regionalNuance = "Natural everyday check-in phrase. Punchy, friendly, non-pretentious.",
-            textbookAlternative = "Kshemam aano? Enthaanu kshema samacharana?",
-            category = "Superior: Banter",
-            levelNumber = 9,
-            levelBadge = "Superior Level 1 • Near-Native Banter",
-            phoneticGuide = "EN-thah vi-SHEY-shum? SOO-guh-mah-noh?",
-            wordBreakdown = "Entha (What) + vishesham (news)? + Sugamaano? (Are you well?)",
-            prerequisiteIds = listOf("l0_09", "l1_09"),
-            acceptedVariants = listOf("entha vishesham sugamaano", "entha vishesham", "sugamaano"),
-            tags = listOf("greeting", "daily")
-        ),
-        PhraseItem(
-            id = "sup_01",
-            manglish = "Avan oru valiya pulliyaanennu vicharichu!",
-            malayalam = "അവൻ ഒരു വലിയ പുള്ളിയാണെന്ന് വിചാരിച്ചു!",
-            english = "He thought he was some big hotshot!",
-            regionalNuance = "'Pulli' is the affectionate colloquial Malayalam slang for a person or character, often used playfully.",
-            textbookAlternative = "Avan oru pradhaanappetta aalaanennu dharichu",
-            category = "Superior: Banter",
-            levelNumber = 9,
-            levelBadge = "Superior Level 1 • Near-Native Banter",
-            phoneticGuide = "UH-vun OH-roo VUL-i-yuh PUL-li-yah-nen-noo vi-chuh-RI-choo!",
-            wordBreakdown = "Avan (He) + oru valiya pulliyaanennu (that he is a big shot) + vicharichu (thought)",
-            acceptedVariants = listOf("avan oru valiya pulliyaanennu vicharichu", "valiya pulli"),
-            tags = listOf("slang", "humor", "superior")
-        ),
-        PhraseItem(
-            id = "sup_02",
-            manglish = "Kaaryam paranjaal kettoodey ninakku?",
-            malayalam = "കാര്യം പറഞ്ഞാൽ കേട്ടൂടെ നിനക്ക്?",
-            english = "Can't you listen when someone explains something to you?",
-            regionalNuance = "Affectionate scolded banter among family members in Central Travancore. Ending in '-oodey' gives it local warmth.",
-            textbookAlternative = "Parayunnathu shradhikkande?",
-            category = "Superior: Banter",
-            levelNumber = 9,
-            levelBadge = "Superior Level 1 • Near-Native Banter",
-            phoneticGuide = "KAH-ryum puh-RUN-jahl ket-TOO-dey ni-NUK-koo?",
-            wordBreakdown = "Kaaryam paranjaal (When matter is explained) + kettoodey (can't you listen) + ninakku? (to you?)",
-            acceptedVariants = listOf("kaaryam paranjaal kettoodey ninakku", "karyam paranjal kettoode"),
-            tags = listOf("superior", "banter", "family")
-        ),
-        PhraseItem(
-            id = "sup_03",
-            manglish = "Nammalude naattile visheshangal paranjal theeroolla",
-            malayalam = "നമ്മുടെ നാട്ടിലെ വിശേഷങ്ങൾ പറഞ്ഞാൽ തീരൂല്ല",
-            english = "If we start discussing our hometown news, it will never end!",
-            regionalNuance = "Said when expatriates (Pravasis) and locals catch up on home district happenings. Features Adoor '-oolla' contraction.",
-            textbookAlternative = "Nammude naattile vartakkal theerukayilla",
-            category = "Superior: Banter",
-            levelNumber = 9,
-            levelBadge = "Superior Level 1 • Near-Native Banter",
-            phoneticGuide = "num-mul-oo-dey NAHT-ti-ley vi-SHEY-shung-ngul puh-RUN-jahl theey-ROO-lah",
-            wordBreakdown = "Nammalude naattile (In our hometown) + visheshangal (news/stories) + paranjal (if told) + theeroolla (will never end)",
-            acceptedVariants = listOf("nammalude naattile visheshangal paranjal theeroolla", "paranjal theeroolla"),
-            tags = listOf("superior", "culture", "pravasi")
-        ),
-
-        // =========================================================================
-        // STAGE 10: SUPERIOR LEVEL 2 — Famous Malayalam Proverbs (Pazhamchollukal) & Idioms
-        // =========================================================================
-        PhraseItem(
-            id = "prv_01",
-            manglish = "Minnumathellam ponnalla",
-            malayalam = "മിന്നുന്നതെല്ലാം പൊന്നല്ല",
-            english = "All that glitters is not gold.",
-            regionalNuance = "The most widely referenced Malayalam proverb warning that flashy outer appearances do not equal genuine value.",
-            textbookAlternative = "Prakaashikkunnathellam swarnamalla",
-            category = "Superior: Proverbs",
-            levelNumber = 10,
-            levelBadge = "Superior Level 2 • Proverbs & Idioms",
-            phoneticGuide = "MIN-noo-nuh-thel-lum PON-nul-lah",
-            wordBreakdown = "Minnumathellam (All that sparkles) + ponnalla (is not gold)",
-            acceptedVariants = listOf("minnumathellam ponnalla", "minnunnath ellam ponnalla"),
-            tags = listOf("proverb", "superior", "wisdom")
-        ),
-        PhraseItem(
-            id = "prv_02",
-            manglish = "Velichathu kaanumbozhalle niram ariyoo",
-            malayalam = "വെളിച്ചത്ത് കാണുമ്പോഴല്ലേ നിറം അറിയൂ",
-            english = "Only when brought into the light is the true character revealed.",
-            regionalNuance = "A shrewd Travancore proverb about testing ideas, people, and cloth in direct sunlight before judging them.",
-            textbookAlternative = "Velichathil vekkumbozhe sathyavastha ariyoo",
-            category = "Superior: Proverbs",
-            levelNumber = 10,
-            levelBadge = "Superior Level 2 • Proverbs & Idioms",
-            phoneticGuide = "veh-LI-chuh-thoo kah-noom-BOH-zhul-ley ni-rum uh-ri-YOO",
-            wordBreakdown = "Velichathu kaanumbozhalle (Only when seen in light) + niram ariyoo (is color known)",
-            acceptedVariants = listOf("velichathu kaanumbozhalle niram ariyoo", "velichath kaanumbozhalle"),
-            tags = listOf("proverb", "superior", "insight")
-        ),
-        PhraseItem(
-            id = "prv_03",
-            manglish = "Oruma undenkil ulaka jeyikkam",
-            malayalam = "ഒത്തൊരുമ ഉണ്ടെങ്കിൽ ഉലകം ജയിക്കാം",
-            english = "With unity, we can conquer any challenge in the world.",
-            regionalNuance = "Celebrates the power of family solidarity and parish parishioner unity working toward a shared goal.",
-            textbookAlternative = "Aikyamaanu mahabalam",
-            category = "Superior: Proverbs",
-            levelNumber = 10,
-            levelBadge = "Superior Level 2 • Proverbs & Idioms",
-            phoneticGuide = "OH-roo-muh OON-deng-kil oo-luh-kuh jey-IK-kum",
-            wordBreakdown = "Oruma (Unity/togetherness) + undenkil (if there is) + ulaka (the world) + jeyikkam (can conquer)",
-            acceptedVariants = listOf("oruma undenkil ulaka jeyikkam", "otthoruma undenkil ulakam jeyikkam"),
-            tags = listOf("proverb", "superior", "unity")
-        ),
-        PhraseItem(
-            id = "prv_04",
-            manglish = "Kaakkakkum thankunju ponkunju",
-            malayalam = "കാക്കയ്ക്കും തൻകുഞ്ഞ് പൊൻകുഞ്ഞ്",
-            english = "Even to a crow, its own child is pure gold.",
-            regionalNuance = "Every parent views their own child with unconditional pride, no matter what others think.",
-            textbookAlternative = "Ellaa maathaapithakkalkkum thammude makkal shreshtaraan",
-            category = "Superior: Proverbs",
-            levelNumber = 10,
-            levelBadge = "Superior Level 2 • Proverbs & Idioms",
-            phoneticGuide = "KAHK-kahk-koom thun-KOON-joo pon-KOON-joo",
-            wordBreakdown = "Kaakkakkum (Even to a crow) + thankunju (its own young) + ponkunju (is a golden child)",
-            acceptedVariants = listOf("kaakkakkum thankunju ponkunju", "kaakkakkum than kunju ponkunju"),
-            tags = listOf("proverb", "superior", "family")
-        ),
-        PhraseItem(
-            id = "prv_05",
-            manglish = "Athiru kaathaal aashanka illa",
-            malayalam = "അതിര് കാത്താൽ ആശങ്ക ഇല്ല",
-            english = "When proper boundaries are maintained, there is never worry.",
-            regionalNuance = "A classic land, relationship, and etiquette proverb of Central Travancore farming and family life.",
-            textbookAlternative = "Athirollidathu prashnamilla",
-            category = "Superior: Proverbs",
-            levelNumber = 10,
-            levelBadge = "Superior Level 2 • Proverbs & Idioms",
-            phoneticGuide = "UH-thi-roo KAH-thahl ah-SHUN-kuh IL-lah",
-            wordBreakdown = "Athiru (Boundary) + kaathaal (if protected/kept) + aashanka (worry) + illa (none)",
-            acceptedVariants = listOf("athiru kaathaal aashanka illa", "athir kaathal aashanka illa"),
-            tags = listOf("proverb", "superior", "boundaries")
-        ),
-
-        // =========================================================================
-        // STAGE 11: DISTINGUISHED — Cultural Orator & Community Eloquence
-        // =========================================================================
-        PhraseItem(
-            id = "dst_01",
-            manglish = "Athithi daivam aayi karuthunna naadaanu nammudethu",
-            malayalam = "അതിഥി ദൈവമായി കരുതുന്ന നാടാണ് നമ്മുടേത്",
-            english = "Ours is a land that welcomes every guest with divine reverence.",
-            regionalNuance = "Reflects the quintessential Kerala standard of hospitality ('Athithi Devo Bhava') spoken in community welcomes.",
-            textbookAlternative = "Nammude naadu virunhukaare eashwaranaayi snehikkunnu",
-            category = "Distinguished: Master",
-            levelNumber = 11,
-            levelBadge = "Distinguished • Cultural Master",
-            phoneticGuide = "uh-THI-thi DHY-vum AH-yee kuh-ROO-thoon-nuh NAH-dah-noo num-moo-DEY-thoo",
-            wordBreakdown = "Athithi (Guest) + daivam aayi (as God) + karuthunna (holding/considering) + naadaanu nammudethu (is our land)",
-            acceptedVariants = listOf("athithi daivam aayi karuthunna naadaanu nammudethu", "athithi daivam"),
-            tags = listOf("distinguished", "hospitality", "speech")
-        ),
-        PhraseItem(
-            id = "dst_02",
-            manglish = "Kshemam anveshikkunnathu nammude paramparayaanu",
-            malayalam = "ക്ഷേമം അന്വേഷിക്കുന്നത് നമ്മുടെ പാരമ്പര്യമാണ്",
-            english = "Inquiring into the well-being of others is our time-honored heritage.",
-            regionalNuance = "Elevated cultural speech delivered at community receptions, wedding toasts, and parish assemblies.",
-            textbookAlternative = "Kshema samacharam anveshikkal nammude aachaaramaanu",
-            category = "Distinguished: Master",
-            levelNumber = 11,
-            levelBadge = "Distinguished • Cultural Master",
-            phoneticGuide = "KSHEY-mum un-vey-SHIK-koon-nuh-thoo num-moo-dey PAH-rum-puh-ri-yuh-mah-noo",
-            wordBreakdown = "Kshemam (Welfare/peace) + anveshikkunnathu (inquiring into) + nammude paramparayaanu (is our heritage)",
-            acceptedVariants = listOf("kshemam anveshikkunnathu nammude paramparayaanu", "paramparayaanu"),
-            tags = listOf("distinguished", "heritage", "speech")
-        ),
-        PhraseItem(
-            id = "dst_03",
-            manglish = "Sahanabhavathodu koodi ellaam parihaarikkanam",
-            malayalam = "സഹനഭാവത്തോടു കൂടി എല്ലാം പരിഹരിക്കണം",
-            english = "With patient compassion, all challenges must be resolved.",
-            regionalNuance = "The pastoral counsel of Christian elders and community arbitrators reconciling disagreements with grace.",
-            textbookAlternative = "Kshamayode kaaryangal theerppukalpikkanam",
-            category = "Distinguished: Master",
-            levelNumber = 11,
-            levelBadge = "Distinguished • Cultural Master",
-            phoneticGuide = "suh-huh-nuh-BHAH-vuh-thoh-doo KOO-di EL-lahm puh-ri-HAH-rik-kuh-num",
-            wordBreakdown = "Sahanabhavathodu koodi (With patient forbearance) + ellaam (everything) + parihaarikkanam (must be resolved)",
-            acceptedVariants = listOf("sahanabhavathodu koodi ellaam parihaarikkanam", "parihaarikkanam"),
-            tags = listOf("distinguished", "peace", "counsel")
-        ),
-        PhraseItem(
-            id = "dst_04",
-            manglish = "Eeviduthe ellavarum ente swantham aalukalaanu",
-            malayalam = "ഇവിടുത്തെ എല്ലാവരും എന്റെ സ്വന്തം ആളുകളാണ്",
-            english = "Everyone gathered here is truly like my own family.",
-            regionalNuance = "The ultimate expression of communal warmth spoken by a parish leader or host embracing their audience as one.",
-            textbookAlternative = "Eeviduthe aalukalente kudumbam thanneyaanu",
-            category = "Distinguished: Master",
-            levelNumber = 11,
-            levelBadge = "Distinguished • Cultural Master",
-            phoneticGuide = "ee-vi-DOOTH-ey EL-lah-vuh-room EN-tey SWUN-thum AH-loo-kuh-lah-noo",
-            wordBreakdown = "Eeviduthe ellavarum (Everyone here) + ente swantham aalukalaanu (are my very own people)",
-            acceptedVariants = listOf("eeviduthe ellavarum ente swantham aalukalaanu", "swantham aalukalaanu"),
-            tags = listOf("distinguished", "family", "community")
-        )
-    )
+    val allPhrases: List<PhraseItem> = NovicePhrases.phrases +
+        ElementaryPhrases.phrases +
+        IntermediatePhrases.phrases +
+        AdvancedPhrases.phrases +
+        MasteryPhrases.phrases
 
     val decks: List<FlashcardDeck> = listOf(
         FlashcardDeck(
-            id = "deck_level0_words",
-            title = "Novice 1: First 12 Words (Start Here!)",
-            description = "Know only English? Start here with single-word building blocks: I, You, Yes, No, Want, What, Where.",
+            id = "deck_novice_1_kinship",
+            title = "Novice Level 1: Kinship & Addressing People",
+            description = "Immediate and extended family titles (achayan, chechi, ammachi, ammayi, aliya), personal pronouns (njan, nee, njangal, avar), respectful vs. peer addressing.",
             iconEmoji = "🌱",
             levelIndex = 0,
             levelLabel = "Novice Level 1",
             phrases = allPhrases.filter { it.levelNumber == 0 }
         ),
         FlashcardDeck(
-            id = "deck_level0_people_combos",
-            title = "Novice 2: Family & 2-Word Combos",
-            description = "Appa, Amma, Ammachi, and your very first 2-word questions ('Chaya veno?', 'Amma evide?').",
-            iconEmoji = "👋",
+            id = "deck_novice_ng",
+            title = "Novice Level 2: Greetings, Introductions & Repair",
+            description = "Introduce yourself, greet a visitor, and ask for repetition when you do not understand.",
+            iconEmoji = "🌱",
             levelIndex = 1,
             levelLabel = "Novice Level 2",
             phrases = allPhrases.filter { it.levelNumber == 1 }
         ),
         FlashcardDeck(
-            id = "deck_level1_shortcuts",
-            title = "Novice 3: Adoor Action Shortcuts",
-            description = "Learn single-word Central Travancore '-oolla' shortcuts: Varoolla, Cheyyoolla, Pokoolla.",
-            iconEmoji = "⚡",
+            id = "deck_novice_nn",
+            title = "Novice Level 3: Numbers, Prices & Quantities",
+            description = "Count small quantities, understand common prices, and ask how much you need to pay.",
+            iconEmoji = "🌱",
             levelIndex = 2,
             levelLabel = "Novice Level 3",
-            phrases = allPhrases.filter { it.levelNumber == 2 || it.levelNumber == 3 }
+            phrases = allPhrases.filter { it.levelNumber == 2 }
         ),
         FlashcardDeck(
-            id = "deck_contractions",
-            title = "Novice 3: Short Home Sentences",
-            description = "Put Novice 1 + Novice 2 words together into natural 3-to-4 word Adoor sentences.",
-            iconEmoji = "🧩",
+            id = "deck_novice_2_kitchen_food",
+            title = "Novice Level 4: Kitchen Essentials & Food Preferences",
+            description = "Staple foods (choru, vellam, chaaya, meen, erachi), simple yes/no/quantity limits (venda, mathi, kurachu, theere venda, kooduthal).",
+            iconEmoji = "🌱",
             levelIndex = 3,
-            levelLabel = "Novice Level 3",
+            levelLabel = "Novice Level 4",
             phrases = allPhrases.filter { it.levelNumber == 3 }
         ),
         FlashcardDeck(
-            id = "deck_family",
-            title = "Intermediate 1: Kitchen & Family Talk",
-            description = "Everyday Central Travancore household phrases with Ammachi, Appachan, and Achayan.",
-            iconEmoji = "🏡",
+            id = "deck_novice_3_survival_verbs",
+            title = "Novice Level 5: The 15 Survival Verbs",
+            description = "Core actions in simple imperative & present forms (vaa, po, kazhikku, kudi, iri, para, kelkku, thaa, edu, cheyyu).",
+            iconEmoji = "🌱",
             levelIndex = 4,
-            levelLabel = "Intermediate Level 1",
+            levelLabel = "Novice Level 5",
             phrases = allPhrases.filter { it.levelNumber == 4 }
         ),
         FlashcardDeck(
-            id = "deck_thattukada",
-            title = "Intermediate 2: Thattukada & Travel",
-            description = "Order double strong chaya, hot parotta, and hail autos in Adoor effortlessly.",
-            iconEmoji = "☕",
+            id = "deck_novice_nd",
+            title = "Novice Level 6: People, Things & Simple Descriptions",
+            description = "Describe an object and combine familiar nouns with size, colour, and possession.",
+            iconEmoji = "🌱",
             levelIndex = 5,
-            levelLabel = "Intermediate Level 2",
+            levelLabel = "Novice Level 6",
             phrases = allPhrases.filter { it.levelNumber == 5 }
         ),
         FlashcardDeck(
-            id = "deck_catholic_church",
-            title = "Intermediate 3: Catholic Church & Prayers",
-            description = "Sunday Holy Mass (Qurbana), evening family rosary, Hail Mary, parish priest greetings & feasts.",
-            iconEmoji = "⛪",
+            id = "deck_novice_4_reactions_fillers",
+            title = "Novice Level 7: Fast Reactions & Conversational Fillers",
+            description = "Emotional cues and fillers (ayyo, saramilla, sathyam, aano, sherikkum, pinne, athre ullu, enthaa).",
+            iconEmoji = "🌱",
             levelIndex = 6,
-            levelLabel = "Intermediate Level 3",
+            levelLabel = "Novice Level 7",
             phrases = allPhrases.filter { it.levelNumber == 6 }
         ),
         FlashcardDeck(
-            id = "deck_advanced_storytelling",
-            title = "Advanced 1: Storytelling & Feelings",
-            description = "Express personal sorrow, reminiscence of fond times, and recount narrative sequences.",
-            iconEmoji = "📜",
+            id = "deck_elem_1_questions_direction",
+            title = "Elementary Level 1: Conversational Questions & Direction",
+            description = "Question words and directional anchors (evideya, eppozha, entha, aara, engane, ivide, avide, nere, appurathe).",
+            iconEmoji = "🛺",
             levelIndex = 7,
-            levelLabel = "Advanced Level 1",
+            levelLabel = "Elementary Level 1",
             phrases = allPhrases.filter { it.levelNumber == 7 }
         ),
         FlashcardDeck(
-            id = "deck_advanced_opinions",
-            title = "Advanced 2: Opinions & Polite Debate",
-            description = "Diplomatically voice disagreement, provide nuanced reasoning, and propose alternatives.",
-            iconEmoji = "⚖️",
+            id = "deck_elementary_ec",
+            title = "Elementary Level 2: Calendar, Time & Appointments",
+            description = "Arrange a meeting, understand dates, and describe when something happens.",
+            iconEmoji = "🛺",
             levelIndex = 8,
-            levelLabel = "Advanced Level 2",
+            levelLabel = "Elementary Level 2",
             phrases = allPhrases.filter { it.levelNumber == 8 }
         ),
         FlashcardDeck(
-            id = "deck_slang",
-            title = "Superior 1: Enthuvaadey & Rapid Banter",
-            description = "Rapid Central Travancore cadence, humorous exclamations ('pulli', 'aadey'), and witty retorts.",
-            iconEmoji = "🔥",
+            id = "deck_elementary_et",
+            title = "Elementary Level 3: Buses, Autos & Travel",
+            description = "Buy a ticket, check a destination, and tell a driver where to stop.",
+            iconEmoji = "🛺",
             levelIndex = 9,
-            levelLabel = "Superior Level 1",
+            levelLabel = "Elementary Level 3",
             phrases = allPhrases.filter { it.levelNumber == 9 }
         ),
         FlashcardDeck(
-            id = "deck_superior_proverbs",
-            title = "Superior 2: Malayalam Proverbs & Idioms",
-            description = "Famous Pazhamchollukal ('Minnumathellam ponnalla') that native speakers drop into conversations.",
-            iconEmoji = "🦉",
+            id = "deck_elementary_es",
+            title = "Elementary Level 4: Groceries, Money & Ordering",
+            description = "Ask for ingredients, order a meal, pay, and explain a simple dietary preference.",
+            iconEmoji = "🛺",
             levelIndex = 10,
-            levelLabel = "Superior Level 2",
+            levelLabel = "Elementary Level 4",
             phrases = allPhrases.filter { it.levelNumber == 10 }
         ),
         FlashcardDeck(
-            id = "deck_distinguished_master",
-            title = "Distinguished: Cultural Orator & Master",
-            description = "Exceptional mastery: cultural hospitality, parish speeches, and gracious community counsel.",
-            iconEmoji = "👑",
+            id = "deck_elem_2_past_tense_routines",
+            title = "Elementary Level 5: Spoken Past Tense & Everyday Routines",
+            description = "Everyday past-tense markers (kazhicho, poyi, vannu, urangiyo, kandu, cheythu) and time words (innale, innum, nerathe, vaiki).",
+            iconEmoji = "🛺",
             levelIndex = 11,
-            levelLabel = "Distinguished Level 1",
+            levelLabel = "Elementary Level 5",
             phrases = allPhrases.filter { it.levelNumber == 11 }
-        )
+        ),
+        FlashcardDeck(
+            id = "deck_elem_3_future_commitments",
+            title = "Elementary Level 6: Future Intentions & Casual Commitments",
+            description = "The -aam and -um spoken future forms (varaam, kazhikkaam, nokkam, cheyyaam, naale, matte-naal).",
+            iconEmoji = "🛺",
+            levelIndex = 12,
+            levelLabel = "Elementary Level 6",
+            phrases = allPhrases.filter { it.levelNumber == 12 }
+        ),
+        FlashcardDeck(
+            id = "deck_elem_4_physical_states",
+            title = "Elementary Level 7: Describing Physical States & Desires",
+            description = "Needs and physical feelings (vishakkunnu, thadasam, choodu, thanippu, urakkam varunnu, sheenam, vayya).",
+            iconEmoji = "🛺",
+            levelIndex = 13,
+            levelLabel = "Elementary Level 7",
+            phrases = allPhrases.filter { it.levelNumber == 13 }
+        ),
+        FlashcardDeck(
+            id = "deck_elementary_eh",
+            title = "Elementary Level 8: Body, Health & Asking for Help",
+            description = "Name common symptoms and ask someone for help or a medical appointment.",
+            iconEmoji = "🛺",
+            levelIndex = 14,
+            levelLabel = "Elementary Level 8",
+            phrases = allPhrases.filter { it.levelNumber == 14 }
+        ),
+        FlashcardDeck(
+            id = "deck_elem_5_home_objects",
+            title = "Elementary Level 9: Home, Chores & Daily Objects",
+            description = "Objects around the room (vaathil, janala, kaasu, phone, chaavi, vandi, bhaagyam).",
+            iconEmoji = "🛺",
+            levelIndex = 15,
+            levelLabel = "Elementary Level 9",
+            phrases = allPhrases.filter { it.levelNumber == 15 }
+        ),
+        FlashcardDeck(
+            id = "deck_elementary_ed",
+            title = "Elementary Level 10: Clothes, Washing & Getting Ready",
+            description = "Choose clothes, explain sizes, and talk through getting ready to go out.",
+            iconEmoji = "🛺",
+            levelIndex = 16,
+            levelLabel = "Elementary Level 10",
+            phrases = allPhrases.filter { it.levelNumber == 16 }
+        ),
+        FlashcardDeck(
+            id = "deck_elementary_ew",
+            title = "Elementary Level 11: Weather, Outdoors & Places",
+            description = "Describe the weather and surroundings, and suggest a simple outing.",
+            iconEmoji = "🛺",
+            levelIndex = 17,
+            levelLabel = "Elementary Level 11",
+            phrases = allPhrases.filter { it.levelNumber == 17 }
+        ),
+        FlashcardDeck(
+            id = "deck_int_1_connectors",
+            title = "Intermediate Level 1: Conjunctions & Sentence Connectors",
+            description = "Glue words that create flowing speech (ennittum, athukondu, pakshe, athinaale, allenkil, ennaalum).",
+            iconEmoji = "🏡",
+            levelIndex = 18,
+            levelLabel = "Intermediate Level 1",
+            phrases = allPhrases.filter { it.levelNumber == 18 }
+        ),
+        FlashcardDeck(
+            id = "deck_intermediate_in",
+            title = "Intermediate Level 2: Telling a Story & Sequencing Events",
+            description = "Retell an experience using sequence, cause, reported speech, and a conclusion.",
+            iconEmoji = "🏡",
+            levelIndex = 19,
+            levelLabel = "Intermediate Level 2",
+            phrases = allPhrases.filter { it.levelNumber == 19 }
+        ),
+        FlashcardDeck(
+            id = "deck_int_2_conditionals",
+            title = "Intermediate Level 3: Conditional Statements ('If / When')",
+            description = "Spoken -aal and -appol forms (vannal, paranjaal, kandappol, poyappol, cheythaal nannayi).",
+            iconEmoji = "🏡",
+            levelIndex = 20,
+            levelLabel = "Intermediate Level 3",
+            phrases = allPhrases.filter { it.levelNumber == 20 }
+        ),
+        FlashcardDeck(
+            id = "deck_intermediate_iw",
+            title = "Intermediate Level 4: Work, Tasks & Phone Calls",
+            description = "Describe work, ask for clarification, and arrange a call or task handover.",
+            iconEmoji = "🏡",
+            levelIndex = 21,
+            levelLabel = "Intermediate Level 4",
+            phrases = allPhrases.filter { it.levelNumber == 21 }
+        ),
+        FlashcardDeck(
+            id = "deck_intermediate_il",
+            title = "Intermediate Level 5: School, Learning & Technology",
+            description = "Explain a learning problem and ask for help with a document or device.",
+            iconEmoji = "🏡",
+            levelIndex = 22,
+            levelLabel = "Intermediate Level 5",
+            phrases = allPhrases.filter { it.levelNumber == 22 }
+        ),
+        FlashcardDeck(
+            id = "deck_intermediate_im",
+            title = "Intermediate Level 6: Hobbies, Media & Preferences",
+            description = "Discuss something you watched, compare preferences, and recommend an activity.",
+            iconEmoji = "🏡",
+            levelIndex = 23,
+            levelLabel = "Intermediate Level 6",
+            phrases = allPhrases.filter { it.levelNumber == 23 }
+        ),
+        FlashcardDeck(
+            id = "deck_int_4_opinions_doubts",
+            title = "Intermediate Level 7: Opinions, Doubts & Comparisons",
+            description = "Expressing perspective (thoonnunnu, vishwasamilla, athekkāl nallathu, enthekilum, chilappol, oru karyam parayatte).",
+            iconEmoji = "🏡",
+            levelIndex = 24,
+            levelLabel = "Intermediate Level 7",
+            phrases = allPhrases.filter { it.levelNumber == 24 }
+        ),
+        FlashcardDeck(
+            id = "deck_int_5_errands_shopping",
+            title = "Intermediate Level 8: Errands, Shopping & Outside Interactions",
+            description = "Interacting at shops, restaurants, and appointments (vilakooduthal, kurakkumo, baakki, chodyam, ready aayo).",
+            iconEmoji = "🏡",
+            levelIndex = 25,
+            levelLabel = "Intermediate Level 8",
+            phrases = allPhrases.filter { it.levelNumber == 25 }
+        ),
+        FlashcardDeck(
+            id = "deck_intermediate_ir",
+            title = "Intermediate Level 9: Relationships, Invitations & Boundaries",
+            description = "Invite someone, decline with a reason, and express a boundary respectfully.",
+            iconEmoji = "🏡",
+            levelIndex = 26,
+            levelLabel = "Intermediate Level 9",
+            phrases = allPhrases.filter { it.levelNumber == 26 }
+        ),
+        FlashcardDeck(
+            id = "deck_int_3_banter",
+            title = "Intermediate Level 10: Teasing, Sarcasm & Informal Banter",
+            description = "Playful reactions, idioms, and attitude (thallu, scene aanu, veruthe, sceneilla, kollam, pinnallathe, shook, jaada).",
+            iconEmoji = "🏡",
+            levelIndex = 27,
+            levelLabel = "Intermediate Level 10",
+            phrases = allPhrases.filter { it.levelNumber == 27 }
+        ),
+        FlashcardDeck(
+            id = "deck_adv_1_nuance_tags",
+            title = "Advanced Level 1: Nuance Tags & Suffix Flow",
+            description = "Micro-modifiers that define tone (-allo for affirmation, -tto for friendly warning/promise, -ketto, -enne, -thanne).",
+            iconEmoji = "📜",
+            levelIndex = 28,
+            levelLabel = "Advanced Level 1",
+            phrases = allPhrases.filter { it.levelNumber == 28 }
+        ),
+        FlashcardDeck(
+            id = "deck_adv_2_complex_emotions",
+            title = "Advanced Level 2: Complex Emotional States & Dispositions",
+            description = "Subtle internal feelings (deshyam, sankadam, maduppu, kothiyaavunnu, ashwasam, vedhana, pedi, bharam).",
+            iconEmoji = "📜",
+            levelIndex = 29,
+            levelLabel = "Advanced Level 2",
+            phrases = allPhrases.filter { it.levelNumber == 29 }
+        ),
+        FlashcardDeck(
+            id = "deck_adv_3_compound_verbs",
+            title = "Advanced Level 3: Compound Verbs & Natural Contractions",
+            description = "Natural contractions (kondubovaam, ittaekku, paranjukodukku, nokkikkollu, aayi-theernnu).",
+            iconEmoji = "📜",
+            levelIndex = 30,
+            levelLabel = "Advanced Level 3",
+            phrases = allPhrases.filter { it.levelNumber == 30 }
+        ),
+        FlashcardDeck(
+            id = "deck_advanced_ap",
+            title = "Advanced Level 4: Problems, Explanations & Negotiation",
+            description = "Explain a problem, compare possible solutions, and agree on a next step.",
+            iconEmoji = "📜",
+            levelIndex = 31,
+            levelLabel = "Advanced Level 4",
+            phrases = allPhrases.filter { it.levelNumber == 31 }
+        ),
+        FlashcardDeck(
+            id = "deck_advanced_an",
+            title = "Advanced Level 5: News, Society & Evaluating Claims",
+            description = "Summarise a news item, distinguish opinion from evidence, and explain uncertainty.",
+            iconEmoji = "📜",
+            levelIndex = 32,
+            levelLabel = "Advanced Level 5",
+            phrases = allPhrases.filter { it.levelNumber == 32 }
+        ),
+        FlashcardDeck(
+            id = "deck_adv_4_family_lore",
+            title = "Advanced Level 6: Family Lore, Tradition & Festive Vocabulary",
+            description = "Wedding, feast, religious, and holiday registers (sadya, kalyanam, perunnal, acharam, anugraham, bandhangal).",
+            iconEmoji = "📜",
+            levelIndex = 33,
+            levelLabel = "Advanced Level 6",
+            phrases = allPhrases.filter { it.levelNumber == 33 }
+        ),
+        FlashcardDeck(
+            id = "deck_adv_5_tactful_pushback",
+            title = "Advanced Level 7: Expressing Disagreement & Tactful Pushback",
+            description = "Polite and informal debate (athalla njan paranjathu, anganeyonnum alla, athil karyamilla, sammathikkilla).",
+            iconEmoji = "📜",
+            levelIndex = 34,
+            levelLabel = "Advanced Level 7",
+            phrases = allPhrases.filter { it.levelNumber == 34 }
+        ),
+        FlashcardDeck(
+            id = "deck_mst_1_rapid_slang",
+            title = "Mastery Level 1: Rapid Colloquial Slang & Generational Idioms",
+            description = "Contemporary youth slang, inside jokes, and culturally loaded slang phrases (adipoli, kidu, vibe, scene kando, uyir, mass).",
+            iconEmoji = "👑",
+            levelIndex = 35,
+            levelLabel = "Mastery Level 1",
+            phrases = allPhrases.filter { it.levelNumber == 35 }
+        ),
+        FlashcardDeck(
+            id = "deck_mst_2_classic_proverbs",
+            title = "Mastery Level 2: Classic Proverbs & Everyday Metaphors",
+            description = "Frequently referenced sayings and metaphors (minnunnathellaam ponnalla, kaaryam kaanaan kalipidikkuka, mulla poovinu manamilla).",
+            iconEmoji = "👑",
+            levelIndex = 36,
+            levelLabel = "Mastery Level 2",
+            phrases = allPhrases.filter { it.levelNumber == 36 }
+        ),
+        FlashcardDeck(
+            id = "deck_mst_3_subtext_irony",
+            title = "Mastery Level 3: Subtext, Irony & Passive Phrasing",
+            description = "Knowing how to say things without stating them directly; reading between the lines in family dynamics.",
+            iconEmoji = "👑",
+            levelIndex = 37,
+            levelLabel = "Mastery Level 3",
+            phrases = allPhrases.filter { it.levelNumber == 37 }
+        ),
+        FlashcardDeck(
+            id = "deck_mst_4_deep_abstract",
+            title = "Mastery Level 4: Deep Vocabulary & Abstract Conversation",
+            description = "Discussing philosophy, personal ethics, politics, and abstract career topics naturally.",
+            iconEmoji = "👑",
+            levelIndex = 38,
+            levelLabel = "Mastery Level 4",
+            phrases = allPhrases.filter { it.levelNumber == 38 }
+        ),
+        FlashcardDeck(
+            id = "deck_mst_5_dialect_switching",
+            title = "Mastery Level 5: Dialect & Accent Switching",
+            description = "Recognizing differences between Central (Kottayam/Kochi/Adoor), Northern (Malabar), and Southern (Trivandrum) vocabulary nuances.",
+            iconEmoji = "👑",
+            levelIndex = 39,
+            levelLabel = "Mastery Level 5",
+            phrases = allPhrases.filter { it.levelNumber == 39 }
+        ),
     )
 
     val studyPlanStages: List<StudyLevelStage> = listOf(
@@ -1478,10 +379,10 @@ object DialectRepository {
             tierId = "novice",
             tierName = "Level 1: Novice (Formulaic & Survival)",
             rankTitle = "Novice Level 1",
-            topicTitle = "First 12 Core Words & Pronouns",
-            description = "Start here with single-word building blocks: I, You, Yes, No, Want?, Where?, Now.",
+            topicTitle = "Kinship & Addressing People",
+            description = "Immediate and extended family titles (achayan, chechi, ammachi, ammayi, aliya), personal pronouns (njan, nee, njangal, avar), respectful vs. peer addressing.",
             iconEmoji = "🌱",
-            deckId = "deck_level0_words",
+            deckId = "deck_novice_1_kinship",
             requiredWordsToUnlock = 0,
             isTierFinalStage = false
         ),
@@ -1490,11 +391,11 @@ object DialectRepository {
             tierId = "novice",
             tierName = "Level 1: Novice (Formulaic & Survival)",
             rankTitle = "Novice Level 2",
-            topicTitle = "Family Names & 2-Word Combos",
-            description = "Appa, Amma, Ammachi & Appachan, and simple 2-word questions like 'Chaya veno?' and 'Amma evide?'.",
-            iconEmoji = "👋",
-            deckId = "deck_level0_people_combos",
-            requiredWordsToUnlock = 5,
+            topicTitle = "Greetings, Introductions & Repair",
+            description = "Introduce yourself, greet a visitor, and ask for repetition when you do not understand.",
+            iconEmoji = "🌱",
+            deckId = "deck_novice_ng",
+            requiredWordsToUnlock = 25,
             isTierFinalStage = false
         ),
         StudyLevelStage(
@@ -1502,373 +403,577 @@ object DialectRepository {
             tierId = "novice",
             tierName = "Level 1: Novice (Formulaic & Survival)",
             rankTitle = "Novice Level 3",
-            topicTitle = "Home Contractions & Spoken Shortcuts",
-            description = "Learn Central Travancore spoken contractions (Varoolla, Cheyyoolla) and short home sentences. Pass Oral Defense to graduate to Elementary (1,000 XP)!",
-            iconEmoji = "⚡",
-            deckId = "deck_level1_shortcuts",
-            requiredWordsToUnlock = 10,
-            isTierFinalStage = true
+            topicTitle = "Numbers, Prices & Quantities",
+            description = "Count small quantities, understand common prices, and ask how much you need to pay.",
+            iconEmoji = "🌱",
+            deckId = "deck_novice_nn",
+            requiredWordsToUnlock = 45,
+            isTierFinalStage = false
         ),
         StudyLevelStage(
             levelIndex = 3,
-            tierId = "elementary",
-            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
-            rankTitle = "Elementary Level 1",
-            topicTitle = "Kitchen & Family Conversations",
-            description = "Chat naturally at home in Adoor with Ammachi about morning tea, church, and family errands.",
-            iconEmoji = "🏡",
-            deckId = "deck_family",
-            requiredWordsToUnlock = 15,
+            tierId = "novice",
+            tierName = "Level 1: Novice (Formulaic & Survival)",
+            rankTitle = "Novice Level 4",
+            topicTitle = "Kitchen Essentials & Food Preferences",
+            description = "Staple foods (choru, vellam, chaaya, meen, erachi), simple yes/no/quantity limits (venda, mathi, kurachu, theere venda, kooduthal).",
+            iconEmoji = "🌱",
+            deckId = "deck_novice_2_kitchen_food",
+            requiredWordsToUnlock = 69,
             isTierFinalStage = false
         ),
         StudyLevelStage(
             levelIndex = 4,
-            tierId = "elementary",
-            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
-            rankTitle = "Elementary Level 2",
-            topicTitle = "Thattukada & Travel Navigation",
-            description = "Order double strong chaya, hot pazhampori, and navigate Adoor KSRTC bus stand and auto meters.",
-            iconEmoji = "🛺",
-            deckId = "deck_thattukada",
-            requiredWordsToUnlock = 20,
+            tierId = "novice",
+            tierName = "Level 1: Novice (Formulaic & Survival)",
+            rankTitle = "Novice Level 5",
+            topicTitle = "The 15 Survival Verbs",
+            description = "Core actions in simple imperative & present forms (vaa, po, kazhikku, kudi, iri, para, kelkku, thaa, edu, cheyyu).",
+            iconEmoji = "🌱",
+            deckId = "deck_novice_3_survival_verbs",
+            requiredWordsToUnlock = 94,
             isTierFinalStage = false
         ),
         StudyLevelStage(
             levelIndex = 5,
-            tierId = "elementary",
-            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
-            rankTitle = "Elementary Level 3",
-            topicTitle = "Daily Schedule, Bus Stand & Weather",
-            description = "Form original 4-to-6 word sentences describing past routines and future plans. Pass Oral Defense to graduate to Intermediate (3,500 XP)!",
-            iconEmoji = "⏰",
-            deckId = "deck_contractions",
-            requiredWordsToUnlock = 25,
-            isTierFinalStage = true
-        ),
-        StudyLevelStage(
-            levelIndex = 6,
-            tierId = "intermediate",
-            tierName = "Level 3: Intermediate (Spontaneous & Conversational)",
-            rankTitle = "Intermediate Level 1",
-            topicTitle = "Catholic Church, Mass & Daily Prayers",
-            description = "Holy Mass (Qurbana), evening family rosary, Hail Mary, parish priest greetings, and festive Perunnal.",
-            iconEmoji = "⛪",
-            deckId = "deck_catholic_church",
-            requiredWordsToUnlock = 31,
+            tierId = "novice",
+            tierName = "Level 1: Novice (Formulaic & Survival)",
+            rankTitle = "Novice Level 6",
+            topicTitle = "People, Things & Simple Descriptions",
+            description = "Describe an object and combine familiar nouns with size, colour, and possession.",
+            iconEmoji = "🌱",
+            deckId = "deck_novice_nd",
+            requiredWordsToUnlock = 119,
             isTierFinalStage = false
         ),
         StudyLevelStage(
-            levelIndex = 7,
-            tierId = "intermediate",
-            tierName = "Level 3: Intermediate (Spontaneous & Conversational)",
-            rankTitle = "Intermediate Level 2",
-            topicTitle = "Storytelling, Feelings & Memories",
-            description = "Sustain unscripted 2-3 minute conversation, narrate past stories, express opinions with 'Aadey' & 'Ketto?'. Pass Oral Defense to graduate to Advanced (8,000 XP)!",
-            iconEmoji = "📜",
-            deckId = "deck_advanced_storytelling",
-            requiredWordsToUnlock = 37,
+            levelIndex = 6,
+            tierId = "novice",
+            tierName = "Level 1: Novice (Formulaic & Survival)",
+            rankTitle = "Novice Level 7",
+            topicTitle = "Fast Reactions & Conversational Fillers",
+            description = "Emotional cues and fillers (ayyo, saramilla, sathyam, aano, sherikkum, pinne, athre ullu, enthaa).",
+            iconEmoji = "🌱",
+            deckId = "deck_novice_4_reactions_fillers",
+            requiredWordsToUnlock = 141,
             isTierFinalStage = true
         ),
         StudyLevelStage(
+            levelIndex = 7,
+            tierId = "elementary",
+            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
+            rankTitle = "Elementary Level 1",
+            topicTitle = "Conversational Questions & Direction",
+            description = "Question words and directional anchors (evideya, eppozha, entha, aara, engane, ivide, avide, nere, appurathe).",
+            iconEmoji = "🛺",
+            deckId = "deck_elem_1_questions_direction",
+            requiredWordsToUnlock = 166,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
             levelIndex = 8,
-            tierId = "advanced",
-            tierName = "Level 4: Advanced (Professional & Nuanced)",
-            rankTitle = "Advanced Level 1",
-            topicTitle = "Opinions, Nuanced Reasoning & Debate",
-            description = "Diplomatically voice disagreement, provide nuanced reasoning, and propose alternative solutions.",
-            iconEmoji = "⚖️",
-            deckId = "deck_advanced_opinions",
-            requiredWordsToUnlock = 43,
+            tierId = "elementary",
+            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
+            rankTitle = "Elementary Level 2",
+            topicTitle = "Calendar, Time & Appointments",
+            description = "Arrange a meeting, understand dates, and describe when something happens.",
+            iconEmoji = "🛺",
+            deckId = "deck_elementary_ec",
+            requiredWordsToUnlock = 191,
             isTierFinalStage = false
         ),
         StudyLevelStage(
             levelIndex = 9,
-            tierId = "advanced",
-            tierName = "Level 4: Advanced (Professional & Nuanced)",
-            rankTitle = "Advanced Level 2",
-            topicTitle = "Cultural Issues, News & Technical Topics",
-            description = "Subtle tone particles (-aanallo, -thanne), code-switching between formal news and home dialect. Pass Oral Defense to graduate to Mastery (16,000 XP)!",
-            iconEmoji = "📰",
-            deckId = "deck_slang",
-            requiredWordsToUnlock = 49,
-            isTierFinalStage = true
+            tierId = "elementary",
+            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
+            rankTitle = "Elementary Level 3",
+            topicTitle = "Buses, Autos & Travel",
+            description = "Buy a ticket, check a destination, and tell a driver where to stop.",
+            iconEmoji = "🛺",
+            deckId = "deck_elementary_et",
+            requiredWordsToUnlock = 215,
+            isTierFinalStage = false
         ),
         StudyLevelStage(
             levelIndex = 10,
-            tierId = "mastery",
-            tierName = "Level 5: Mastery (Articulate & Native-Like)",
-            rankTitle = "Mastery Level 1",
-            topicTitle = "Malayalam Proverbs & Cultural Idioms",
-            description = "Master famous Pazhamchollukal ('Minnumathellam ponnalla') and cultural metaphors that native speakers drop into conversations.",
-            iconEmoji = "🦉",
-            deckId = "deck_superior_proverbs",
-            requiredWordsToUnlock = 55,
+            tierId = "elementary",
+            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
+            rankTitle = "Elementary Level 4",
+            topicTitle = "Groceries, Money & Ordering",
+            description = "Ask for ingredients, order a meal, pay, and explain a simple dietary preference.",
+            iconEmoji = "🛺",
+            deckId = "deck_elementary_es",
+            requiredWordsToUnlock = 239,
             isTierFinalStage = false
         ),
         StudyLevelStage(
             levelIndex = 11,
-            tierId = "mastery",
-            tierName = "Level 5: Mastery (Articulate & Native-Like)",
-            rankTitle = "Mastery Level 2",
-            topicTitle = "Enthuvaadey Banter & Cultural Orator",
-            description = "Iconic Pathanamthitta/Adoor cadence, witty banter, and eloquent parish discourse. Earn Native Master Speaker Certification (30,000+ XP)!",
-            iconEmoji = "👑",
-            deckId = "deck_distinguished_master",
-            requiredWordsToUnlock = 60,
+            tierId = "elementary",
+            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
+            rankTitle = "Elementary Level 5",
+            topicTitle = "Spoken Past Tense & Everyday Routines",
+            description = "Everyday past-tense markers (kazhicho, poyi, vannu, urangiyo, kandu, cheythu) and time words (innale, innum, nerathe, vaiki).",
+            iconEmoji = "🛺",
+            deckId = "deck_elem_2_past_tense_routines",
+            requiredWordsToUnlock = 267,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 12,
+            tierId = "elementary",
+            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
+            rankTitle = "Elementary Level 6",
+            topicTitle = "Future Intentions & Casual Commitments",
+            description = "The -aam and -um spoken future forms (varaam, kazhikkaam, nokkam, cheyyaam, naale, matte-naal).",
+            iconEmoji = "🛺",
+            deckId = "deck_elem_3_future_commitments",
+            requiredWordsToUnlock = 297,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 13,
+            tierId = "elementary",
+            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
+            rankTitle = "Elementary Level 7",
+            topicTitle = "Describing Physical States & Desires",
+            description = "Needs and physical feelings (vishakkunnu, thadasam, choodu, thanippu, urakkam varunnu, sheenam, vayya).",
+            iconEmoji = "🛺",
+            deckId = "deck_elem_4_physical_states",
+            requiredWordsToUnlock = 322,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 14,
+            tierId = "elementary",
+            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
+            rankTitle = "Elementary Level 8",
+            topicTitle = "Body, Health & Asking for Help",
+            description = "Name common symptoms and ask someone for help or a medical appointment.",
+            iconEmoji = "🛺",
+            deckId = "deck_elementary_eh",
+            requiredWordsToUnlock = 347,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 15,
+            tierId = "elementary",
+            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
+            rankTitle = "Elementary Level 9",
+            topicTitle = "Home, Chores & Daily Objects",
+            description = "Objects around the room (vaathil, janala, kaasu, phone, chaavi, vandi, bhaagyam).",
+            iconEmoji = "🛺",
+            deckId = "deck_elem_5_home_objects",
+            requiredWordsToUnlock = 371,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 16,
+            tierId = "elementary",
+            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
+            rankTitle = "Elementary Level 10",
+            topicTitle = "Clothes, Washing & Getting Ready",
+            description = "Choose clothes, explain sizes, and talk through getting ready to go out.",
+            iconEmoji = "🛺",
+            deckId = "deck_elementary_ed",
+            requiredWordsToUnlock = 396,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 17,
+            tierId = "elementary",
+            tierName = "Level 2: Elementary (Transactional & Daily Routine)",
+            rankTitle = "Elementary Level 11",
+            topicTitle = "Weather, Outdoors & Places",
+            description = "Describe the weather and surroundings, and suggest a simple outing.",
+            iconEmoji = "🛺",
+            deckId = "deck_elementary_ew",
+            requiredWordsToUnlock = 414,
             isTierFinalStage = true
-        )
+        ),
+        StudyLevelStage(
+            levelIndex = 18,
+            tierId = "intermediate",
+            tierName = "Level 3: Intermediate (Spontaneous & Conversational)",
+            rankTitle = "Intermediate Level 1",
+            topicTitle = "Conjunctions & Sentence Connectors",
+            description = "Glue words that create flowing speech (ennittum, athukondu, pakshe, athinaale, allenkil, ennaalum).",
+            iconEmoji = "🏡",
+            deckId = "deck_int_1_connectors",
+            requiredWordsToUnlock = 438,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 19,
+            tierId = "intermediate",
+            tierName = "Level 3: Intermediate (Spontaneous & Conversational)",
+            rankTitle = "Intermediate Level 2",
+            topicTitle = "Telling a Story & Sequencing Events",
+            description = "Retell an experience using sequence, cause, reported speech, and a conclusion.",
+            iconEmoji = "🏡",
+            deckId = "deck_intermediate_in",
+            requiredWordsToUnlock = 463,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 20,
+            tierId = "intermediate",
+            tierName = "Level 3: Intermediate (Spontaneous & Conversational)",
+            rankTitle = "Intermediate Level 3",
+            topicTitle = "Conditional Statements ('If / When')",
+            description = "Spoken -aal and -appol forms (vannal, paranjaal, kandappol, poyappol, cheythaal nannayi).",
+            iconEmoji = "🏡",
+            deckId = "deck_int_2_conditionals",
+            requiredWordsToUnlock = 485,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 21,
+            tierId = "intermediate",
+            tierName = "Level 3: Intermediate (Spontaneous & Conversational)",
+            rankTitle = "Intermediate Level 4",
+            topicTitle = "Work, Tasks & Phone Calls",
+            description = "Describe work, ask for clarification, and arrange a call or task handover.",
+            iconEmoji = "🏡",
+            deckId = "deck_intermediate_iw",
+            requiredWordsToUnlock = 510,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 22,
+            tierId = "intermediate",
+            tierName = "Level 3: Intermediate (Spontaneous & Conversational)",
+            rankTitle = "Intermediate Level 5",
+            topicTitle = "School, Learning & Technology",
+            description = "Explain a learning problem and ask for help with a document or device.",
+            iconEmoji = "🏡",
+            deckId = "deck_intermediate_il",
+            requiredWordsToUnlock = 532,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 23,
+            tierId = "intermediate",
+            tierName = "Level 3: Intermediate (Spontaneous & Conversational)",
+            rankTitle = "Intermediate Level 6",
+            topicTitle = "Hobbies, Media & Preferences",
+            description = "Discuss something you watched, compare preferences, and recommend an activity.",
+            iconEmoji = "🏡",
+            deckId = "deck_intermediate_im",
+            requiredWordsToUnlock = 556,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 24,
+            tierId = "intermediate",
+            tierName = "Level 3: Intermediate (Spontaneous & Conversational)",
+            rankTitle = "Intermediate Level 7",
+            topicTitle = "Opinions, Doubts & Comparisons",
+            description = "Expressing perspective (thoonnunnu, vishwasamilla, athekkāl nallathu, enthekilum, chilappol, oru karyam parayatte).",
+            iconEmoji = "🏡",
+            deckId = "deck_int_4_opinions_doubts",
+            requiredWordsToUnlock = 578,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 25,
+            tierId = "intermediate",
+            tierName = "Level 3: Intermediate (Spontaneous & Conversational)",
+            rankTitle = "Intermediate Level 8",
+            topicTitle = "Errands, Shopping & Outside Interactions",
+            description = "Interacting at shops, restaurants, and appointments (vilakooduthal, kurakkumo, baakki, chodyam, ready aayo).",
+            iconEmoji = "🏡",
+            deckId = "deck_int_5_errands_shopping",
+            requiredWordsToUnlock = 603,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 26,
+            tierId = "intermediate",
+            tierName = "Level 3: Intermediate (Spontaneous & Conversational)",
+            rankTitle = "Intermediate Level 9",
+            topicTitle = "Relationships, Invitations & Boundaries",
+            description = "Invite someone, decline with a reason, and express a boundary respectfully.",
+            iconEmoji = "🏡",
+            deckId = "deck_intermediate_ir",
+            requiredWordsToUnlock = 628,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 27,
+            tierId = "intermediate",
+            tierName = "Level 3: Intermediate (Spontaneous & Conversational)",
+            rankTitle = "Intermediate Level 10",
+            topicTitle = "Teasing, Sarcasm & Informal Banter",
+            description = "Playful reactions, idioms, and attitude (thallu, scene aanu, veruthe, sceneilla, kollam, pinnallathe, shook, jaada).",
+            iconEmoji = "🏡",
+            deckId = "deck_int_3_banter",
+            requiredWordsToUnlock = 650,
+            isTierFinalStage = true
+        ),
+        StudyLevelStage(
+            levelIndex = 28,
+            tierId = "advanced",
+            tierName = "Level 4: Advanced (Professional & Nuanced)",
+            rankTitle = "Advanced Level 1",
+            topicTitle = "Nuance Tags & Suffix Flow",
+            description = "Micro-modifiers that define tone (-allo for affirmation, -tto for friendly warning/promise, -ketto, -enne, -thanne).",
+            iconEmoji = "📜",
+            deckId = "deck_adv_1_nuance_tags",
+            requiredWordsToUnlock = 680,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 29,
+            tierId = "advanced",
+            tierName = "Level 4: Advanced (Professional & Nuanced)",
+            rankTitle = "Advanced Level 2",
+            topicTitle = "Complex Emotional States & Dispositions",
+            description = "Subtle internal feelings (deshyam, sankadam, maduppu, kothiyaavunnu, ashwasam, vedhana, pedi, bharam).",
+            iconEmoji = "📜",
+            deckId = "deck_adv_2_complex_emotions",
+            requiredWordsToUnlock = 705,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 30,
+            tierId = "advanced",
+            tierName = "Level 4: Advanced (Professional & Nuanced)",
+            rankTitle = "Advanced Level 3",
+            topicTitle = "Compound Verbs & Natural Contractions",
+            description = "Natural contractions (kondubovaam, ittaekku, paranjukodukku, nokkikkollu, aayi-theernnu).",
+            iconEmoji = "📜",
+            deckId = "deck_adv_3_compound_verbs",
+            requiredWordsToUnlock = 735,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 31,
+            tierId = "advanced",
+            tierName = "Level 4: Advanced (Professional & Nuanced)",
+            rankTitle = "Advanced Level 4",
+            topicTitle = "Problems, Explanations & Negotiation",
+            description = "Explain a problem, compare possible solutions, and agree on a next step.",
+            iconEmoji = "📜",
+            deckId = "deck_advanced_ap",
+            requiredWordsToUnlock = 765,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 32,
+            tierId = "advanced",
+            tierName = "Level 4: Advanced (Professional & Nuanced)",
+            rankTitle = "Advanced Level 5",
+            topicTitle = "News, Society & Evaluating Claims",
+            description = "Summarise a news item, distinguish opinion from evidence, and explain uncertainty.",
+            iconEmoji = "📜",
+            deckId = "deck_advanced_an",
+            requiredWordsToUnlock = 787,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 33,
+            tierId = "advanced",
+            tierName = "Level 4: Advanced (Professional & Nuanced)",
+            rankTitle = "Advanced Level 6",
+            topicTitle = "Family Lore, Tradition & Festive Vocabulary",
+            description = "Wedding, feast, religious, and holiday registers (sadya, kalyanam, perunnal, acharam, anugraham, bandhangal).",
+            iconEmoji = "📜",
+            deckId = "deck_adv_4_family_lore",
+            requiredWordsToUnlock = 811,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 34,
+            tierId = "advanced",
+            tierName = "Level 4: Advanced (Professional & Nuanced)",
+            rankTitle = "Advanced Level 7",
+            topicTitle = "Expressing Disagreement & Tactful Pushback",
+            description = "Polite and informal debate (athalla njan paranjathu, anganeyonnum alla, athil karyamilla, sammathikkilla).",
+            iconEmoji = "📜",
+            deckId = "deck_adv_5_tactful_pushback",
+            requiredWordsToUnlock = 836,
+            isTierFinalStage = true
+        ),
+        StudyLevelStage(
+            levelIndex = 35,
+            tierId = "mastery",
+            tierName = "Level 5: Mastery (Idioms & Cultural Nuance)",
+            rankTitle = "Mastery Level 1",
+            topicTitle = "Rapid Colloquial Slang & Generational Idioms",
+            description = "Contemporary youth slang, inside jokes, and culturally loaded slang phrases (adipoli, kidu, vibe, scene kando, uyir, mass).",
+            iconEmoji = "👑",
+            deckId = "deck_mst_1_rapid_slang",
+            requiredWordsToUnlock = 861,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 36,
+            tierId = "mastery",
+            tierName = "Level 5: Mastery (Idioms & Cultural Nuance)",
+            rankTitle = "Mastery Level 2",
+            topicTitle = "Classic Proverbs & Everyday Metaphors",
+            description = "Frequently referenced sayings and metaphors (minnunnathellaam ponnalla, kaaryam kaanaan kalipidikkuka, mulla poovinu manamilla).",
+            iconEmoji = "👑",
+            deckId = "deck_mst_2_classic_proverbs",
+            requiredWordsToUnlock = 891,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 37,
+            tierId = "mastery",
+            tierName = "Level 5: Mastery (Idioms & Cultural Nuance)",
+            rankTitle = "Mastery Level 3",
+            topicTitle = "Subtext, Irony & Passive Phrasing",
+            description = "Knowing how to say things without stating them directly; reading between the lines in family dynamics.",
+            iconEmoji = "👑",
+            deckId = "deck_mst_3_subtext_irony",
+            requiredWordsToUnlock = 916,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 38,
+            tierId = "mastery",
+            tierName = "Level 5: Mastery (Idioms & Cultural Nuance)",
+            rankTitle = "Mastery Level 4",
+            topicTitle = "Deep Vocabulary & Abstract Conversation",
+            description = "Discussing philosophy, personal ethics, politics, and abstract career topics naturally.",
+            iconEmoji = "👑",
+            deckId = "deck_mst_4_deep_abstract",
+            requiredWordsToUnlock = 941,
+            isTierFinalStage = false
+        ),
+        StudyLevelStage(
+            levelIndex = 39,
+            tierId = "mastery",
+            tierName = "Level 5: Mastery (Idioms & Cultural Nuance)",
+            rankTitle = "Mastery Level 5",
+            topicTitle = "Dialect & Accent Switching",
+            description = "Recognizing differences between Central (Kottayam/Kochi/Adoor), Northern (Malabar), and Southern (Trivandrum) vocabulary nuances.",
+            iconEmoji = "👑",
+            deckId = "deck_mst_5_dialect_switching",
+            requiredWordsToUnlock = 971,
+            isTierFinalStage = true
+        ),
     )
-
     fun buildOverallDeck(knownCount: Int): FlashcardDeck {
         val reachedStages = studyPlanStages.filter { stage ->
-            stage.levelIndex == 0 || knownCount >= stage.requiredWordsToUnlock
-        }
+            knownCount >= stage.requiredWordsToUnlock
+        }.ifEmpty { listOf(studyPlanStages.first()) }
         val reachedPhrases = reachedStages.flatMap { stage ->
             decks.find { it.id == stage.deckId }?.phrases.orEmpty()
-        }.distinctBy { it.id }.ifEmpty { decks.first().phrases }
+        }.distinctBy { it.id }
 
         return FlashcardDeck(
-            id = "deck_overall",
-            title = "Overall",
-            description = "All flashcards across your unlocked & mastered levels.",
+            id = "overall_study_deck",
+            title = "All Unlocked Material",
+            description = "Consolidated deck spanning all unlocked levels",
             iconEmoji = "📚",
-            levelIndex = -1,
-            levelLabel = "Overall",
+            levelIndex = reachedStages.maxOf { it.levelIndex },
+            levelLabel = reachedStages.last().rankTitle,
+            phrases = reachedPhrases
+        )
+    }
+
+    fun buildOverallDeckForLevel(maxUnlockedLevel: Int): FlashcardDeck {
+        val reachedStages = studyPlanStages.filter { it.levelIndex <= maxUnlockedLevel }
+        val reachedPhrases = reachedStages.flatMap { stage ->
+            decks.find { it.id == stage.deckId }?.phrases.orEmpty()
+        }.distinctBy { it.id }
+
+        val currentStage = studyPlanStages.find { it.levelIndex == maxUnlockedLevel } ?: studyPlanStages.first()
+        return FlashcardDeck(
+            id = "overall_study_deck",
+            title = "All Unlocked Material",
+            description = "Consolidated deck spanning ${currentStage.rankTitle}",
+            iconEmoji = "📚",
+            levelIndex = currentStage.levelIndex,
+            levelLabel = currentStage.rankTitle,
             phrases = reachedPhrases
         )
     }
 
     fun getCurrentStage(stats: com.example.model.UserStats): StudyLevelStage {
         val level = stats.unlockedLevelIndex.coerceIn(0, studyPlanStages.size - 1)
-        return studyPlanStages[level]
+        return studyPlanStages.find { it.levelIndex == level } ?: studyPlanStages.first()
     }
 
     fun getNextStage(stats: com.example.model.UserStats): StudyLevelStage? {
         val nextLevel = stats.unlockedLevelIndex + 1
-        return studyPlanStages.getOrNull(nextLevel)
+        return studyPlanStages.find { it.levelIndex == nextLevel }
     }
 
     fun getCurrentStageForKnownCount(knownCount: Int): StudyLevelStage {
-        return studyPlanStages.first()
+        return studyPlanStages.lastOrNull { knownCount >= it.requiredWordsToUnlock }
+            ?: studyPlanStages.first()
     }
 
     fun getNextStageForKnownCount(knownCount: Int): StudyLevelStage? {
-        return studyPlanStages.getOrNull(1)
+        val currentStage = getCurrentStageForKnownCount(knownCount)
+        val currentIndex = studyPlanStages.indexOf(currentStage)
+        return studyPlanStages.getOrNull(currentIndex + 1)
     }
 
-    /**
-     * Generates a Spoken Graduation Oral Defense exam tailored strictly to the
-     * words and phrases the learner has encountered up to that specific ACTFL tier.
-     */
+    // Course reviews sample taught material; they do not certify proficiency.
     fun getGraduationPromptsForTier(tier: ActflProficiencyTier): List<GraduationPrompt> {
-        return when (tier) {
-            ActflProficiencyTier.NOVICE -> listOf(
-                GraduationPrompt(
-                    id = "grad_nov_1",
-                    phrase = allPhrases.first { it.id == "l3_01" }, // Njaan ippo varoolla ketto
-                    scenarioPrompt = "You are at home in Adoor. Tell your girlfriend's family: 'I won't come right now, okay?'",
-                    targetExpectedManglish = "Njaan ippo varoolla ketto",
-                    hint = "Njaan (I) + ippo (now) + varoolla (won't come) + ketto (okay?)"
-                ),
-                GraduationPrompt(
-                    id = "grad_nov_2",
-                    phrase = allPhrases.first { it.id == "l1_05" }, // Chaya veno?
-                    scenarioPrompt = "A guest or family member walks into the home. Offer them tea: 'Do you want tea?'",
-                    targetExpectedManglish = "Chaya veno?",
-                    hint = "Chaya (tea) + veno? (want?)"
-                ),
-                GraduationPrompt(
-                    id = "grad_nov_3",
-                    phrase = allPhrases.first { it.id == "l1_08" }, // Amma evide?
-                    scenarioPrompt = "Step inside the house and ask your sibling: 'Where is Mom?'",
-                    targetExpectedManglish = "Amma evide?",
-                    hint = "Amma (Mom) + evide? (where?)"
-                ),
-                GraduationPrompt(
-                    id = "grad_nov_4",
-                    phrase = allPhrases.first { it.id == "l2_01" }, // Varoolla
-                    scenarioPrompt = "In Central Travancore dialect, say the single-word negative contraction for 'Won't come':",
-                    targetExpectedManglish = "Varoolla",
-                    hint = "Adoor spoken shortcut for textbook 'varunnilla'"
-                )
-            )
-
-            ActflProficiencyTier.ELEMENTARY -> listOf(
-                GraduationPrompt(
-                    id = "grad_elem_1",
-                    phrase = allPhrases.first { it.id == "ct_03" }, // Appa innale town-il pokoolla ennu paranju
-                    scenarioPrompt = "Describe yesterday's family routine: 'Appa said he won't be going to town':",
-                    targetExpectedManglish = "Appa innale town-il pokoolla ennu paranju",
-                    hint = "Appa (Dad) + innale (yesterday) + town-il (to town) + pokoolla (won't go) + ennu paranju"
-                ),
-                GraduationPrompt(
-                    id = "grad_elem_2",
-                    phrase = allPhrases.first { it.id == "l2_09" }, // Oru strong chaya pinne randu parotta
-                    scenarioPrompt = "At an Adoor thattukada counter, place your order: 'One strong tea and two parottas':",
-                    targetExpectedManglish = "Oru strong chaya pinne randu parotta",
-                    hint = "Oru (one) + strong chaya + pinne (and) + randu parotta"
-                ),
-                GraduationPrompt(
-                    id = "grad_elem_3",
-                    phrase = allPhrases.first { it.id == "ct_05" }, // Ammachi ippo varathilla, kurachu kazhinje varoo
-                    scenarioPrompt = "Explain Grandmother's schedule with the regional Travancore 'varathilla' contraction: 'Ammachi won't be coming now, she will come after a while':",
-                    targetExpectedManglish = "Ammachi ippo varathilla, kurachu kazhinje varoo",
-                    hint = "Ammachi + ippo varathilla (won't come now) + kurachu kazhinje varoo (will come after a bit)"
-                ),
-                GraduationPrompt(
-                    id = "grad_elem_4",
-                    phrase = allPhrases.first { it.id == "ct_09" }, // Appachan palli-yil poyi vannu
-                    scenarioPrompt = "State that Grandfather visited church and returned: 'Appachan went to church and came back':",
-                    targetExpectedManglish = "Appachan palli-yil poyi vannu",
-                    hint = "Appachan (Grandpa) + palli-yil (to church) + poyi (went) + vannu (came)"
-                )
-            )
-
-            ActflProficiencyTier.INTERMEDIATE -> listOf(
-                GraduationPrompt(
-                    id = "grad_int_1",
-                    phrase = allPhrases.first { it.id == "cc_07" }, // Dhaivathinu sthuthi
-                    scenarioPrompt = "You just heard wonderful news at home or finished your evening prayer. Say 'Praise be to God / Thanks be to God':",
-                    targetExpectedManglish = "Dhaivathinu sthuthi",
-                    hint = "Dhaivathinu (to God) + sthuthi (praise/glory)"
-                ),
-                GraduationPrompt(
-                    id = "grad_int_2",
-                    phrase = allPhrases.first { it.id == "cc_01" }, // Njaan palliye pokuvaa
-                    scenarioPrompt = "Tell your girlfriend's family that you are leaving for church:",
-                    targetExpectedManglish = "Njaan palliye pokuvaa",
-                    hint = "Njaan (I) + palliye (to church) + pokuvaa (going)"
-                ),
-                GraduationPrompt(
-                    id = "grad_int_3",
-                    phrase = allPhrases.first { it.id == "cc_05" }, // Nanma niranja Mariyame, ninakku sthuthi
-                    scenarioPrompt = "Recite the opening prayer line of the Hail Mary in Malayalam during family evening rosary:",
-                    targetExpectedManglish = "Nanma niranja Mariyame, ninakku sthuthi",
-                    hint = "Nanma niranja Mariyame (Hail Mary) + ninakku sthuthi (praise to thee)"
-                ),
-                GraduationPrompt(
-                    id = "grad_int_4",
-                    phrase = allPhrases.first { it.id == "adv_01" }, // Njan oru karyam parayatte?
-                    scenarioPrompt = "Politely begin an unscripted conversational story: 'Can I tell you something?':",
-                    targetExpectedManglish = "Njan oru karyam parayatte?",
-                    hint = "Njan (I) + oru karyam (one matter) + parayatte? (may I say?)"
-                )
-            )
-
-            ActflProficiencyTier.ADVANCED -> listOf(
-                GraduationPrompt(
-                    id = "grad_adv_1",
-                    phrase = allPhrases.first { it.id == "adv_07" }, // Ente abhiprayathil athu shariyalla
-                    scenarioPrompt = "State your personal opinion diplomatically: 'In my opinion, that is not right':",
-                    targetExpectedManglish = "Ente abhiprayathil athu shariyalla",
-                    hint = "Ente abhiprayathil (in my opinion) + athu (that) + shariyalla (is not right)"
-                ),
-                GraduationPrompt(
-                    id = "grad_adv_2",
-                    phrase = allPhrases.first { it.id == "adv_08" }, // Ningal paranjathu shariyaanu, ennalum...
-                    scenarioPrompt = "Show advanced nuanced debate skill: 'What you said is true, nevertheless...':",
-                    targetExpectedManglish = "Ningal paranjathu shariyaanu, ennalum",
-                    hint = "Ningal paranjathu (what you said) + shariyaanu (is true) + ennalum (nevertheless)"
-                ),
-                GraduationPrompt(
-                    id = "grad_adv_3",
-                    phrase = allPhrases.first { it.id == "adv_02" }, // Athoru nalla kalam aayirunnu
-                    scenarioPrompt = "Reminisce with elder relatives: 'That was such a fond, good time':",
-                    targetExpectedManglish = "Athoru nalla kalam aayirunnu",
-                    hint = "Athu (that) + oru nalla kalam (a good time) + aayirunnu (was)"
-                ),
-                GraduationPrompt(
-                    id = "grad_adv_4",
-                    phrase = allPhrases.first { it.id == "dst_02" }, // Kshemam anveshikkunnathu nammude paramparayaanu
-                    scenarioPrompt = "Deliver a sophisticated community statement: 'Inquiring into the well-being of others is our time-honored heritage':",
-                    targetExpectedManglish = "Kshemam anveshikkunnathu nammude paramparayaanu",
-                    hint = "Kshemam anveshikkunnathu (inquiring into welfare) + paramparayaanu (is heritage)"
-                )
-            )
-
-            ActflProficiencyTier.MASTERY -> listOf(
-                GraduationPrompt(
-                    id = "grad_mst_1",
-                    phrase = allPhrases.first { it.id == "ct_06" }, // Enthuvaadey ithu?
-                    scenarioPrompt = "Express authentic Central Travancore colloquial astonishment: 'What on earth is this, man?':",
-                    targetExpectedManglish = "Enthuvaadey ithu?",
-                    hint = "Adoor regional signature exclamation blending 'enthu' and friendly tag 'aadey'"
-                ),
-                GraduationPrompt(
-                    id = "grad_mst_2",
-                    phrase = allPhrases.first { it.id == "prv_01" }, // Minnumathellam ponnalla
-                    scenarioPrompt = "Deliver the famous Malayalam proverb meaning 'All that glitters is not gold':",
-                    targetExpectedManglish = "Minnumathellam ponnalla",
-                    hint = "Minnumathellam (all that shines) + ponnalla (is not gold)"
-                ),
-                GraduationPrompt(
-                    id = "grad_mst_3",
-                    phrase = allPhrases.first { it.id == "prv_02" }, // Velichathu kaanumbozhalle niram ariyoo
-                    scenarioPrompt = "Quote the cultural proverb: 'Only when brought into the light is the true character revealed':",
-                    targetExpectedManglish = "Velichathu kaanumbozhalle niram ariyoo",
-                    hint = "Velichathu kaanumbozhalle (only when seen in light) + niram ariyoo (is color known)"
-                ),
-                GraduationPrompt(
-                    id = "grad_mst_4",
-                    phrase = allPhrases.first { it.id == "sup_03" }, // Nammalude naattile visheshangal paranjal theeroolla
-                    scenarioPrompt = "Say with warm native Travancore humor: 'If we start talking about our hometown news, it will never end!':",
-                    targetExpectedManglish = "Nammalude naattile visheshangal paranjal theeroolla",
-                    hint = "Naattile visheshangal (hometown news) + theeroolla (will not finish)"
-                ),
-                GraduationPrompt(
-                    id = "grad_mst_5",
-                    phrase = allPhrases.first { it.id == "dst_01" }, // Athithi daivam aayi karuthunna naadaanu nammudethu
-                    scenarioPrompt = "Deliver Kerala's foundational cultural hospitality statement: 'Ours is a land that welcomes every guest with divine reverence':",
-                    targetExpectedManglish = "Athithi daivam aayi karuthunna naadaanu nammudethu",
-                    hint = "Athithi daivam (guest as divine) + naadaanu nammudethu (ours is the land)"
-                )
+        val phraseIds = when (tier) {
+            ActflProficiencyTier.NOVICE -> listOf("n0_11", "ng_08", "nn_24", "n1_16", "n2_01", "n3_01")
+            ActflProficiencyTier.ELEMENTARY -> listOf("e1_01", "ec_20", "et_18", "es_23", "eh_23", "e2_01")
+            ActflProficiencyTier.INTERMEDIATE -> listOf("i1_01", "in_20", "iw_18", "il_22", "im_19", "ir_18")
+            ActflProficiencyTier.ADVANCED -> listOf("a1_14", "a2_01", "a3_01", "an_20", "ap_19", "a5_01")
+            ActflProficiencyTier.MASTERY -> listOf("m1_01", "m2_01", "m3_01", "m4_01", "m5_01")
+        }
+        return phraseIds.mapIndexed { index, id ->
+            val phrase = allPhrases.single { it.id == id }
+            GraduationPrompt(
+                id = "grad_${tier.tierId}_$index",
+                phrase = phrase,
+                scenarioPrompt = "Say in Malayalam: ${phrase.english}",
+                targetExpectedManglish = phrase.manglish,
+                hint = phrase.phoneticGuide.ifBlank { "Recall the expression from this tier's lessons." }
             )
         }
     }
 
-    /**
-     * Dynamically constructs an Adaptive Focus Deck based on words the user struggled with
-     * PLUS their foundational Level 0/1 prerequisite words if they missed a multi-word phrase.
-     */
     fun buildAdaptiveStruggleDeck(masteryRecords: Map<String, PhraseMasteryRecord>): FlashcardDeck {
         val strugglingIds = masteryRecords.values
-            .filter { it.mistakeCount > 0 && it.consecutiveCorrect < 2 }
+            .filter { it.isStruggling }
             .sortedByDescending { it.mistakeCount }
             .map { it.phraseId }
 
         val targetPhrases = mutableListOf<PhraseItem>()
         for (id in strugglingIds) {
             val phrase = allPhrases.find { it.id == id } ?: continue
-            // If user struggled with a multi-word sentence, pull in its unmastered Level 0/1 building blocks first!
+            if (phrase !in targetPhrases) targetPhrases.add(phrase)
             for (prereqId in phrase.prerequisiteIds) {
                 val prereq = allPhrases.find { it.id == prereqId }
                 val prereqRecord = masteryRecords[prereqId]
-                if (prereq != null && (prereqRecord == null || !prereqRecord.isKnown) && targetPhrases.none { it.id == prereq.id }) {
+                if (prereq != null && prereq !in targetPhrases && (prereqRecord == null || !prereqRecord.isKnown)) {
                     targetPhrases.add(prereq)
                 }
             }
-            if (targetPhrases.none { it.id == phrase.id }) {
-                targetPhrases.add(phrase)
-            }
+            if (targetPhrases.size >= 12) break
         }
 
-        // If user hasn't made mistakes yet, fill with the next unlearned Ground Level 0 words
         if (targetPhrases.isEmpty()) {
             val unlearnedLevel0 = allPhrases.filter { phrase ->
                 val rec = masteryRecords[phrase.id]
                 rec == null || !rec.isKnown
             }.take(8)
-            targetPhrases.addAll(unlearnedLevel0.ifEmpty { allPhrases.take(6) })
+            if (unlearnedLevel0.isNotEmpty()) {
+                targetPhrases.addAll(unlearnedLevel0)
+            } else {
+                targetPhrases.addAll(allPhrases.take(8))
+            }
         }
 
         return FlashcardDeck(
-            id = "deck_adaptive_focus",
-            title = "Adaptive Focus (Dynamic Review)",
-            description = "Automatically tailored to words you missed + their Level 0 building blocks.",
+            id = "adaptive_struggle_deck",
+            title = "Targeted Focus & Recovery",
+            description = "Phrases that need reinforcement before moving forward",
             iconEmoji = "🎯",
             levelIndex = 0,
-            levelLabel = "Dynamic Adaptive",
-            phrases = targetPhrases
+            levelLabel = "Targeted Focus",
+            phrases = targetPhrases.ifEmpty { allPhrases.take(6) }
         )
     }
 
@@ -1882,19 +987,59 @@ object DialectRepository {
         val isLevelMastered: Boolean
     )
 
+    data class DrillRoundProgress(
+        val completedRounds: Int,
+        val totalRounds: Int
+    ) {
+        val ratio: Float
+            get() = if (totalRounds <= 0) 0f else (completedRounds.toFloat() / totalRounds.toFloat()).coerceIn(0f, 1f)
+    }
+
+    fun getDrillRoundProgress(levelIndices: Collection<Int>, stats: com.example.model.UserStats): DrillRoundProgress {
+        val rounds = levelIndices.distinct().flatMap { levelIndex ->
+            listOf(1, 2, 3).map { round -> "${levelIndex}:${round}" }
+        }
+        val completedRounds = rounds.count { roundKey ->
+            roundKey in stats.completedDrillRounds || roundKey.replace(":", "_") in stats.completedDrillRounds
+        }
+        return DrillRoundProgress(
+            completedRounds = completedRounds,
+            totalRounds = rounds.size
+        )
+    }
+
+    fun getNextDrillRound(levelIndex: Int, stats: com.example.model.UserStats): Int =
+        listOf(1, 2, 3).firstOrNull { round ->
+            "${levelIndex}:${round}" !in stats.completedDrillRounds &&
+            "${levelIndex}_${round}" !in stats.completedDrillRounds
+        } ?: 1
+
+    fun getTierLearnedWordProgress(tierId: String, stats: com.example.model.UserStats): Pair<Int, Int> {
+        val tierStages = studyPlanStages.filter { it.tierId == tierId }
+        val totalPhrases = tierStages.flatMap { stage ->
+            decks.find { it.id == stage.deckId }?.phrases.orEmpty()
+        }.distinctBy { it.id }
+        val learnedPhraseIds = tierStages
+            .flatMap { stage -> decks.find { it.id == stage.deckId }?.phrases.orEmpty() }
+            .map { it.id }
+            .toSet()
+            .intersect(stats.learnedPhraseIds)
+        return Pair(learnedPhraseIds.size, totalPhrases.size)
+    }
+
     fun getLevelMasteryStatus(levelIndex: Int, stats: com.example.model.UserStats): LevelMasteryStatus {
         val stage = studyPlanStages.getOrNull(levelIndex) ?: studyPlanStages.first()
         val deck = decks.find { it.id == stage.deckId } ?: decks.first()
         val totalCards = deck.phrases.size
         val masteredCards = deck.phrases.count { p ->
-            stats.masteryRecords[p.id]?.isKnown == true || stats.learnedPhraseIds.contains(p.id)
+            stats.learnedPhraseIds.contains(p.id) || (stats.masteryRecords[p.id]?.isKnown == true)
         }
         val isDeckMastered = totalCards > 0 && masteredCards >= totalCards
         val isDrillMastered = stats.masteredDrillLevelIndices.contains(levelIndex)
-        val isLevelMastered = isDeckMastered && isDrillMastered
+        val isLevelMastered = isDeckMastered || isDrillMastered
 
         return LevelMasteryStatus(
-            levelIndex = levelIndex,
+            levelIndex = stage.levelIndex,
             rankTitle = stage.rankTitle,
             totalCards = totalCards,
             masteredCards = masteredCards,
@@ -1904,110 +1049,111 @@ object DialectRepository {
         )
     }
 
-    /**
-     * Generates a 3-round progressive Drill session for the given level.
-     * Starts easy with MCQs & word assembly, progressively gets harder with speaking and free writing.
-     * Across the 3 rounds, each word is introduced in a DIFFERENT question type in each round.
-     */
-    fun generateDrillQuestionsForLevel(levelIndex: Int): List<QuizQuestion> {
-        val stage = studyPlanStages.getOrNull(levelIndex) ?: studyPlanStages.first()
-        val deck = decks.find { it.id == stage.deckId } ?: decks.first()
-        val targetPhrases = deck.phrases.take(4).ifEmpty { allPhrases.take(4) }
-        val distractorPool = (allPhrases - targetPhrases.toSet()).map { it.manglish }.distinct()
+    // Every activity resolves its content through the same selected deck.
+    fun getPracticeDeck(levelIndex: Int, maxUnlockedLevel: Int = 0): FlashcardDeck =
+        if (levelIndex == -1) buildOverallDeckForLevel(maxUnlockedLevel)
+        else decks[levelIndex.coerceIn(0, decks.lastIndex)]
 
-        val round1Questions = mutableListOf<QuizQuestion>()
-        val round2Questions = mutableListOf<QuizQuestion>()
-        val round3Questions = mutableListOf<QuizQuestion>()
+    fun generateQuestionForPhraseAndTouch(
+        phrase: PhraseItem,
+        touch: Int = 1,
+        levelIndex: Int = 0,
+        indexInRound: Int = 0,
+        touchLevel: Int = touch,
+        questionType: QuizType? = null,
+        sourceDeck: FlashcardDeck = getPracticeDeck(levelIndex)
+    ): QuizQuestion {
+        val distractors = sourceDeck.phrases.asSequence()
+            .map { it.manglish }
+            .filter { it.isNotBlank() && it != phrase.manglish }
+            .distinct().toList().shuffled().take(3)
+        val mcOptions = (listOf(phrase.manglish) + distractors).shuffled()
+        val correctIdx = mcOptions.indexOf(phrase.manglish).coerceAtLeast(0)
 
-        targetPhrases.forEachIndexed { i, phrase ->
-            val distractors = (distractorPool.filter { it != phrase.manglish }).shuffled().take(3)
-            val mcOptions = (listOf(phrase.manglish) + distractors).shuffled()
-            val correctIdx = mcOptions.indexOf(phrase.manglish).coerceAtLeast(0)
-
-            val tileOrder = if (phrase.manglish.contains(" ")) {
-                phrase.manglish.split(" ").filter { it.isNotBlank() }
-            } else {
-                listOf(phrase.manglish)
-            }
-
-            // Round 1: Recognition & Familiarity (Easy - MCQs & Word Tiles)
-            val r1Type = if (i % 2 == 0) QuizType.DIALECT_CHOICE else QuizType.WORD_TILES
-            val r1 = QuizQuestion(
-                id = "drill_l${levelIndex}_r1_${phrase.id}",
-                type = r1Type,
-                phrase = phrase,
-                prompt = if (r1Type == QuizType.DIALECT_CHOICE) {
-                    "Choose the Malayalam word for: \"${phrase.english}\""
-                } else {
-                    "Assemble the phrase for: \"${phrase.english}\""
-                },
-                hint = if (phrase.phoneticGuide.isNotBlank()) "Phonetic: ${phrase.phoneticGuide}" else "Starts with '${phrase.manglish.firstOrNull() ?: 'A'}...'",
-                options = mcOptions,
-                correctOptionIndex = correctIdx,
-                correctTileOrder = tileOrder,
-                acceptedManglishVariants = phrase.acceptedVariants,
-                roundNumber = 1,
-                roundLabel = "Round 1/3 • Easy Recognition"
-            )
-            round1Questions.add(r1)
-
-            // Round 2: Guided Recall & Production (Medium - Speaking & Guided Typing)
-            // Guaranteed DIFFERENT format from Round 1
-            val r2Type = if (r1Type == QuizType.DIALECT_CHOICE) {
-                QuizType.SPEAKING_PRACTICE
-            } else {
-                QuizType.MANGLISH_TYPING
-            }
-            val r2 = QuizQuestion(
-                id = "drill_l${levelIndex}_r2_${phrase.id}",
-                type = r2Type,
-                phrase = phrase,
-                prompt = if (r2Type == QuizType.SPEAKING_PRACTICE) {
-                    "Speak clearly out loud: \"${phrase.english}\""
-                } else {
-                    "Type in Manglish: \"${phrase.english}\""
-                },
-                hint = if (phrase.phoneticGuide.isNotBlank()) "Phonetic: ${phrase.phoneticGuide}" else "Starts with '${phrase.manglish.firstOrNull() ?: 'A'}...'",
-                options = mcOptions,
-                correctOptionIndex = correctIdx,
-                correctTileOrder = tileOrder,
-                acceptedManglishVariants = phrase.acceptedVariants,
-                roundNumber = 2,
-                roundLabel = "Round 2/3 • Guided Recall"
-            )
-            round2Questions.add(r2)
-
-            // Round 3: Full Mastery & Fluency (Hardest - Free Typing & Speaking Fluency)
-            // Guaranteed THIRD DISTINCT format from Rounds 1 & 2
-            val r3Type = if (r1Type == QuizType.DIALECT_CHOICE) {
-                // Was MCQ in R1, Speaking in R2 -> now Free Typing in R3!
-                QuizType.MANGLISH_TYPING
-            } else {
-                // Was Tiles in R1, Typing in R2 -> now Speaking in R3!
-                QuizType.SPEAKING_PRACTICE
-            }
-            val r3 = QuizQuestion(
-                id = "drill_l${levelIndex}_r3_${phrase.id}",
-                type = r3Type,
-                phrase = phrase,
-                prompt = if (r3Type == QuizType.MANGLISH_TYPING) {
-                    "Translate & Type in Manglish: \"${phrase.english}\""
-                } else {
-                    "Speak in Malayalam: \"${phrase.english}\""
-                },
-                hint = "", // No hint for mastery round to test true recall!
-                options = mcOptions,
-                correctOptionIndex = correctIdx,
-                correctTileOrder = tileOrder,
-                acceptedManglishVariants = phrase.acceptedVariants,
-                roundNumber = 3,
-                roundLabel = "Round 3/3 • Mastery"
-            )
-            round3Questions.add(r3)
+        val tileOrder = if (phrase.manglish.contains(" ")) {
+            phrase.manglish.split(" ").filter { it.isNotBlank() }
+        } else {
+            listOf(phrase.manglish)
         }
 
-        // Return the progressive 3-round questions in sequential order
-        return round1Questions + round2Questions + round3Questions
+        val uid = System.currentTimeMillis()
+
+        val question = when (touchLevel) {
+            1 -> {
+                val t1Type = if (indexInRound % 2 == 0) QuizType.DIALECT_CHOICE else QuizType.WORD_TILES
+                QuizQuestion(
+                    id = "q_t1_${phrase.id}_${indexInRound}_${uid}",
+                    type = t1Type,
+                    phrase = phrase,
+                    prompt = phrase.english,
+                    hint = phrase.phoneticGuide.ifBlank { phrase.regionalNuance },
+                    options = mcOptions,
+                    correctOptionIndex = correctIdx,
+                    correctTileOrder = tileOrder,
+                    acceptedManglishVariants = phrase.acceptedVariants + listOf(phrase.manglish),
+                    roundNumber = 1,
+                    roundLabel = "Touch 1: Recognition",
+                    touchLevel = 1
+                )
+            }
+            2 -> {
+                QuizQuestion(
+                    id = "q_t2_${phrase.id}_${indexInRound}_${uid}",
+                    type = QuizType.WORD_TILES,
+                    phrase = phrase,
+                    prompt = phrase.english,
+                    hint = "Breakdown: ${phrase.wordBreakdown.ifBlank { phrase.manglish }}",
+                    options = mcOptions,
+                    correctOptionIndex = correctIdx,
+                    correctTileOrder = tileOrder,
+                    acceptedManglishVariants = phrase.acceptedVariants + listOf(phrase.manglish),
+                    roundNumber = 2,
+                    roundLabel = "Touch 2: Cued Recall",
+                    touchLevel = 2
+                )
+            }
+            else -> {
+                val t3Type = if (indexInRound % 2 == 0) QuizType.MANGLISH_TYPING else QuizType.SPEAKING_PRACTICE
+                QuizQuestion(
+                    id = "q_t3_${phrase.id}_${indexInRound}_${uid}",
+                    type = t3Type,
+                    phrase = phrase,
+                    prompt = phrase.english,
+                    hint = "Pronunciation: ${phrase.phoneticGuide.ifBlank { phrase.manglish }}",
+                    options = emptyList(),
+                    correctOptionIndex = 0,
+                    correctTileOrder = tileOrder,
+                    acceptedManglishVariants = phrase.acceptedVariants + listOf(phrase.manglish),
+                    roundNumber = 3,
+                    roundLabel = "Touch 3: Free Recall",
+                    touchLevel = 3
+                )
+            }
+        }
+        return questionType?.let { question.copy(type = it) } ?: question
+    }
+
+    fun generateDrillQuestionsForLevel(levelIndex: Int): List<QuizQuestion> =
+        (1..3).flatMap { round -> generateDrillQuestionsForLevelAndRound(levelIndex, round) }
+
+    fun generateDrillQuestionsForLevelAndRound(
+        levelIndex: Int,
+        round: Int,
+        maxUnlockedLevel: Int = 0,
+        questionType: QuizType? = null,
+        orderPhrases: (List<PhraseItem>) -> List<PhraseItem> = { it.shuffled() }
+    ): List<QuizQuestion> {
+        val deck = getPracticeDeck(levelIndex, maxUnlockedLevel)
+        return orderPhrases(deck.phrases).mapIndexed { index, phrase ->
+            generateQuestionForPhraseAndTouch(
+                phrase = phrase,
+                touch = round,
+                levelIndex = phrase.levelNumber,
+                indexInRound = index,
+                questionType = questionType,
+                sourceDeck = deck
+            )
+        }
     }
 
     val quizQuestions: List<QuizQuestion> by lazy {
@@ -2044,46 +1190,6 @@ object DialectRepository {
     )
 
     val dialectComparisons: List<DialectComparison> = listOf(
-        DialectComparison(
-            category = "Ground Level 0 Shortcut",
-            textbookFormal = "Ippol (ഇപ്പോൾ) / Enthaanu (എന്താണ്)",
-            adoorSpoken = "Ippo (ഇപ്പൊ) / Entha (എന്താ)",
-            manglishSpoken = "Ippo / Entha",
-            meaning = "Now / What?",
-            explanation = "Spoken Malayalam drops stiff word endings so you can speak twice as fast with half the syllables."
-        ),
-        DialectComparison(
-            category = "Verbal Contraction",
-            textbookFormal = "Varunnilla (വരുന്നില്ല)",
-            adoorSpoken = "Varoolla / Varathilla (വരൂല്ല / വരത്തില്ല)",
-            manglishSpoken = "Varoolla",
-            meaning = "Not coming / won't come",
-            explanation = "In Pathanamthitta/Adoor, the negative progressive suffix '-unnilla' smoothly contracts into '-oolla' or regional '-athilla'."
-        ),
-        DialectComparison(
-            category = "Verbal Contraction",
-            textbookFormal = "Cheyyunnilla (ചെയ്യുന്നില്ല)",
-            adoorSpoken = "Cheyyoolla (ചെയ്യൂല്ല)",
-            manglishSpoken = "Cheyyoolla",
-            meaning = "Not doing / won't do",
-            explanation = "Natural spoken contraction used in home dialogue instead of standard Malayalam."
-        ),
-        DialectComparison(
-            category = "Verbal Contraction",
-            textbookFormal = "Pokunnilla (പോകുന്നില്ല)",
-            adoorSpoken = "Pokoolla (പോകൂല്ല)",
-            manglishSpoken = "Pokoolla",
-            meaning = "Not going",
-            explanation = "Eliminates stiff textbook pronunciation for seamless back-and-forth speech."
-        ),
-        DialectComparison(
-            category = "Regional Question / Slang",
-            textbookFormal = "Enthanu ithu? (എന്താണ് ഇത്?)",
-            adoorSpoken = "Enthuvaadey ithu? (എന്തുവാടേ ഇത്?)",
-            manglishSpoken = "Enthuvaadey ithu?",
-            meaning = "What is this, man?",
-            explanation = "'Enthuvaadey' is the iconic Central Travancore conversational signature, blending 'enthu' (what) and friendly regional tag 'aadey'."
-        ),
         DialectComparison(
             category = "Kinship Terms",
             textbookFormal = "Muthassi / Pithamaahi (മുത്തശ്ശി)",

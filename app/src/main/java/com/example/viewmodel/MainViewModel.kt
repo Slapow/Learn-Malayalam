@@ -6,11 +6,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.audio.AudioHelper
 import com.example.data.CloudProgressRepository
 import com.example.data.DialectRepository
+import com.example.data.DrillItemRepository
 import com.example.data.SmartGrader
 import com.example.data.TutorAiService
+import com.example.data.TranslatorAiService
+import com.example.data.TranslationResult
+import com.example.data.mergeTranslationResults
+import com.example.data.translationDelayMillis
+import com.example.data.translationQueryKey
 import com.example.data.UserStatsRepository
 import com.example.model.*
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,8 +38,12 @@ enum class Screen {
 data class QuizState(
     val levelIndex: Int = 0,
     val levelTitle: String = "Novice Level 1",
+    val currentRoundNumber: Int = 1, // 1, 2, or 3
+    val practiceQuestionType: QuizType? = null,
     val currentIndex: Int = 0,
     val questions: List<QuizQuestion> = emptyList(),
+    val fixedRoundTargetCount: Int = 12,
+    val roundCorrectCount: Int = 0,
     val typedInput: String = "",
     val selectedTileIndices: List<Int> = emptyList(),
     val selectedOptionIndex: Int? = null,
@@ -45,6 +56,10 @@ data class QuizState(
     val copyAnswerInput: String = "",
     val isCopyAnswerUnlocked: Boolean = false,
     val reshuffledCount: Int = 0,
+    val recycleCounts: Map<String, Int> = emptyMap(),
+    val showRoundCheckpoint: Boolean = false,
+    val completedRoundNumber: Int = 0,
+    val isLoading: Boolean = false,
     val isFinished: Boolean = false
 )
 
@@ -62,6 +77,7 @@ data class FlashcardSwipeHistory(
 data class FlashcardState(
     val currentDeck: FlashcardDeck = DialectRepository.decks[0],
     val activeMode: QuizletStudyMode = QuizletStudyMode.FLASHCARDS,
+    val hasStartedSession: Boolean = false,
     // 1. Classic Flashcards sub-state
     val currentCardIndex: Int = 0,
     val isFlipped: Boolean = false,
@@ -100,7 +116,8 @@ data class FlashcardState(
     val mismatchedTileIds: Set<String> = emptySet(),
     val matchElapsedTenths: Int = 0,
     val matchBestTenths: Int? = null,
-    val isMatchFinished: Boolean = false
+    val isMatchFinished: Boolean = false,
+    val continueToDrillsLevelIndex: Int? = null
 )
 
 data class AiTutorState(
@@ -111,15 +128,31 @@ data class AiTutorState(
     val error: String? = null
 )
 
+data class TranslatorState(
+    val inputText: String = "",
+    val results: List<TranslationResult> = emptyList(),
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val isAiConfigured: Boolean = true
+)
+
 class MainViewModel(
     private val cloudRepo: CloudProgressRepository,
     private val statsRepo: UserStatsRepository,
+    private val drillRepository: DrillItemRepository,
     val audioHelper: AudioHelper,
     private val currentUserId: String,
     private val userDisplayName: String
 ) : ViewModel() {
 
     private val aiService = TutorAiService()
+    private val sessionOrder = SessionOrder()
+    private val translatorService = TranslatorAiService()
+    private var translationJob: Job? = null
+    private var translationGeneration = 0L
+    private var lastTranslationQuery: String? = null
+    private val _translatorState = MutableStateFlow(TranslatorState(isAiConfigured = translatorService.isConfigured))
+    val translatorState: StateFlow<TranslatorState> = _translatorState.asStateFlow()
 
     val userStats: StateFlow<UserStats> = statsRepo.stats
 
@@ -140,6 +173,7 @@ class MainViewModel(
 
     private val _isListening = MutableStateFlow(false)
     val isListening: StateFlow<Boolean> = _isListening.asStateFlow()
+    val speechLevel: StateFlow<Float> = audioHelper.speechLevel
 
     private val _cloudSyncStatus = MutableStateFlow("☁️ Synced with Cloud Firestore")
     val cloudSyncStatus: StateFlow<String> = _cloudSyncStatus.asStateFlow()
@@ -152,6 +186,17 @@ class MainViewModel(
 
     private val _tierGraduationState = MutableStateFlow<TierGraduationExamState?>(null)
     val tierGraduationState: StateFlow<TierGraduationExamState?> = _tierGraduationState.asStateFlow()
+
+    private val _isDevModeEnabled = MutableStateFlow(false)
+    val isDevModeEnabled: StateFlow<Boolean> = _isDevModeEnabled.asStateFlow()
+
+    fun setDevModeEnabled(enabled: Boolean) {
+        _isDevModeEnabled.value = enabled
+    }
+
+    fun devEndMode() {
+        _isDevModeEnabled.value = false
+    }
 
     private val _levelUpEvent = MutableStateFlow<LevelUpEvent?>(null)
     val levelUpEvent: StateFlow<LevelUpEvent?> = _levelUpEvent.asStateFlow()
@@ -171,14 +216,12 @@ class MainViewModel(
             val newDeck = DialectRepository.decks.find { it.id == newStage.deckId }
 
             statsRepo.setUnlockedLevelIndex(nextLevel)
-            statsRepo.addXp(50)
 
             _levelUpEvent.value = LevelUpEvent(
                 newLevelIndex = nextLevel,
                 rankTitle = newStage.rankTitle,
                 completedLevelTitle = completedStage.rankTitle,
-                unlockedDeckTitle = newDeck?.title ?: newStage.topicTitle,
-                xpBonus = 50
+                unlockedDeckTitle = newDeck?.title ?: newStage.topicTitle
             )
             syncToCloud()
         }
@@ -197,11 +240,6 @@ class MainViewModel(
         syncToCloud()
     }
 
-    fun setDevXp(xp: Int) {
-        statsRepo.setCustomXp(xp)
-        syncToCloud()
-    }
-
     fun setDevStreak(days: Int) {
         statsRepo.setCustomStreak(days)
         syncToCloud()
@@ -215,17 +253,326 @@ class MainViewModel(
         val newDeck = DialectRepository.decks.find { it.id == newStage.deckId }
         val modeLabel = if (isDrill) "3-Round Drill" else "Flashcard Deck"
 
+        statsRepo.setUnlockedLevelIndex(nextLevel)
+
         _levelUpEvent.value = LevelUpEvent(
             newLevelIndex = nextLevel,
             rankTitle = newStage.rankTitle,
             completedLevelTitle = "${completedStage.rankTitle} ($modeLabel)",
             unlockedDeckTitle = newDeck?.title ?: newStage.topicTitle,
-            xpBonus = 50
+        )
+        syncToCloud()
+    }
+
+    // --- Dev Mode Quick Actions for Drills ---
+    fun devGetQuizQuestionCorrect() {
+        autoAdvanceQuizJob?.cancel()
+        val state = _quizState.value
+        val currentQ = state.questions.getOrNull(state.currentIndex) ?: return
+
+        val rec = statsRepo.recordPhraseTouch(
+            phraseId = currentQ.phrase.id,
+            touch = currentQ.touchLevel.coerceAtLeast(state.currentRoundNumber),
+            isCorrect = true
+        )
+        viewModelScope.launch {
+            cloudRepo.saveLearnedPhrase(
+                currentQ.phrase,
+                masteryLevel = if (rec.touchLevel >= 3) 5 else 3
+            )
+        }
+
+        val newCorrectCount = if (state.isCorrect) state.roundCorrectCount else state.roundCorrectCount + 1
+        val correctedState = if (state.isEvaluated && !state.isCorrect) state.undoCurrentRecycle() else state
+
+        _quizState.value = correctedState.copy(
+            isEvaluated = true,
+            isCorrect = true,
+            isSkipped = false,
+            roundCorrectCount = newCorrectCount,
+            feedbackMessage = "Marked Correct (Dev Mode Applied!)",
+            mustCopyAnswer = false,
+            copyAnswerInput = "",
+            isCopyAnswerUnlocked = true
+        )
+        syncToCloud()
+
+        nextQuizQuestion()
+    }
+
+    fun devSkipToLastQuizQuestion() {
+        autoAdvanceQuizJob?.cancel()
+        val state = _quizState.value
+        if (state.questions.isEmpty()) return
+
+        if (state.currentIndex >= state.questions.size - 1) {
+            devGetQuizQuestionCorrect()
+            return
+        }
+
+        val targetRound = state.currentRoundNumber.coerceIn(1, 3)
+        val lastIndex = state.questions.size - 1
+
+        for (i in 0 until lastIndex) {
+            val q = state.questions[i]
+            val rec = statsRepo.recordPhraseTouch(
+                phraseId = q.phrase.id,
+                touch = q.touchLevel.coerceAtLeast(targetRound),
+                isCorrect = true
+            )
+            viewModelScope.launch {
+                cloudRepo.saveLearnedPhrase(
+                    q.phrase,
+                    masteryLevel = if (rec.touchLevel >= 3) 5 else 3
+                )
+            }
+        }
+
+        val cleanedQuestions = state.questions.take(lastIndex + 1)
+
+        _quizState.value = state.copy(
+            questions = cleanedQuestions,
+            currentIndex = lastIndex,
+            roundCorrectCount = state.fixedRoundTargetCount.coerceAtLeast(lastIndex),
+            reshuffledCount = 0,
+            typedInput = "",
+            selectedTileIndices = emptyList(),
+            selectedOptionIndex = null,
+            isEvaluated = false,
+            isCorrect = false,
+            isSkipped = false,
+            feedbackMessage = "",
+            speechTranscription = "",
+            mustCopyAnswer = false,
+            copyAnswerInput = "",
+            isCopyAnswerUnlocked = false
+        )
+        syncToCloud()
+    }
+
+    // --- Dev Mode Quick Actions for Deck Study Modes ---
+    fun devGetDeckStudyQuestionCorrect() {
+        autoAdvanceDeckJob?.cancel()
+        val s = _flashcardState.value
+        val currentQ = s.studyQueue.getOrNull(s.currentQuestionIndex) ?: return
+        val phrase = currentQ.phrase
+
+        val updatedStreaks = s.cardStreaks.toMutableMap().apply {
+            put(phrase.id, 2)
+        }
+
+        statsRepo.recordPhraseAttempt(phrase.id, isCorrect = true)
+        viewModelScope.launch {
+            cloudRepo.saveLearnedPhrase(phrase, masteryLevel = 5)
+        }
+
+        val isDeckMastered = s.currentDeck.phrases.isNotEmpty() && s.currentDeck.phrases.all {
+            statsRepo.stats.value.learnedPhraseIds.contains(it.id) || (updatedStreaks[it.id] ?: 0) >= 2
+        }
+        if (isDeckMastered) {
+            statsRepo.recordDeckMastered(s.currentDeck.id)
+        }
+        checkForLevelUp()
+
+        val nextIdx = s.currentQuestionIndex + 1
+        if (nextIdx >= s.studyQueue.size) {
+            statsRepo.incrementQuizCompleted()
+            _flashcardState.value = s.copy(
+                cardStreaks = updatedStreaks,
+                totalCorrectInRound = s.totalCorrectInRound + 1,
+                totalAnsweredInRound = s.totalAnsweredInRound + 1,
+                isRoundComplete = true,
+                mustCopyToContinue = false,
+                isQuestionEvaluated = false,
+                isQuestionCorrect = false
+            )
+        } else {
+            _flashcardState.value = s.copy(
+                currentQuestionIndex = nextIdx,
+                cardStreaks = updatedStreaks,
+                totalCorrectInRound = s.totalCorrectInRound + 1,
+                totalAnsweredInRound = s.totalAnsweredInRound + 1,
+                typedResponse = "",
+                selectedMcOption = null,
+                selectedTrueFalse = null,
+                spokenTranscript = "",
+                isQuestionEvaluated = false,
+                isQuestionCorrect = false,
+                isAlmostExactTypo = false,
+                gradeHeadline = "",
+                gradeDetail = "",
+                mustCopyToContinue = false,
+                copyInputText = "",
+                isCopyVerified = false
+            )
+        }
+        syncToCloud()
+    }
+
+    fun devSkipToLastDeckStudyQuestion() {
+        autoAdvanceDeckJob?.cancel()
+        val s = _flashcardState.value
+        if (s.studyQueue.isEmpty()) return
+
+        if (s.currentQuestionIndex >= s.studyQueue.size - 1) {
+            devGetDeckStudyQuestionCorrect()
+            return
+        }
+
+        val lastIndex = s.studyQueue.size - 1
+        val updatedStreaks = s.cardStreaks.toMutableMap()
+
+        for (i in 0 until lastIndex) {
+            val q = s.studyQueue[i]
+            updatedStreaks[q.phrase.id] = 2
+            statsRepo.recordPhraseAttempt(q.phrase.id, isCorrect = true)
+            viewModelScope.launch {
+                cloudRepo.saveLearnedPhrase(q.phrase, masteryLevel = 5)
+            }
+        }
+
+        _flashcardState.value = s.copy(
+            currentQuestionIndex = lastIndex,
+            cardStreaks = updatedStreaks,
+            totalCorrectInRound = lastIndex,
+            totalAnsweredInRound = lastIndex,
+            typedResponse = "",
+            selectedMcOption = null,
+            selectedTrueFalse = null,
+            spokenTranscript = "",
+            isQuestionEvaluated = false,
+            isQuestionCorrect = false,
+            isAlmostExactTypo = false,
+            gradeHeadline = "",
+            gradeDetail = "",
+            mustCopyToContinue = false,
+            copyInputText = "",
+            isCopyVerified = false
+        )
+        syncToCloud()
+    }
+
+    fun devSkipToLastFlashcard() {
+        val s = _flashcardState.value
+        val phrases = s.currentDeck.phrases
+        if (phrases.isEmpty()) return
+
+        if (s.currentCardIndex >= phrases.size - 1) {
+            markCardKnown()
+            return
+        }
+
+        val lastIndex = phrases.size - 1
+        val newLearned = s.learnedInSession.toMutableSet()
+        val newStreaks = s.cardStreaks.toMutableMap()
+
+        for (i in 0 until lastIndex) {
+            val p = phrases[i]
+            newLearned.add(p.id)
+            newStreaks[p.id] = 2
+            statsRepo.recordPhraseAttempt(p.id, isCorrect = true)
+            viewModelScope.launch {
+                cloudRepo.saveLearnedPhrase(p, masteryLevel = 5)
+            }
+        }
+
+        _flashcardState.value = s.copy(
+            currentCardIndex = lastIndex,
+            isFlipped = false,
+            learnedInSession = newLearned,
+            stillLearningInSession = s.stillLearningInSession - newLearned,
+            cardStreaks = newStreaks
+        )
+        syncToCloud()
+    }
+
+    fun devGetMatchCorrect() {
+        val s = _flashcardState.value
+        if (s.matchTiles.isEmpty() || s.isMatchFinished) return
+
+        val unmatchedEn = s.matchTiles.firstOrNull { !it.isMatched && it.isEnglish } ?: return
+        val unmatchedMl = s.matchTiles.firstOrNull { !it.isMatched && !it.isEnglish && it.phraseId == unmatchedEn.phraseId } ?: return
+
+        val updatedTiles = s.matchTiles.map {
+            if (it.id == unmatchedEn.id || it.id == unmatchedMl.id) it.copy(isMatched = true) else it
+        }
+        val allCleared = updatedTiles.all { it.isMatched }
+        val phrase = DialectRepository.allPhrases.find { it.id == unmatchedEn.phraseId }
+        if (phrase != null) {
+            statsRepo.recordPhraseAttempt(phrase.id, isCorrect = true)
+        }
+
+        _flashcardState.value = s.copy(
+            matchTiles = updatedTiles,
+            selectedMatchTileId = null,
+            mismatchedTileIds = emptySet(),
+            isMatchFinished = allCleared
+        )
+        if (allCleared) {
+            statsRepo.incrementQuizCompleted()
+            syncToCloud()
+        }
+    }
+
+    fun devSkipToLastMatch() {
+        val s = _flashcardState.value
+        if (s.matchTiles.isEmpty()) return
+
+        val updatedTiles = s.matchTiles.map { it.copy(isMatched = true) }
+        for (t in s.matchTiles.filter { it.isEnglish }) {
+            statsRepo.recordPhraseAttempt(t.phraseId, isCorrect = true)
+        }
+
+        _flashcardState.value = s.copy(
+            matchTiles = updatedTiles,
+            selectedMatchTileId = null,
+            mismatchedTileIds = emptySet(),
+            isMatchFinished = true
+        )
+        statsRepo.incrementQuizCompleted()
+        syncToCloud()
+    }
+
+    fun devGetFlashcardsScreenCorrect() {
+        when (_flashcardState.value.activeMode) {
+            QuizletStudyMode.FLASHCARDS -> markCardKnown()
+            QuizletStudyMode.MATCH -> devGetMatchCorrect()
+            else -> devGetDeckStudyQuestionCorrect()
+        }
+    }
+
+    fun devSkipToLastFlashcardsScreenQuestion() {
+        when (_flashcardState.value.activeMode) {
+            QuizletStudyMode.FLASHCARDS -> devSkipToLastFlashcard()
+            QuizletStudyMode.MATCH -> devSkipToLastMatch()
+            else -> devSkipToLastDeckStudyQuestion()
+        }
+    }
+
+    fun devSkipToLastGraduationPrompt() {
+        val state = _tierGraduationState.value ?: return
+        if (state.prompts.isEmpty()) return
+
+        if (state.currentPromptIndex >= state.prompts.size - 1) {
+            evaluateGraduationPrompt(overridePassed = true)
+            nextGraduationPrompt()
+            return
+        }
+
+        val lastIndex = state.prompts.size - 1
+        _tierGraduationState.value = state.copy(
+            currentPromptIndex = lastIndex,
+            scoreCount = lastIndex,
+            spokenTranscript = "",
+            isEvaluated = false,
+            isPromptPassed = false,
+            feedbackMessage = "Dev Mode: Skipped to final prompt"
         )
     }
 
     private var autoAdvanceQuizJob: Job? = null
     private var autoAdvanceDeckJob: Job? = null
+    private var drillSessionGeneration = 0
 
     init {
         startNewQuizSession()
@@ -242,20 +589,11 @@ class MainViewModel(
                 }
                 .collect { cloudProgress ->
                     if (cloudProgress != null) {
-                        val isLegacyDefault = cloudProgress.xp == 140L && cloudProgress.streakDays == 4L &&
-                            statsRepo.stats.value.learnedPhraseIds.isEmpty()
-                        if (isLegacyDefault) {
-                            // Clean up old placeholder 140 XP / 4-day streak in Cloud Firestore
-                            statsRepo.resetProgressToZero()
-                            syncToCloud()
-                        } else {
-                            statsRepo.syncFromCloud(
-                                xp = cloudProgress.xp.toInt(),
-                                streakDays = cloudProgress.streakDays.toInt(),
-                                quizCount = cloudProgress.completedQuizCount.toInt(),
-                                spokenCount = cloudProgress.spokenPhrasesCount.toInt()
-                            )
-                        }
+                        statsRepo.syncFromCloud(
+                            streakDays = cloudProgress.streakDays.toInt(),
+                            quizCount = cloudProgress.completedQuizCount.toInt(),
+                            spokenCount = cloudProgress.spokenPhrasesCount.toInt()
+                        )
                         _lastSyncedDevice.value = cloudProgress.lastDevice
                         _lastActiveCloudScreen.value = cloudProgress.activeScreen
 
@@ -328,7 +666,6 @@ class MainViewModel(
     fun buildSessionSnapshotJson(): JSONObject {
         val s = statsRepo.stats.value
         return JSONObject().apply {
-            put("xp", s.xp)
             put("streakDays", s.streakDays)
             put("completedQuizCount", s.completedQuizCount)
             put("spokenPhrasesCount", s.spokenPhrasesCount)
@@ -342,11 +679,10 @@ class MainViewModel(
     }
 
     fun applyRemoteLanSession(json: JSONObject) {
-        val newXp = json.optInt("xp", statsRepo.stats.value.xp)
         val newStreak = json.optInt("streakDays", statsRepo.stats.value.streakDays)
         val newQuizCount = json.optInt("completedQuizCount", statsRepo.stats.value.completedQuizCount)
         val newSpoken = json.optInt("spokenPhrasesCount", statsRepo.stats.value.spokenPhrasesCount)
-        statsRepo.syncFromCloud(newXp, newStreak, newQuizCount, newSpoken)
+        statsRepo.syncFromCloud(newStreak, newQuizCount, newSpoken)
         _lastSyncedDevice.value = "Laptop Web"
         _lastActiveCloudScreen.value = json.optString("activeScreen", _lastActiveCloudScreen.value)
         syncToCloud()
@@ -380,7 +716,14 @@ class MainViewModel(
      * Launches any specific deck & Quizlet study mode directly from Home or the Study Plan Ladder
      */
     fun openDeckWithMode(deck: FlashcardDeck, mode: QuizletStudyMode = QuizletStudyMode.FLASHCARDS) {
+        initializeDeckStudySession(deck, mode)
+        _currentScreen.value = Screen.FLASHCARDS
+        syncToCloud()
+    }
+
+    fun openLevelDeckBeforeDrills(deck: FlashcardDeck, levelIndex: Int) {
         initializeDeckStudySession(deck, QuizletStudyMode.FLASHCARDS)
+        _flashcardState.value = _flashcardState.value.copy(continueToDrillsLevelIndex = levelIndex)
         _currentScreen.value = Screen.FLASHCARDS
         syncToCloud()
     }
@@ -427,7 +770,7 @@ class MainViewModel(
     // === Speech Recognition ===
     fun startSpeechPractice(onTranscription: (String) -> Unit) {
         _isListening.value = true
-        _speechStatus.value = "Listening... Speak out loud now"
+        _speechStatus.value = "Opening microphone..."
 
         audioHelper.startListening(
             onResult = { spokenText ->
@@ -439,6 +782,13 @@ class MainViewModel(
                 onTranscription(spokenText)
                 statsRepo.incrementSpokenCount()
                 syncToCloud()
+
+                // Auto-evaluate when speech is captured!
+                if (!_quizState.value.isEvaluated && _quizState.value.questions.getOrNull(_quizState.value.currentIndex)?.type == QuizType.SPEAKING_PRACTICE) {
+                    evaluateCurrentQuestion()
+                } else if (!_flashcardState.value.isQuestionEvaluated && _flashcardState.value.activeMode == QuizletStudyMode.SPEAK) {
+                    evaluateDeckStudyQuestion()
+                }
             },
             onError = { errorMsg ->
                 _isListening.value = false
@@ -461,7 +811,9 @@ class MainViewModel(
     // =========================================================================
 
     fun startTierGraduationExam(tier: ActflProficiencyTier) {
-        val prompts = DialectRepository.getGraduationPromptsForTier(tier)
+        val prompts = sessionOrder.shuffled(
+            "graduation:${tier.tierId}", DialectRepository.getGraduationPromptsForTier(tier)
+        ) { it.phrase.id }
         _tierGraduationState.value = TierGraduationExamState(
             tier = tier,
             prompts = prompts,
@@ -474,7 +826,6 @@ class MainViewModel(
             feedbackMessage = "",
             isExamFinished = false,
             didPassGraduation = false,
-            xpAwarded = 0
         )
     }
 
@@ -556,7 +907,6 @@ class MainViewModel(
             _tierGraduationState.value = state.copy(
                 isExamFinished = true,
                 didPassGraduation = passed,
-                xpAwarded = if (passed) 50 else 10
             )
         } else {
             _tierGraduationState.value = state.copy(
@@ -579,24 +929,29 @@ class MainViewModel(
     }
 
     fun selectQuizletMode(mode: QuizletStudyMode) {
-        initializeDeckStudySession(_flashcardState.value.currentDeck, QuizletStudyMode.FLASHCARDS)
+        initializeDeckStudySession(_flashcardState.value.currentDeck, mode)
         syncToCloud()
     }
 
     fun initializeDeckStudySession(deck: FlashcardDeck, mode: QuizletStudyMode) {
         autoAdvanceDeckJob?.cancel()
+        val sessionKey = "deck:${deck.id}:${mode.name}"
+        // Match records the first visible tile, rather than the first sampled phrase.
+        val sessionDeck = if (mode == QuizletStudyMode.MATCH) deck else deck.copy(
+            phrases = sessionOrder.shuffled(sessionKey, deck.phrases) { it.id }
+        )
         val initialStreaks = deck.phrases.associate { it.id to 0 }
         when (mode) {
             QuizletStudyMode.FLASHCARDS -> {
-                val initialCardId = deck.phrases.getOrNull(0)?.id
+                val initialCardId = sessionDeck.phrases.firstOrNull()?.id
                 val initPresCount = if (initialCardId != null) mapOf(initialCardId to 1) else emptyMap()
                 _flashcardState.value = FlashcardState(
-                    currentDeck = deck,
+                    currentDeck = sessionDeck,
                     activeMode = mode,
                     currentCardIndex = 0,
                     isFlipped = false,
                     isEnglishOnFront = _flashcardState.value.isEnglishOnFront,
-                    isShuffled = false,
+                    isShuffled = true,
                     learnedInSession = emptySet(),
                     stillLearningInSession = emptySet(),
                     cardsSentToStillLearning = emptySet(),
@@ -607,7 +962,7 @@ class MainViewModel(
             }
 
             QuizletStudyMode.MATCH -> {
-                val samplePhrases = deck.phrases.shuffled().take(6)
+                val samplePhrases = deck.phrases.distinctBy { it.id }.shuffled().take(6)
                 val tiles = mutableListOf<MatchTile>()
                 for (p in samplePhrases) {
                     tiles.add(
@@ -633,15 +988,15 @@ class MainViewModel(
                     currentDeck = deck,
                     activeMode = mode,
                     cardStreaks = initialStreaks,
-                    matchTiles = tiles.shuffled(),
+                    matchTiles = sessionOrder.shuffled(sessionKey, tiles) { it.phraseId },
                     matchBestTenths = _flashcardState.value.matchBestTenths
                 )
             }
 
             else -> {
-                val queue = buildInitialStudyQueue(deck, mode, initialStreaks)
+                val queue = buildInitialStudyQueue(sessionDeck, mode, initialStreaks)
                 _flashcardState.value = FlashcardState(
-                    currentDeck = deck,
+                    currentDeck = sessionDeck,
                     activeMode = mode,
                     studyQueue = queue,
                     currentQuestionIndex = 0,
@@ -656,7 +1011,7 @@ class MainViewModel(
         mode: QuizletStudyMode,
         streaks: Map<String, Int>
     ): List<DeckStudyQuestion> {
-        val phrases = deck.phrases.shuffled()
+        val phrases = deck.phrases
         return phrases.mapIndexed { idx, phrase ->
             val format = when (mode) {
                 QuizletStudyMode.WRITE -> StudyPromptFormat.WRITTEN_MANGLISH
@@ -697,21 +1052,21 @@ class MainViewModel(
         requiredStreak: Int = 2,
         isRemediation: Boolean = false
     ): DeckStudyQuestion {
-        val allPool = (deck.phrases + DialectRepository.allPhrases).distinctBy { it.id }
-        val distractors = allPool.filter { it.id != phrase.id }.shuffled().take(3).map { it.manglish }
+        val distractors = deck.phrases.map { it.manglish }
+            .filter { it.isNotBlank() && it != phrase.manglish }.distinct().shuffled().take(3)
         val mcOptions = (listOf(phrase.manglish) + distractors).shuffled()
         val correctIdx = mcOptions.indexOf(phrase.manglish).coerceAtLeast(0)
 
-        val isTrue = (phrase.id.hashCode() + currentStreak) % 2 == 0
+        val isTrue = distractors.isEmpty() || (phrase.id.hashCode() + currentStreak) % 2 == 0
         val tfShown = if (isTrue) {
             phrase.manglish
         } else {
-            distractors.firstOrNull() ?: "Varoolla"
+            distractors.firstOrNull() ?: phrase.manglish
         }
 
         val promptText = when (format) {
             StudyPromptFormat.MULTIPLE_CHOICE -> phrase.english
-            StudyPromptFormat.TRUE_FALSE -> "Does \"${phrase.english}\" mean \"$tfShown\"?"
+            StudyPromptFormat.TRUE_FALSE -> "${phrase.english}\n$tfShown"
             StudyPromptFormat.WRITTEN_MANGLISH -> phrase.english
             StudyPromptFormat.SPOKEN_OUT_LOUD -> phrase.english
         }
@@ -743,8 +1098,16 @@ class MainViewModel(
     }
 
     // Classic Flashcards actions
+    fun markStudySessionStarted() {
+        val state = _flashcardState.value
+        if (!state.hasStartedSession) {
+            _flashcardState.value = state.copy(hasStartedSession = true)
+        }
+    }
+
     fun flipCard() {
         _flashcardState.value = _flashcardState.value.copy(
+            hasStartedSession = true,
             isFlipped = !_flashcardState.value.isFlipped
         )
     }
@@ -762,8 +1125,21 @@ class MainViewModel(
         }
         val newLearned = s.learnedInSession + currentPhrase.id
         val newStillLearning = s.stillLearningInSession - currentPhrase.id
-        val nextIdx = (s.currentCardIndex + 1) % s.currentDeck.phrases.size
-        val nextCardId = s.currentDeck.phrases.getOrNull(nextIdx)?.id
+        
+        // Find next card that hasn't been learned yet
+        var nextIdx = s.currentCardIndex
+        var found = false
+        for (i in 1..s.currentDeck.phrases.size) {
+            val candidateIdx = (s.currentCardIndex + i) % s.currentDeck.phrases.size
+            val candidateId = s.currentDeck.phrases[candidateIdx].id
+            if (!newLearned.contains(candidateId)) {
+                nextIdx = candidateIdx
+                found = true
+                break
+            }
+        }
+        
+        val nextCardId = if (found) s.currentDeck.phrases[nextIdx].id else null
         val newPresCount = s.cardPresentationCount.toMutableMap()
         if (nextCardId != null) {
             newPresCount[nextCardId] = (newPresCount[nextCardId] ?: 0) + 1
@@ -776,7 +1152,8 @@ class MainViewModel(
         _flashcardState.value = s.copy(
             currentCardIndex = nextIdx,
             isFlipped = false,
-            learnedInSession = newLearned,
+            learnedInSession = s.learnedInSession + currentPhrase.id,
+            hasStartedSession = true,
             stillLearningInSession = newStillLearning,
             cardPresentationCount = newPresCount,
             swipeHistory = s.swipeHistory + historyItem,
@@ -793,7 +1170,7 @@ class MainViewModel(
     }
 
     fun markCardLearning() {
-        val s = _flashcardState.value
+        val s = _flashcardState.value.copy(hasStartedSession = true)
         val currentPhrase = s.currentDeck.phrases.getOrNull(s.currentCardIndex) ?: return
         statsRepo.recordPhraseAttempt(currentPhrase.id, isCorrect = false)
         viewModelScope.launch {
@@ -804,7 +1181,18 @@ class MainViewModel(
         }
         val isFirstTimeSent = !s.cardsSentToStillLearning.contains(currentPhrase.id)
         val newCardsSent = s.cardsSentToStillLearning + currentPhrase.id
-        val nextIdx = (s.currentCardIndex + 1) % s.currentDeck.phrases.size
+        
+        // Find next card that hasn't been learned yet (skipping learned ones)
+        var nextIdx = s.currentCardIndex
+        for (i in 1..s.currentDeck.phrases.size) {
+            val candidateIdx = (s.currentCardIndex + i) % s.currentDeck.phrases.size
+            val candidateId = s.currentDeck.phrases[candidateIdx].id
+            if (!s.learnedInSession.contains(candidateId)) {
+                nextIdx = candidateIdx
+                break
+            }
+        }
+        
         val nextCardId = s.currentDeck.phrases.getOrNull(nextIdx)?.id
         val newPresCount = s.cardPresentationCount.toMutableMap()
         if (nextCardId != null) {
@@ -879,11 +1267,15 @@ class MainViewModel(
     }
 
     fun advanceCardWithoutTally() {
+        android.util.Log.d("FlashcardSwipe", "advanceCardWithoutTally CALLED!")
         val s = _flashcardState.value
         if (s.currentDeck.phrases.isEmpty()) return
         val nextIdx = (s.currentCardIndex + 1) % s.currentDeck.phrases.size
+        val nextId = s.currentDeck.phrases[nextIdx].id
         _flashcardState.value = s.copy(
             currentCardIndex = nextIdx,
+            hasStartedSession = true,
+            cardPresentationCount = s.cardPresentationCount + (nextId to ((s.cardPresentationCount[nextId] ?: 0) + 1)),
             isFlipped = false
         )
     }
@@ -897,14 +1289,19 @@ class MainViewModel(
     }
 
     fun shuffleCurrentFlashcardDeck() {
+        android.util.Log.d("FlashcardSwipe", "shuffleCurrentFlashcardDeck CALLED!")
+        autoAdvanceDeckJob?.cancel()
         val s = _flashcardState.value
         val shuffledDeck = s.currentDeck.copy(
-            phrases = s.currentDeck.phrases.shuffled()
+            phrases = sessionOrder.shuffled(
+                "deck:${s.currentDeck.id}:${QuizletStudyMode.FLASHCARDS.name}", s.currentDeck.phrases
+            ) { it.id }
         )
         val initialCardId = shuffledDeck.phrases.getOrNull(0)?.id
         val initPresCount = if (initialCardId != null) mapOf(initialCardId to 1) else emptyMap()
         _flashcardState.value = s.copy(
             currentDeck = shuffledDeck,
+            hasStartedSession = false,
             currentCardIndex = 0,
             isFlipped = false,
             isShuffled = true,
@@ -914,6 +1311,7 @@ class MainViewModel(
     }
 
     fun restartCurrentFlashcardDeck() {
+        autoAdvanceDeckJob?.cancel()
         val s = _flashcardState.value
         val phraseIds = s.currentDeck.phrases.map { it.id }.toSet()
         statsRepo.resetDeckProgress(s.currentDeck.id, phraseIds)
@@ -922,14 +1320,20 @@ class MainViewModel(
         } else {
             DialectRepository.decks.find { it.id == s.currentDeck.id } ?: s.currentDeck
         }
-        val resetStreaks = canonicalDeck.phrases.associate { it.id to 0 }
-        val initialCardId = canonicalDeck.phrases.getOrNull(0)?.id
+        val sessionDeck = canonicalDeck.copy(
+            phrases = sessionOrder.shuffled(
+                "deck:${canonicalDeck.id}:${QuizletStudyMode.FLASHCARDS.name}", canonicalDeck.phrases
+            ) { it.id }
+        )
+        val resetStreaks = sessionDeck.phrases.associate { it.id to 0 }
+        val initialCardId = sessionDeck.phrases.firstOrNull()?.id
         val initPresCount = if (initialCardId != null) mapOf(initialCardId to 1) else emptyMap()
         _flashcardState.value = s.copy(
-            currentDeck = canonicalDeck,
+            currentDeck = sessionDeck,
             currentCardIndex = 0,
+            hasStartedSession = false,
             isFlipped = false,
-            isShuffled = false,
+            isShuffled = true,
             learnedInSession = emptySet(),
             stillLearningInSession = emptySet(),
             cardsSentToStillLearning = emptySet(),
@@ -992,7 +1396,7 @@ class MainViewModel(
                     com.example.data.GradeResult(
                         isCorrect = true,
                         scorePercent = 100,
-                        feedbackHeadline = "Correct! (+5 XP)",
+                        feedbackHeadline = "Correct!",
                         detailedExplanation = "\"${phrase.manglish}\" = \"${phrase.english}\""
                     )
                 } else {
@@ -1011,7 +1415,7 @@ class MainViewModel(
                     com.example.data.GradeResult(
                         isCorrect = true,
                         scorePercent = 100,
-                        feedbackHeadline = "Spot on! (+5 XP)",
+                        feedbackHeadline = "Spot on!",
                         detailedExplanation = "\"${phrase.manglish}\" means \"${phrase.english}\"."
                     )
                 } else {
@@ -1235,7 +1639,7 @@ class MainViewModel(
 
     // === Quizlet Match Mode Logic ===
     fun onMatchTileTapped(tileId: String) {
-        val s = _flashcardState.value
+        val s = _flashcardState.value.copy(hasStartedSession = true)
         val tappedTile = s.matchTiles.find { it.id == tileId } ?: return
         if (tappedTile.isMatched) return
 
@@ -1302,29 +1706,59 @@ class MainViewModel(
     // LEGACY / QUICK DAILY DRILLS TAB (With Copy Answer When Wrong & Shuffle Back)
     // =========================================================================
 
-    fun startNewQuizSession(levelIndex: Int? = null) {
+    fun startNewQuizSession(
+        levelIndex: Int? = null,
+        round: Int? = null,
+        questionType: QuizType? = null
+    ) {
         autoAdvanceQuizJob?.cancel()
-        val targetLevel = levelIndex ?: statsRepo.stats.value.unlockedLevelIndex
-        val stage = DialectRepository.studyPlanStages.getOrNull(targetLevel)
-        val levelQuestions = DialectRepository.generateDrillQuestionsForLevel(targetLevel)
-        _quizState.value = QuizState(
-            currentIndex = 0,
-            questions = levelQuestions,
-            levelIndex = targetLevel,
-            levelTitle = stage?.rankTitle ?: "Novice Level ${targetLevel + 1}",
-            typedInput = "",
-            selectedTileIndices = emptyList(),
-            selectedOptionIndex = null,
-            isEvaluated = false,
-            isCorrect = false,
-            feedbackMessage = "",
-            speechTranscription = "",
-            mustCopyAnswer = false,
-            copyAnswerInput = "",
-            isCopyAnswerUnlocked = false,
-            reshuffledCount = 0,
-            isFinished = false
+        val sessionGeneration = ++drillSessionGeneration
+        val currentUnlocked = statsRepo.stats.value.unlockedLevelIndex
+        val targetLevel = levelIndex ?: _quizState.value.levelIndex.takeIf { _quizState.value.questions.isNotEmpty() } ?: currentUnlocked
+        val activeQuestionType = questionType
+        val activeRound = round ?: DialectRepository.getNextDrillRound(
+            targetLevel,
+            statsRepo.stats.value
         )
+        val stage = if (targetLevel >= 0) DialectRepository.studyPlanStages.getOrNull(targetLevel) else null
+        val title = if (targetLevel == -1) "Overall Drill" else (stage?.rankTitle ?: "Novice Level ${targetLevel + 1}")
+        fun buildQuestions() = DialectRepository.generateDrillQuestionsForLevelAndRound(
+            targetLevel, activeRound, currentUnlocked, activeQuestionType,
+            orderPhrases = { phrases ->
+                sessionOrder.shuffled("drill:$targetLevel:${activeQuestionType?.name ?: "mixed"}", phrases) { it.id }
+            }
+        )
+        _quizState.value = QuizState(
+            levelIndex = targetLevel,
+            currentRoundNumber = activeRound,
+            practiceQuestionType = activeQuestionType,
+            roundCorrectCount = 0,
+            levelTitle = title,
+            isLoading = true
+        )
+        viewModelScope.launch {
+            try {
+                drillRepository.seedCurriculumIfNeeded()
+                if (sessionGeneration == drillSessionGeneration) {
+                    val questions = buildQuestions()
+                    _quizState.value = _quizState.value.copy(
+                        questions = questions,
+                        fixedRoundTargetCount = questions.size,
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("MainVM", "Could not refresh stored review content; using the selected deck", e)
+                if (sessionGeneration == drillSessionGeneration) {
+                    val fallbackQuestions = buildQuestions()
+                    _quizState.value = _quizState.value.copy(
+                        questions = fallbackQuestions,
+                        fixedRoundTargetCount = fallbackQuestions.size,
+                        isLoading = false
+                    )
+                }
+            }
+        }
     }
 
     fun updateQuizTypedInput(text: String) {
@@ -1360,6 +1794,7 @@ class MainViewModel(
 
     fun evaluateCurrentQuestion() {
         val state = _quizState.value
+        if (state.isEvaluated) return
         val q = state.questions.getOrNull(state.currentIndex) ?: return
 
         var isCorrect = false
@@ -1392,29 +1827,66 @@ class MainViewModel(
             }
 
             QuizType.DIALECT_CHOICE -> {
-                val chosenText = q.options.getOrNull(state.selectedOptionIndex ?: -1)
-                isCorrect = (chosenText != null && (chosenText.equals(q.phrase.manglish, ignoreCase = true) || state.selectedOptionIndex == 0))
+                val chosenIndex = state.selectedOptionIndex ?: -1
+                isCorrect = chosenIndex == q.correctOptionIndex
                 feedback = if (isCorrect) {
-                    "Spot on! '${q.options.getOrNull(0) ?: q.phrase.manglish}'"
+                    "Spot on! '${q.phrase.manglish}'"
                 } else {
                     "The correct word is '${q.phrase.manglish}'!"
                 }
             }
         }
 
-        val rec = statsRepo.recordPhraseAttempt(q.phrase.id, isCorrect)
-        viewModelScope.launch {
-            cloudRepo.saveLearnedPhrase(q.phrase, masteryLevel = if (rec.isKnown) 5 else if (isCorrect) 3 else 1)
+        val rec = if (q.isSpacedReview) {
+            statsRepo.stats.value.masteryRecords[q.phrase.id]
+        } else {
+            statsRepo.recordPhraseTouch(
+                phraseId = q.phrase.id,
+                touch = q.touchLevel,
+                isCorrect = isCorrect
+            )
+        }
+        if (q.isSpacedReview || q.touchLevel == 3) {
+            viewModelScope.launch {
+                try {
+                    drillRepository.recordReview(q.phrase.id, isCorrect)
+                } catch (e: Exception) {
+                    Log.e("MainVM", "Could not update spaced repetition for ${q.phrase.id}", e)
+                }
+            }
+        }
+        if (!q.isSpacedReview) {
+            viewModelScope.launch {
+                cloudRepo.saveLearnedPhrase(
+                    q.phrase,
+                    masteryLevel = if ((rec?.touchLevel ?: 0) >= 3) 5 else if (rec?.touchLevel == 2) 3 else 1
+                )
+            }
         }
 
-        val updatedQuestions = state.questions.toMutableList()
-        var newReshuffled = state.reshuffledCount
+        var updatedState = state
         val mustCopy = false
 
         if (!isCorrect) {
-            // Add back to the shuffle queue so the user practices it again in this session!
-            updatedQuestions.add(q.copy(id = "${q.id}_retry_${System.currentTimeMillis()}"))
-            newReshuffled += 1
+            // Recycling & Demotion Rules:
+            // - Touch 3 fail -> Demote to Touch 2 (Mastery 2). Recycle Touch 2 question 3-4 items later.
+            // - Touch 1 or 2 fail -> Keep/demote to Touch 1 (Mastery 1). Recycle Touch 1 question 3-4 items later.
+            val recycledQ = if (q.isSpacedReview) {
+                q.copy(id = "srs_retry_${q.id}_${System.currentTimeMillis()}")
+            } else {
+                val recycleTouch = if (q.touchLevel >= 3) 2 else 1
+                DialectRepository.generateQuestionForPhraseAndTouch(
+                    phrase = q.phrase,
+                    touch = recycleTouch,
+                    levelIndex = state.levelIndex,
+                    indexInRound = state.currentIndex,
+                    questionType = state.practiceQuestionType,
+                    sourceDeck = DialectRepository.getPracticeDeck(state.levelIndex, statsRepo.stats.value.unlockedLevelIndex)
+                )
+            }
+
+            // Interleaving queue rule: space repeat touch 3 to 4 questions later
+            updatedState = state.enqueueRecycledQuestion(recycledQ)
         } else {
             speakPhrase(q.phrase)
             autoAdvanceQuizJob?.cancel()
@@ -1430,16 +1902,68 @@ class MainViewModel(
             }
         }
 
-        _quizState.value = state.copy(
-            questions = updatedQuestions,
+        val newCorrectCount = if (isCorrect) state.roundCorrectCount + 1 else state.roundCorrectCount
+
+        _quizState.value = updatedState.copy(
             isEvaluated = true,
             isCorrect = isCorrect,
+            roundCorrectCount = newCorrectCount,
             isSkipped = false,
             feedbackMessage = feedback,
             mustCopyAnswer = mustCopy,
             copyAnswerInput = "",
-            isCopyAnswerUnlocked = !mustCopy,
-            reshuffledCount = newReshuffled
+            isCopyAnswerUnlocked = !mustCopy
+        )
+        syncToCloud()
+    }
+
+    /**
+     * "Override: I was right" button for Drills in case of a typo or microphone accent mismatch.
+     */
+    fun overrideQuizQuestionAsCorrect() {
+        val state = _quizState.value
+        val q = state.questions.getOrNull(state.currentIndex) ?: return
+        if (!state.isEvaluated || state.isCorrect) return
+
+        if (q.isSpacedReview) {
+            viewModelScope.launch {
+                try {
+                    drillRepository.recordReview(q.phrase.id, wasCorrect = true)
+                } catch (e: Exception) {
+                    Log.e("MainVM", "Could not update spaced repetition for ${q.phrase.id}", e)
+                }
+            }
+        } else {
+            val rec = statsRepo.recordPhraseTouch(
+                phraseId = q.phrase.id,
+                touch = q.touchLevel,
+                isCorrect = true
+            )
+            viewModelScope.launch {
+                cloudRepo.saveLearnedPhrase(q.phrase, masteryLevel = if (rec.touchLevel >= 3) 5 else 3)
+            }
+        }
+
+        speakPhrase(q.phrase)
+        autoAdvanceQuizJob?.cancel()
+        val evaluatedIndex = state.currentIndex
+        autoAdvanceQuizJob = viewModelScope.launch {
+            delay(850)
+            if (_quizState.value.currentIndex == evaluatedIndex &&
+                _quizState.value.isEvaluated &&
+                _quizState.value.isCorrect
+            ) {
+                nextQuizQuestion()
+            }
+        }
+
+        _quizState.value = state.undoCurrentRecycle().copy(
+            isCorrect = true,
+            roundCorrectCount = state.roundCorrectCount + 1,
+            feedbackMessage = "Marked Correct (Override Applied!) — '${q.phrase.manglish}'",
+            mustCopyAnswer = false,
+            copyAnswerInput = "",
+            isCopyAnswerUnlocked = true
         )
         syncToCloud()
     }
@@ -1447,27 +1971,45 @@ class MainViewModel(
     fun skipCurrentQuizQuestion() {
         autoAdvanceQuizJob?.cancel()
         val state = _quizState.value
+        if (state.isEvaluated) return
         val q = state.questions.getOrNull(state.currentIndex) ?: return
 
-        val rec = statsRepo.recordPhraseAttempt(q.phrase.id, false)
-        viewModelScope.launch {
-            cloudRepo.saveLearnedPhrase(q.phrase, masteryLevel = if (rec.isKnown) 5 else 1)
+        if (q.isSpacedReview) {
+            viewModelScope.launch {
+                try {
+                    drillRepository.recordReview(q.phrase.id, wasCorrect = false)
+                } catch (e: Exception) {
+                    Log.e("MainVM", "Could not update spaced repetition for ${q.phrase.id}", e)
+                }
+            }
+        } else {
+            val rec = statsRepo.recordPhraseTouch(q.phrase.id, touch = q.touchLevel, isCorrect = false)
+            viewModelScope.launch {
+                cloudRepo.saveLearnedPhrase(q.phrase, masteryLevel = if (rec.touchLevel >= 3) 5 else 1)
+            }
         }
 
-        // Add word back to shuffle queue for the next round
-        val updatedQuestions = state.questions.toMutableList()
-        updatedQuestions.add(q.copy(id = "${q.id}_skipped_${System.currentTimeMillis()}"))
-
-        _quizState.value = state.copy(
-            questions = updatedQuestions,
+        val recycledQ = if (q.isSpacedReview) {
+            q.copy(id = "srs_retry_${q.id}_${System.currentTimeMillis()}")
+        } else {
+            val recycleTouch = if (q.touchLevel >= 3) 2 else 1
+            DialectRepository.generateQuestionForPhraseAndTouch(
+                phrase = q.phrase,
+                touch = recycleTouch,
+                levelIndex = state.levelIndex,
+                indexInRound = state.currentIndex,
+                questionType = state.practiceQuestionType,
+                sourceDeck = DialectRepository.getPracticeDeck(state.levelIndex, statsRepo.stats.value.unlockedLevelIndex)
+            )
+        }
+        _quizState.value = state.enqueueRecycledQuestion(recycledQ).copy(
             isEvaluated = true,
             isCorrect = false,
             isSkipped = true,
             feedbackMessage = "Skipped — '${q.phrase.manglish}'",
             mustCopyAnswer = false,
             copyAnswerInput = "",
-            isCopyAnswerUnlocked = true,
-            reshuffledCount = state.reshuffledCount + 1
+            isCopyAnswerUnlocked = true
         )
         syncToCloud()
     }
@@ -1479,9 +2021,67 @@ class MainViewModel(
 
         val nextIdx = state.currentIndex + 1
         if (nextIdx >= state.questions.size) {
-            statsRepo.recordDrillCompletedForLevel(state.levelIndex)
-            _quizState.value = state.copy(isFinished = true)
-            checkForLevelUp()
+            if (state.levelIndex == -1) {
+                statsRepo.incrementQuizCompleted()
+                _quizState.value = state.copy(isFinished = true)
+            } else {
+            val stage = DialectRepository.studyPlanStages.getOrNull(state.levelIndex)
+            val deck = stage?.let { DialectRepository.decks.find { d -> d.id == it.deckId } }
+            val levelPhrases = deck?.phrases.orEmpty()
+            val records = statsRepo.stats.value.masteryRecords
+            val targetRound = state.currentRoundNumber.coerceIn(1, 3)
+            val allWordsCompletedRound = levelPhrases.isNotEmpty() && levelPhrases.all { phrase ->
+                (records[phrase.id]?.touchLevel ?: 0) >= targetRound
+            }
+            val roundComplete = state.roundCorrectCount >= state.fixedRoundTargetCount &&
+                allWordsCompletedRound
+
+            if (roundComplete) {
+                statsRepo.recordDrillRoundCompleted(state.levelIndex, targetRound)
+                if (targetRound == 3) {
+                    statsRepo.recordDrillCompletedForLevel(state.levelIndex)
+                    _quizState.value = state.copy(isFinished = true)
+                    checkForLevelUp()
+                } else {
+                    _quizState.value = state.copy(
+                        showRoundCheckpoint = true,
+                        completedRoundNumber = targetRound
+                    )
+                }
+            } else {
+                val incompletePhrases = levelPhrases.filter { phrase ->
+                    (records[phrase.id]?.touchLevel ?: 0) < targetRound
+                }
+                val extraQuestions = mutableListOf<QuizQuestion>()
+                incompletePhrases.forEachIndexed { i, phrase ->
+                    extraQuestions.add(
+                        DialectRepository.generateQuestionForPhraseAndTouch(
+                            phrase,
+                            targetRound,
+                            state.levelIndex,
+                            indexInRound = i,
+                            questionType = state.practiceQuestionType
+                        ).copy(recycleCount = state.recycleCounts[phrase.id] ?: 0)
+                    )
+                }
+                val updatedQuestions = state.questions + extraQuestions
+                _quizState.value = state.copy(
+                    questions = updatedQuestions,
+                    currentIndex = nextIdx,
+                    typedInput = "",
+                    selectedTileIndices = emptyList(),
+                    selectedOptionIndex = null,
+                    isEvaluated = false,
+                    isCorrect = false,
+                    isSkipped = false,
+                    feedbackMessage = "",
+                    speechTranscription = "",
+                    mustCopyAnswer = false,
+                    copyAnswerInput = "",
+                    isCopyAnswerUnlocked = false
+                )
+            }
+            }
         } else {
             _quizState.value = state.copy(
                 currentIndex = nextIdx,
@@ -1499,6 +2099,75 @@ class MainViewModel(
             )
         }
         syncToCloud()
+    }
+
+    fun continueToNextRound() {
+        val state = _quizState.value
+        val nextRound = state.currentRoundNumber + 1
+        startNewQuizSession(
+            state.levelIndex,
+            round = nextRound,
+            questionType = state.practiceQuestionType
+        )
+    }
+
+    fun updateTranslatorInput(text: String) {
+        val query = translationQueryKey(text)
+        if (query == translationQueryKey(_translatorState.value.inputText)) {
+            _translatorState.value = _translatorState.value.copy(inputText = text)
+            return
+        }
+        _translatorState.value = _translatorState.value.copy(
+            inputText = text, results = emptyList(), isLoading = false, error = null
+        )
+        scheduleTranslation(translationDelayMillis(text))
+    }
+
+    fun translateInput() {
+        val query = translationQueryKey(_translatorState.value.inputText)
+        if (query == lastTranslationQuery && _translatorState.value.error == null) return
+        scheduleTranslation(0)
+    }
+
+    private fun scheduleTranslation(waitMillis: Long) {
+        translationJob?.cancel()
+        val generation = ++translationGeneration
+        val input = _translatorState.value.inputText.trim()
+        val query = translationQueryKey(input)
+        lastTranslationQuery = null
+        if (input.isBlank()) return
+        translationJob = viewModelScope.launch {
+            delay(waitMillis)
+            try {
+                val matches = translatorService.vocabularyMatches(input)
+                if (generation != translationGeneration) return@launch
+                lastTranslationQuery = query
+                _translatorState.value = _translatorState.value.copy(
+                    results = matches, isLoading = translatorService.isConfigured, error = null
+                )
+                if (!translatorService.isConfigured) return@launch
+                val alternatives = translatorService.translate(input)
+                if (generation != translationGeneration) return@launch
+                _translatorState.value = _translatorState.value.copy(
+                    results = mergeTranslationResults(matches, alternatives), isLoading = false
+                )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (generation != translationGeneration) return@launch
+                _translatorState.value = _translatorState.value.copy(
+                    isLoading = false,
+                    error = e.localizedMessage ?: "Couldn't translate that. Please try again."
+                )
+            }
+        }
+    }
+
+    fun dismissTranslator() {
+        translationJob?.cancel()
+        translationGeneration++
+        lastTranslationQuery = null
+        _translatorState.value = _translatorState.value.copy(isLoading = false)
     }
 
     // === AI Tutor & Roleplay ===
@@ -1548,7 +2217,6 @@ class MainViewModel(
                     messages = _aiTutorState.value.messages + reply,
                     isLoading = false
                 )
-                statsRepo.addXp(10)
                 syncToCloud()
                 audioHelper.speak(reply.malayalamText, reply.manglishText)
             } catch (e: Exception) {

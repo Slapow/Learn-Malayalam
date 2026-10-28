@@ -73,13 +73,13 @@ fun LaptopSyncSheet(
                         modifier = Modifier
                             .size(44.dp)
                             .clip(CircleShape)
-                            .background(PalmContainerLight),
+                            .background(MaterialTheme.colorScheme.primaryContainer),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Filled.CloudDone,
                             contentDescription = null,
-                            tint = EmeraldDark
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
@@ -154,7 +154,7 @@ fun LaptopSyncSheet(
                         style = MaterialTheme.typography.bodySmall
                     )
                     Text(
-                        text = "• Progress: ${userStats.xp} XP • ${userStats.streakDays}-day streak • ${userStats.learnedPhraseIds.size} words known",
+                        text = "• Progress: ${userStats.streakDays}-day streak • ${userStats.learnedPhraseIds.size} words known",
                         style = MaterialTheme.typography.bodySmall
                     )
                     Text(
@@ -168,7 +168,7 @@ fun LaptopSyncSheet(
                     OutlinedButton(
                         onClick = {
                             onResetProgress()
-                            Toast.makeText(context, "Progress reset to 0 XP & 0-day streak!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Learning progress and streak reset!", Toast.LENGTH_SHORT).show()
                         },
                         shape = RoundedCornerShape(10.dp),
                         modifier = Modifier
@@ -177,7 +177,7 @@ fun LaptopSyncSheet(
                     ) {
                         Icon(Icons.Filled.RestartAlt, contentDescription = null, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Reset Progress to 0 XP / 0 Streak", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold))
+                        Text("Reset Learning Progress", style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold))
                     }
                 }
             }
@@ -185,23 +185,23 @@ fun LaptopSyncSheet(
             // Pick Up Session on Laptop Section
             Card(
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = GoldenContainerLight.copy(alpha = 0.45f)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.45f)),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, GoldenSpice.copy(alpha = 0.4f), RoundedCornerShape(20.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f), RoundedCornerShape(20.dp))
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Filled.LaptopMac,
                             contentDescription = null,
-                            tint = GoldenOnContainer
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "Continue Learning on Your Laptop",
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = GoldenOnContainer
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                     }
 
@@ -212,7 +212,7 @@ fun LaptopSyncSheet(
                     Text(
                         text = "Option 1 (Direct Bookmarkable Web Link — LIVE NOW): Open and bookmark this link in your browser. Sign in with the same Google account to sync all progress automatically:",
                         style = MaterialTheme.typography.bodySmall.copy(lineHeight = 17.sp),
-                        color = GoldenOnContainer
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -254,13 +254,13 @@ fun LaptopSyncSheet(
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalDivider(color = GoldenOnContainer.copy(alpha = 0.15f))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.15f))
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
                         text = "Option 2 (Standalone Offline-Capable HTML): Save 'learn-malayalam-laptop.html' to your laptop, open it in Chrome, and bookmark it (Ctrl+D / Cmd+D). It connects directly to your Cloud Firestore database:",
                         style = MaterialTheme.typography.bodySmall.copy(lineHeight = 17.sp),
-                        color = GoldenOnContainer
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -269,7 +269,7 @@ fun LaptopSyncSheet(
                         onClick = onShareWebAppHtml,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = Color.White
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
@@ -282,13 +282,13 @@ fun LaptopSyncSheet(
                     }
 
                     Spacer(modifier = Modifier.height(14.dp))
-                    HorizontalDivider(color = GoldenOnContainer.copy(alpha = 0.15f))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.15f))
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
                         text = "Option 3 (Local Wi-Fi Companion Server): Open this URL in your laptop browser while on the same Wi-Fi network:",
                         style = MaterialTheme.typography.bodySmall.copy(lineHeight = 17.sp),
-                        color = GoldenOnContainer
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))

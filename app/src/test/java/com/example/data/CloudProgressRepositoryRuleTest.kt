@@ -18,7 +18,7 @@ class CloudProgressRepositoryRuleTest : FirestoreEmulatorTestBase() {
         val uid = signInTestUser(ALICE_EMAIL)
         val repo = CloudProgressRepository(firestore)
 
-        val stats = UserStats(xp = 220, streakDays = 5, completedQuizCount = 8, spokenPhrasesCount = 14)
+        val stats = UserStats(streakDays = 5, completedQuizCount = 8, spokenPhrasesCount = 14)
         val saveRes = withTimeout(DEFAULT_TIMEOUT_MS) {
             repo.saveOrUpdateProgress(
                 displayName = "Alice Adoor",
@@ -39,7 +39,6 @@ class CloudProgressRepositoryRuleTest : FirestoreEmulatorTestBase() {
         assertTrue(fetchedRes.isSuccess)
         val progress = fetchedRes.getOrThrow()
         assertNotNull(progress)
-        assertEquals(220L, progress?.xp)
         assertEquals("FLASHCARDS", progress?.activeScreen)
         assertEquals("deck_family", progress?.activeDeckId)
     }

@@ -55,7 +55,6 @@
       gap: 6px;
     }
     .pill-streak { background: var(--terracotta-light); color: var(--terracotta); }
-    .pill-xp { background: var(--gold-light); color: #3B2500; }
     .pill-sync { background: var(--emerald-light); color: var(--emerald-dark); cursor: pointer; border: none; }
     .container { max-width: 1080px; width: 100%; margin: 0 auto; padding: 24px; flex: 1; }
     .handoff-banner {
@@ -180,7 +179,6 @@
     </div>
     <div class="stats-bar">
       <div class="pill pill-streak">🔥 <span id="streakVal">0</span>d Streak</div>
-      <div class="pill pill-xp">⭐ <span id="xpVal">0</span> XP</div>
       <button class="pill pill-sync" id="authBtn" onclick="handleAuthClick()">☁️ Sign in with Google to Sync</button>
     </div>
   </header>
@@ -236,7 +234,6 @@
           <span class="bucket-pill" style="background:var(--emerald-light); color:var(--emerald-dark);" id="bucketMastered">🟢 Mastered (2/2): 0</span>
         </div>
 
-        <h3 id="quizPrompt" style="font-size:1.3rem; margin-bottom:6px;">How do you say in Malayalam (Manglish)?</h3>
         <div id="quizEnglishTarget" style="font-size:1.55rem; font-weight:800; color:var(--emerald-primary); margin-bottom:10px;"></div>
         <div id="quizHint" class="phonetic-box" style="margin-bottom:12px;"></div>
 
@@ -285,7 +282,7 @@
         <button class="btn btn-outline" onclick="nextFlashcard(false)">🔄 Still Learning</button>
         <button class="btn btn-outline" onclick="speakCurrentFlashcard()">🔊 Speak Malayalam</button>
         <span id="fcIndexLabel" style="font-weight:700;">1 / 12</span>
-        <button class="btn btn-primary" onclick="nextFlashcard(true)">✅ Mark Known (+5 XP)</button>
+        <button class="btn btn-primary" onclick="nextFlashcard(true)">✅ Mark Known</button>
       </div>
     </section>
 
@@ -382,13 +379,6 @@
       onSnapshot(userRef, (snap) => {
         if (snap.exists()) {
           const data = snap.data();
-          if (data.xp === 140 && data.streakDays === 4 && (!data.learnedPhraseIds || data.learnedPhraseIds.length === 0)) {
-            window.appState.xp = 0;
-            window.appState.streakDays = 0;
-            window.pushCloudProgress();
-            return;
-          }
-          window.appState.xp = data.xp ?? 0;
           window.appState.streakDays = data.streakDays ?? 0;
           if (Array.isArray(data.learnedPhraseIds)) {
             window.appState.learnedPhraseIds = data.learnedPhraseIds;
@@ -412,7 +402,6 @@
       const snap = await getDoc(userRef);
       const payload = {
         displayName: (currentUser.displayName || "Laptop Learner").slice(0, 100),
-        xp: window.appState.xp,
         streakDays: window.appState.streakDays,
         completedQuizCount: window.appState.completedQuizCount || 0,
         spokenPhrasesCount: window.appState.spokenPhrasesCount || 0,
@@ -467,7 +456,6 @@
     ];
 
     window.appState = {
-      xp: 0,
       streakDays: 0,
       completedQuizCount: 0,
       spokenPhrasesCount: 0,
@@ -482,6 +470,16 @@
       isFlipped: false,
       wordDbFilter: "ALL"
     };
+
+    function applySessionState(data) {
+      if (!data || typeof data !== "object" || Array.isArray(data)) return;
+      for (const key of Object.keys(window.appState)) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          window.appState[key] = data[key];
+        }
+      }
+    }
+
 
     function getActiveDeckPhrases() {
       const list = PHRASES.filter(p => p.deck === window.appState.activeDeckId);
@@ -498,7 +496,6 @@
     }
 
     function updateHeaderUI() {
-      document.getElementById("xpVal").textContent = window.appState.xp || 0;
       document.getElementById("streakVal").textContent = window.appState.streakDays || 0;
       const stage = computeCurrentStage();
       document.getElementById("levelBadgeHeader").textContent = stage.badge;
@@ -518,7 +515,6 @@
     }
 
     window.resetAllProgress = function() {
-      window.appState.xp = 0;
       window.appState.streakDays = 0;
       window.appState.learnedPhraseIds = [];
       window.appState.strugglingPhraseIds = [];
@@ -564,13 +560,8 @@
       const qIdx = window.appState.activeQuizIndex % deckPhrases.length;
       const p = deckPhrases[qIdx];
       const streak = (window.appState.streakById && window.appState.streakById[p.id]) || 0;
-      const isSpeakStep = window.appState.quizletMode === "SPEAK" || (window.appState.quizletMode === "MIXED" && qIdx % 2 === 1);
-
       document.getElementById("quizCounter").textContent = `Card ${qIdx + 1} of ${deckPhrases.length} • Mastery Streak: ${streak}/2`;
-      document.getElementById("quizPrompt").textContent = isSpeakStep
-        ? "🎙️ Speak Out Loud (or type) the Malayalam word for:"
-        : "✍️ Type the Malayalam (Manglish) word for:";
-      document.getElementById("quizEnglishTarget").textContent = `"${p.english}"`;
+      document.getElementById("quizEnglishTarget").textContent = p.english;
       document.getElementById("quizHint").textContent = `🔊 Pronunciation Hint: ${p.phonetic}  |  🧩 ${p.breakdown}`;
       document.getElementById("quizInput").value = "";
       document.getElementById("copyRetypeInput").value = "";
@@ -613,10 +604,9 @@
           window.appState.learnedPhraseIds.push(p.id);
         }
         window.appState.strugglingPhraseIds = (window.appState.strugglingPhraseIds || []).filter(id => id !== p.id);
-        window.appState.xp = (window.appState.xp || 0) + 10;
         if ((window.appState.streakDays || 0) === 0) window.appState.streakDays = 1;
 
-        document.getElementById("quizFeedbackText").textContent = `✅ Correct! Mastery streak for "${p.manglish}": ${Math.min(prev, 2)}/2 (+10 XP)`;
+        document.getElementById("quizFeedbackText").textContent = `✅ Correct! Mastery streak for "${p.manglish}": ${Math.min(prev, 2)}/2`;
         document.getElementById("nextBtnContainer").classList.remove("hidden");
       } else {
         window.appState.streakById[p.id] = 0;
@@ -656,7 +646,6 @@
       if (prev >= 2 && !window.appState.learnedPhraseIds.includes(p.id)) {
         window.appState.learnedPhraseIds.push(p.id);
       }
-      window.appState.xp = (window.appState.xp || 0) + 10;
       if ((window.appState.streakDays || 0) === 0) window.appState.streakDays = 1;
       nextQuizQuestion();
     };
@@ -731,7 +720,6 @@
       const deckPhrases = getActiveDeckPhrases();
       const p = deckPhrases[window.appState.activeCardIndex % deckPhrases.length];
       if (known) {
-        window.appState.xp = (window.appState.xp || 0) + 5;
         if ((window.appState.streakDays || 0) === 0) window.appState.streakDays = 1;
         if (!window.appState.learnedPhraseIds.includes(p.id)) {
           window.appState.learnedPhraseIds.push(p.id);
@@ -865,14 +853,8 @@
     }
 
     fetch("/api/session").then(r => r.json()).then(data => {
-      if (data && data.xp !== undefined) {
-        if (data.xp === 140 && data.streakDays === 4) {
-          data.xp = 0;
-          data.streakDays = 0;
-        }
-        window.appState = { ...window.appState, ...data };
-        updateHeaderUI();
-      }
+      applySessionState(data);
+      updateHeaderUI();
     }).catch(() => {});
 
     renderQuiz();

@@ -72,7 +72,7 @@ fun LevelUpCelebrationDialog(
                         .clip(CircleShape)
                         .background(
                             Brush.radialGradient(
-                                listOf(GoldenContainerLight, GoldenSpice.copy(alpha = 0.35f))
+                                listOf(MaterialTheme.colorScheme.secondaryContainer, GoldenSpice.copy(alpha = 0.35f))
                             )
                         )
                 ) {
@@ -87,7 +87,7 @@ fun LevelUpCelebrationDialog(
                         fontWeight = FontWeight.Black,
                         letterSpacing = 1.sp
                     ),
-                    color = GoldenOnContainer
+                    color = MaterialTheme.colorScheme.secondary
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -103,7 +103,7 @@ fun LevelUpCelebrationDialog(
 
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = PalmContainerLight.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
@@ -113,37 +113,14 @@ fun LevelUpCelebrationDialog(
                         Text(
                             text = "New Rank Unlocked:",
                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                            color = EmeraldDark
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = event.rankTitle,
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
-                            color = EmeraldDark,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                             textAlign = TextAlign.Center
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // XP bonus badge
-                Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = GoldenSpice,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("⚡", fontSize = 16.sp)
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "+${event.xpBonus} XP Level Bonus Awarded!",
-                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.ExtraBold),
-                            color = GoldenOnContainer
                         )
                     }
                 }
@@ -162,7 +139,10 @@ fun LevelUpCelebrationDialog(
                 Button(
                     onClick = onDismiss,
                     shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)

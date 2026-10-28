@@ -37,7 +37,11 @@ fun SpokenGraduationDialog(
     onSpeakPhraseText: (String, String) -> Unit,
     onNextPrompt: () -> Unit,
     onSelfVerifySpoken: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    isDevModeEnabled: Boolean = false,
+    onEndDevMode: () -> Unit = {},
+    onDevGetCorrect: () -> Unit = {},
+    onDevSkipToLast: () -> Unit = {}
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -67,7 +71,7 @@ fun SpokenGraduationDialog(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
                             shape = CircleShape,
-                            color = GoldenContainerLight,
+                            color = MaterialTheme.colorScheme.secondaryContainer,
                             modifier = Modifier.size(38.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
@@ -100,6 +104,15 @@ fun SpokenGraduationDialog(
                     }
                 }
 
+                if (isDevModeEnabled && !examState.isExamFinished) {
+                    DevModeTestingBar(
+                        onEndDevMode = onEndDevMode,
+                        onCurrentQuestionCorrect = onDevGetCorrect,
+                        onSkipToLastQuestion = onDevSkipToLast,
+                        modeLabel = "Oral Exam (${examState.currentPromptIndex + 1}/${examState.prompts.size})"
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(14.dp))
 
                 if (examState.isExamFinished) {
@@ -109,10 +122,10 @@ fun SpokenGraduationDialog(
                     if (examState.didPassGraduation) {
                         Surface(
                             shape = RoundedCornerShape(20.dp),
-                            color = PalmContainerLight,
+                            color = MaterialTheme.colorScheme.primaryContainer,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .border(2.dp, EmeraldPrimary, RoundedCornerShape(20.dp))
+                                .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp))
                         ) {
                             Column(
                                 modifier = Modifier.padding(20.dp),
@@ -126,14 +139,14 @@ fun SpokenGraduationDialog(
                                         fontWeight = FontWeight.ExtraBold,
                                         letterSpacing = 0.5.sp
                                     ),
-                                    color = EmeraldDark,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                                     textAlign = TextAlign.Center
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
                                     text = "You successfully graduated from ${examState.tier.title}!\nAll words and next tier stages are now permanently unlocked.",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = EmeraldDark,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                                     textAlign = TextAlign.Center
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
@@ -142,9 +155,9 @@ fun SpokenGraduationDialog(
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Text(
-                                        text = "🏆 Score: ${examState.scoreCount}/${examState.prompts.size} Correct • +50 XP Awarded",
+                                        text = "🏆 Score: ${examState.scoreCount}/${examState.prompts.size} Correct",
                                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                                        color = GoldenOnContainer,
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
                                     )
                                 }
@@ -226,7 +239,7 @@ fun SpokenGraduationDialog(
                             Text(
                                 text = "Score: ${examState.scoreCount}/${examState.currentPromptIndex}",
                                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                color = GoldenOnContainer
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 
@@ -309,7 +322,7 @@ fun SpokenGraduationDialog(
                             Icon(
                                 if (examState.isListening) Icons.Default.MicOff else Icons.Default.Mic,
                                 contentDescription = if (examState.isListening) "Stop listening" else "Tap to speak",
-                                tint = Color.White,
+                                tint = if (examState.isListening) Color.White else MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.size(36.dp)
                             )
                         }
@@ -348,7 +361,7 @@ fun SpokenGraduationDialog(
                             ) {
                                 Surface(
                                     shape = RoundedCornerShape(12.dp),
-                                    color = if (examState.isPromptPassed) PalmContainerLight else TerracottaContainer.copy(alpha = 0.5f)
+                                    color = if (examState.isPromptPassed) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
                                 ) {
                                     Row(
                                         modifier = Modifier
@@ -364,7 +377,7 @@ fun SpokenGraduationDialog(
                                         Text(
                                             text = examState.feedbackMessage,
                                             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                                            color = if (examState.isPromptPassed) EmeraldDark else TerracottaAccent
+                                            color = if (examState.isPromptPassed) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.error
                                         )
                                     }
                                 }

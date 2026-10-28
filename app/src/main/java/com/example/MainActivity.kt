@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -32,6 +33,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.audio.AudioHelper
 import com.example.data.CloudProgressRepository
+import com.example.data.DrillItemDatabase
+import com.example.data.DrillItemRepository
 import com.example.data.UserStatsRepository
 import com.example.ui.components.LaptopSyncSheet
 import com.example.ui.components.LevelUpCelebrationDialog
@@ -113,6 +116,7 @@ fun MainFeatureScreen(
                 MainViewModel(
                     cloudRepo = CloudProgressRepository(firestore),
                     statsRepo = UserStatsRepository(app),
+                    drillRepository = DrillItemRepository(DrillItemDatabase.getInstance(app).drillItemDao()),
                     audioHelper = AudioHelper(app),
                     currentUserId = currentUserId,
                     userDisplayName = userDisplayName
@@ -123,16 +127,28 @@ fun MainFeatureScreen(
 
     val currentScreen by viewModel.currentScreen.collectAsStateWithLifecycle()
     val userStats by viewModel.userStats.collectAsStateWithLifecycle()
+    // Keep the activity selection when HomeScreen leaves the composition during study.
+    var selectedHomeLevelIndex by rememberSaveable(currentUserId) { mutableStateOf<Int?>(null) }
+    val homeLevelIndex = selectedHomeLevelIndex
+        ?.coerceIn(-1, userStats.unlockedLevelIndex) ?: userStats.unlockedLevelIndex
+    LaunchedEffect(userStats.unlockedLevelIndex) {
+        if (selectedHomeLevelIndex != null && selectedHomeLevelIndex != homeLevelIndex) {
+            selectedHomeLevelIndex = homeLevelIndex
+        }
+    }
     val quizState by viewModel.quizState.collectAsStateWithLifecycle()
     val flashcardState by viewModel.flashcardState.collectAsStateWithLifecycle()
     val aiTutorState by viewModel.aiTutorState.collectAsStateWithLifecycle()
+    val translatorState by viewModel.translatorState.collectAsStateWithLifecycle()
     val speechStatus by viewModel.speechStatus.collectAsStateWithLifecycle()
     val isListening by viewModel.isListening.collectAsStateWithLifecycle()
+    val speechLevel by viewModel.speechLevel.collectAsStateWithLifecycle()
     val cloudSyncStatus by viewModel.cloudSyncStatus.collectAsStateWithLifecycle()
     val lastSyncedDevice by viewModel.lastSyncedDevice.collectAsStateWithLifecycle()
     val lastActiveCloudScreen by viewModel.lastActiveCloudScreen.collectAsStateWithLifecycle()
     val tierGraduationState by viewModel.tierGraduationState.collectAsStateWithLifecycle()
     val levelUpEvent by viewModel.levelUpEvent.collectAsStateWithLifecycle()
+    val isDevModeEnabled by viewModel.isDevModeEnabled.collectAsStateWithLifecycle()
 
     val webCompanionServer = remember(viewModel) {
         WebCompanionServer(
@@ -183,83 +199,7 @@ fun MainFeatureScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.safeDrawing),
-        bottomBar = {
-            if (currentScreen != Screen.QUIZ && currentScreen != Screen.FLASHCARDS) {
-                NavigationBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("main_bottom_nav"),
-                    windowInsets = WindowInsets.navigationBars,
-                    tonalElevation = 6.dp
-                ) {
-                    NavigationBarItem(
-                        selected = currentScreen == Screen.HOME,
-                        onClick = { viewModel.navigateTo(Screen.HOME) },
-                        icon = {
-                            Icon(
-                                imageVector = if (currentScreen == Screen.HOME) Icons.Filled.Home else Icons.Outlined.Home,
-                                contentDescription = "Home"
-                            )
-                        },
-                        label = { Text("Home", style = MaterialTheme.typography.labelSmall) },
-                        modifier = Modifier.testTag("nav_home")
-                    )
-
-                    NavigationBarItem(
-                        selected = currentScreen == Screen.FLASHCARDS,
-                        onClick = { viewModel.navigateTo(Screen.FLASHCARDS) },
-                        icon = {
-                            Icon(
-                                imageVector = if (currentScreen == Screen.FLASHCARDS) Icons.Filled.ViewCarousel else Icons.Outlined.ViewCarousel,
-                                contentDescription = "Study Decks"
-                            )
-                        },
-                        label = { Text("Decks", style = MaterialTheme.typography.labelSmall) },
-                        modifier = Modifier.testTag("nav_flashcards")
-                    )
-
-                    NavigationBarItem(
-                        selected = currentScreen == Screen.QUIZ,
-                        onClick = { viewModel.navigateTo(Screen.QUIZ) },
-                        icon = {
-                            Icon(
-                                imageVector = if (currentScreen == Screen.QUIZ) Icons.Filled.FitnessCenter else Icons.Outlined.FitnessCenter,
-                                contentDescription = "Practice"
-                            )
-                        },
-                        label = { Text("Drills", style = MaterialTheme.typography.labelSmall) },
-                        modifier = Modifier.testTag("nav_quiz")
-                    )
-
-                    NavigationBarItem(
-                        selected = currentScreen == Screen.DIALECT_GUIDE,
-                        onClick = { viewModel.navigateTo(Screen.DIALECT_GUIDE) },
-                        icon = {
-                            Icon(
-                                imageVector = if (currentScreen == Screen.DIALECT_GUIDE) Icons.AutoMirrored.Filled.MenuBook else Icons.AutoMirrored.Outlined.MenuBook,
-                                contentDescription = "Study Plan & Known Words"
-                            )
-                        },
-                        label = { Text("Plan", style = MaterialTheme.typography.labelSmall) },
-                        modifier = Modifier.testTag("nav_guide")
-                    )
-
-                    NavigationBarItem(
-                        selected = currentScreen == Screen.SETTINGS,
-                        onClick = { viewModel.navigateTo(Screen.SETTINGS) },
-                        icon = {
-                            Icon(
-                                imageVector = if (currentScreen == Screen.SETTINGS) Icons.Filled.Settings else Icons.Outlined.Settings,
-                                contentDescription = "Settings"
-                            )
-                        },
-                        label = { Text("Settings", style = MaterialTheme.typography.labelSmall) },
-                        modifier = Modifier.testTag("nav_settings")
-                    )
-                }
-            }
-        }
+            .windowInsetsPadding(WindowInsets.safeDrawing)
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -270,27 +210,42 @@ fun MainFeatureScreen(
                 Screen.HOME -> {
                     HomeScreen(
                         userStats = userStats,
+                        selectedLevelIndex = homeLevelIndex,
+                        onSelectLevel = { selectedHomeLevelIndex = it },
+                        translatorState = translatorState,
+                        onTranslatorInputChange = viewModel::updateTranslatorInput,
+                        onTranslate = viewModel::translateInput,
+                        onDismissTranslator = viewModel::dismissTranslator,
                         onNavigate = { screen -> viewModel.navigateTo(screen) },
                         onSpeakPhrase = { phrase -> viewModel.speakPhrase(phrase) },
                         onToggleLearned = { id -> viewModel.toggleLearned(id) },
                         onOpenDeckInMode = { deck, mode -> viewModel.openDeckWithMode(deck, mode) },
+                        onStartLearningDeck = { deck, levelIndex ->
+                            viewModel.openLevelDeckBeforeDrills(deck, levelIndex)
+                        },
                         onStartDrill = { levelIndex ->
                             viewModel.startNewQuizSession(levelIndex)
+                            viewModel.navigateTo(Screen.QUIZ)
+                        },
+                        onStartProductionPractice = { levelIndex, quizType ->
+                            viewModel.startNewQuizSession(levelIndex, questionType = quizType)
                             viewModel.navigateTo(Screen.QUIZ)
                         },
                         onLaunchAdaptiveFocus = { viewModel.launchDynamicAdaptiveReview() },
                         onOpenCloudSync = { viewModel.navigateTo(Screen.SETTINGS) },
                         lastSyncedDevice = lastSyncedDevice,
                         lastActiveScreenLabel = lastActiveCloudScreen,
-                        onResumeCloudSession = { viewModel.resumeLastCloudSession() }
+                        onResumeCloudSession = { viewModel.resumeLastCloudSession() },
+                        isDevModeEnabled = isDevModeEnabled,
+                        onEndDevMode = { viewModel.devEndMode() }
                     )
                 }
 
                 Screen.QUIZ -> {
                     LessonQuizScreen(
                         state = quizState,
-                        userXp = userStats.xp,
                         isListening = isListening,
+                        speechLevel = speechLevel,
                         speechStatus = speechStatus,
                         onBack = { viewModel.navigateTo(Screen.HOME) },
                         onTypedInputChange = { text -> viewModel.updateQuizTypedInput(text) },
@@ -298,12 +253,23 @@ fun MainFeatureScreen(
                         onToggleTile = { idx -> viewModel.toggleWordTile(idx) },
                         onSelectOption = { idx -> viewModel.selectQuizOption(idx) },
                         onEvaluate = { viewModel.evaluateCurrentQuestion() },
+                        onOverrideCorrect = { viewModel.overrideQuizQuestionAsCorrect() },
                         onSkip = { viewModel.skipCurrentQuizQuestion() },
                         onNext = { viewModel.nextQuizQuestion() },
-                        onRestart = { viewModel.startNewQuizSession() },
+                        onRestart = {
+                            viewModel.startNewQuizSession(
+                                quizState.levelIndex,
+                                questionType = quizState.practiceQuestionType
+                            )
+                        },
+                        onContinueNextRound = { viewModel.continueToNextRound() },
                         onSpeakPhrase = { phrase -> viewModel.speakPhrase(phrase) },
                         onStartSpeech = { callback -> checkAndStartSpeech(callback) },
-                        onStopSpeech = { viewModel.stopSpeechPractice() }
+                        onStopSpeech = { viewModel.stopSpeechPractice() },
+                        isDevModeEnabled = isDevModeEnabled,
+                        onEndDevMode = { viewModel.devEndMode() },
+                        onDevGetCorrect = { viewModel.devGetQuizQuestionCorrect() },
+                        onDevSkipToLast = { viewModel.devSkipToLastQuizQuestion() }
                     )
                 }
 
@@ -312,12 +278,14 @@ fun MainFeatureScreen(
                         state = flashcardState,
                         userStats = userStats,
                         isListening = isListening,
+                        speechLevel = speechLevel,
                         speechStatus = speechStatus,
                         onBack = { viewModel.navigateTo(Screen.HOME) },
                         onSelectDeck = { deck -> viewModel.selectDeck(deck) },
                         onSelectMode = { mode -> viewModel.selectQuizletMode(mode) },
                         onLaunchAdaptiveFocus = { viewModel.launchDynamicAdaptiveReview() },
                         onFlipCard = { viewModel.flipCard() },
+                        onSessionInteraction = viewModel::markStudySessionStarted,
                         onMarkKnown = { viewModel.markCardKnown() },
                         onMarkLearning = { viewModel.markCardLearning() },
                         onSpeakPhrase = { phrase -> viewModel.speakPhrase(phrase) },
@@ -338,7 +306,15 @@ fun MainFeatureScreen(
                         onTapMatchTile = { tileId -> viewModel.onMatchTileTapped(tileId) },
                         onTickMatchTimer = { viewModel.tickMatchTimer() },
                         onStartSpeech = { callback -> checkAndStartSpeech(callback) },
-                        onStopSpeech = { viewModel.stopSpeechPractice() }
+                        onStopSpeech = { viewModel.stopSpeechPractice() },
+                        onContinueToDrills = { levelIndex ->
+                            viewModel.startNewQuizSession(levelIndex)
+                            viewModel.navigateTo(Screen.QUIZ)
+                        },
+                        isDevModeEnabled = isDevModeEnabled,
+                        onEndDevMode = { viewModel.devEndMode() },
+                        onDevGetCorrect = { viewModel.devGetFlashcardsScreenCorrect() },
+                        onDevSkipToLast = { viewModel.devSkipToLastFlashcardsScreenQuestion() }
                     )
                 }
 
@@ -346,6 +322,7 @@ fun MainFeatureScreen(
                     AiTutorScreen(
                         state = aiTutorState,
                         isListening = isListening,
+                        speechLevel = speechLevel,
                         speechStatus = speechStatus,
                         onBack = { viewModel.navigateTo(Screen.HOME) },
                         onSelectScenario = { scenario -> viewModel.selectRoleplayScenario(scenario) },
@@ -373,6 +350,7 @@ fun MainFeatureScreen(
                     SettingsScreen(
                         user = user,
                         userStats = userStats,
+                        onBack = { viewModel.navigateTo(Screen.HOME) },
                         onSignOut = onSignOut,
                         cloudSyncStatus = cloudSyncStatus,
                         lastSyncedDevice = lastSyncedDevice,
@@ -380,9 +358,10 @@ fun MainFeatureScreen(
                         localLanUrl = lanUrl,
                         onResetAllProgress = { viewModel.resetAllProgressToZero() },
                         onSetDevLevel = { idx -> viewModel.setDevLevel(idx) },
-                        onSetDevXp = { xp -> viewModel.setDevXp(xp) },
                         onSetDevStreak = { days -> viewModel.setDevStreak(days) },
-                        onQueueDevLevelUp = { isDrill -> viewModel.queueDevLevelUp(isDrill) }
+                        onQueueDevLevelUp = { isDrill -> viewModel.queueDevLevelUp(isDrill) },
+                        isDevModeEnabled = isDevModeEnabled,
+                        onToggleDevMode = { viewModel.setDevModeEnabled(it) }
                     )
                 }
             }
@@ -405,7 +384,11 @@ fun MainFeatureScreen(
                     onSpeakPhraseText = { ml, mg -> viewModel.speakText(ml, mg) },
                     onNextPrompt = { viewModel.nextGraduationPrompt() },
                     onSelfVerifySpoken = { viewModel.evaluateGraduationPrompt(overridePassed = true) },
-                    onDismiss = { viewModel.dismissGraduationExam() }
+                    onDismiss = { viewModel.dismissGraduationExam() },
+                    isDevModeEnabled = isDevModeEnabled,
+                    onEndDevMode = { viewModel.devEndMode() },
+                    onDevGetCorrect = { viewModel.evaluateGraduationPrompt(overridePassed = true) },
+                    onDevSkipToLast = { viewModel.devSkipToLastGraduationPrompt() }
                 )
             }
 
