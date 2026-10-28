@@ -641,7 +641,7 @@ fun AuthScreen(
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Text(
-                                text = "1. Go to console.firebase.google.com\n2. Open your project (e.g. gen-lang-client-0134666056)\n3. Navigate to Build -> Authentication -> Sign-in method\n4. Under Native providers, click 'Anonymous'\n5. Toggle 'Enable' and click 'Save'",
+                                text = "1. Go to console.firebase.google.com\n2. Open your project\n3. Navigate to Build -> Authentication -> Sign-in method\n4. Under Native providers, click 'Anonymous'\n5. Toggle 'Enable' and click 'Save'",
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     lineHeight = 18.sp
                                 )
